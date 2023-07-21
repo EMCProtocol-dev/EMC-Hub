@@ -1,0 +1,5 @@
+# EMC-Hub
+
+```
+$npm install
+```
