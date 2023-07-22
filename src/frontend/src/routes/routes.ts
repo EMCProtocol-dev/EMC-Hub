@@ -9,7 +9,7 @@ export const routes = [
     path: '/',
     component: () => import('@/layout/app/index.vue'),
     redirect: {
-      name: 'models',
+      name: 'home',
     },
     children: [
       {

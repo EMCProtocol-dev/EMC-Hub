@@ -127,19 +127,19 @@ export default defineComponent({
                name: 'Stable Diffusion',
                description: 'Do consectetur proident proident id eiusmod deserunt consequat',
                button: 'Try',
-               link: 'https://www.naiveui.com/zh-CN/light/components/card',
+               link: 'javascript:void(0)'//'https://www.naiveui.com/zh-CN/light/components/card',
             }, {
                cover: cover2,
                name: 'LLaMa',
                description: 'Adipisicing labore ea nulla dolor et adad quis proident laboris',
                button: 'Coming soon',
-               link: 'https://www.naiveui.com/zh-CN/light/components/card',
+               link: 'javascript:void(0)'//'https://www.naiveui.com/zh-CN/light/components/card',
             }, {
                cover: cover3,
                name: 'Feature',
                description: 'Consequat dolor exercitation minim eaaliquip officia et',
                button: 'Coming soon',
-               link: 'https://www.naiveui.com/zh-CN/light/components/card',
+               link: 'javascript:void(0)'//'https://www.naiveui.com/zh-CN/light/components/card',
             }
          ]
       })

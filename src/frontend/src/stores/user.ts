@@ -51,7 +51,7 @@ export const useUserStore = defineStore('user', () => {
       }
     ): Promise<{ _result: number; _desc?: string }> {
       const resp1 = await http.postJSON({
-        url: 'http://36.155.7.134:9080/mrchaiemc/applyRegister.do',
+        url: 'https://api.emchub.ai/mrchaiemc/applyRegister.do',
         data: { bussData: { loginId: account, nickName: nickname, email: email } },
       });
       const userId = resp1?.bussData?.custId;
@@ -60,11 +60,11 @@ export const useUserStore = defineStore('user', () => {
       }
       const [resp2, resp3] = await Promise.all([
         http.postJSON({
-          url: 'http://36.155.7.134:9080/mrchaiemc/setAutoration.do',
+          url: 'https://api.emchub.ai/mrchaiemc/setAutoration.do',
           data: { custId: userId, bussData: { identityType: 'PASSWD', authToken: password } },
         }),
         http.postJSON({
-          url: 'http://36.155.7.134:9080/mrchaiemc/setAutoration.do',
+          url: 'https://api.emchub.ai/mrchaiemc/setAutoration.do',
           data: { custId: userId, bussData: { identityType: 'PRINCIPAL', authToken: principal } },
         }),
       ]);
@@ -89,7 +89,7 @@ export const useUserStore = defineStore('user', () => {
         authData.authToken = _principal as string;
       }
       const resp = await http.postJSON({
-        url: 'http://36.155.7.134:9080/mrchaiemc/userLogin.do',
+        url: 'https://api.emchub.ai/mrchaiemc/userLogin.do',
         data: { loginId: _account, bussData: authData },
       });
       if (resp?.resultCode === 'SUCCESS') {
