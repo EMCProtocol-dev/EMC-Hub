@@ -142,7 +142,7 @@ export default defineComponent({
       onPressUpload() {
         router.push({ name: 'model-upload' });
       },
-      onPressItem(item) {
+      onPressItem(item: any) {
         router.push({ name: 'model-detail', params: { id: item.id } });
       },
     };

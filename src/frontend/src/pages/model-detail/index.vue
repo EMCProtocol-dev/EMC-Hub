@@ -1,5 +1,5 @@
 <template>
-  <div class="page">model detail</div>
+  <div class="page">🐔</div>
 </template>
 
 <script lang="ts">

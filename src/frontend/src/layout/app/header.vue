@@ -43,14 +43,14 @@
 <script lang="ts">
 import { ref, defineComponent, computed, watch, h } from 'vue';
 import type { Component } from 'vue';
-import { NButton, NSpin, NSpace, NCard, NA, NIcon, NDropdown, useMessage } from 'naive-ui';
+import { NButton, NSpin, NSpace, NText, NCard, NA, NIcon, NDropdown, useMessage } from 'naive-ui';
 import { RouterLink } from 'vue-router';
 import { useRouter, useRoute } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 import {
   PersonSharp as IconPerson,
   PersonCircleOutline as IconUser,
-  LogOutOutline as IconSignOut,
+  LogOutSharp as IconSignOut,
 } from '@vicons/ionicons5';
 
 type tabkey = number;
@@ -69,29 +69,19 @@ const tabConfigs: TabItem[] = [
 
 const initTabKey = -1;
 
-const renderIcon = (icon: Component) => {
-  return () => {
-    return h(
-      NIcon,
-      { size: 24 },
-      {
-        default: () => h(icon),
-      }
+const renderLabel = (label: string) => h(NText, null, { default: () => label });
+
+const renderIcon = (icon: Component) => h(NIcon, { size: 28 }, { default: () => h(icon) });
+
+const renderMenuItem = (label: string, icon: Component) => {
+  return () =>
+    h(
+      NSpace,
+      { align: 'center', wrapItem: false, style: 'line-height:1.6;height:40px;' },
+      { default: () => [renderIcon(icon), renderLabel(label)] }
     );
-  };
 };
-const userMenus = [
-  {
-    label: 'User profile',
-    key: 'profile',
-    icon: renderIcon(IconUser),
-  },
-  {
-    label: 'Sign out',
-    key: 'signout',
-    icon: renderIcon(IconSignOut),
-  },
-];
+const userMenus = [{ key: 'signout', label: renderMenuItem('Sign out', IconSignOut) }];
 
 export default defineComponent({
   components: {
@@ -103,6 +93,7 @@ export default defineComponent({
     NCard,
     NA,
     NIcon,
+    NText,
     IconPerson,
   },
   setup(props, context) {
@@ -132,10 +123,9 @@ export default defineComponent({
       },
       onUserMenu(key: string) {
         console.info(key);
-        if(key === 'profile'){
-
-        }else if(key==='signout'){
-          userStore.signOut()
+        if (key === 'profile') {
+        } else if (key === 'signout') {
+          userStore.signOut();
         }
       },
       onPressSignIn() {

@@ -48,6 +48,7 @@ export default defineComponent({
   border-radius: 8px;
   box-shadow: 1px 1px 6px 0 #ccc;
   margin-bottom: 24px;
+  cursor: pointer;
 }
 
 .item-carousel {
@@ -57,6 +58,11 @@ export default defineComponent({
 .item-cover {
   width: 240px;
   height: calc(240px * 1.25);
+  transform: scale(1);
+  transition: all 0.2s;
+}
+.item-cover:hover {
+  transform: scale(1.2);
 }
 .item-body {
   padding: 16px 16px;
