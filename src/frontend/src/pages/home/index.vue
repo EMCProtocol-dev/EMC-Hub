@@ -6,9 +6,11 @@
             <NH4 class="carouse-content">With the help of idle GPU computing power distributed onEdgeMatrix worldwide, you
                can generate the Al images youdesire from anywhere at any time. It is a fully decentralized Alapplication.
             </NH4>
-            <NButton class="warn-button" type="warning">
-               Generate Your First Al lmage on Chain
-            </NButton>
+            <RouterLink :to="{ path: '/models' }">
+               <NButton class="warn-button" type="warning">
+                  Generate Your First Al lmage on Chain
+               </NButton>
+            </RouterLink>
             <img class="carouse-background" src="@/assets/home-background.png" />
             <img class="carouse-background-image" src="@/assets/home-background-image.png" />
 
@@ -57,7 +59,9 @@
          <NSpace class="footer-center" :vertical="true" align="center">
             <div class="footer-title">{{ footer.title }} </div>
             <div class="footer-description">{{ footer.description }}</div>
-            <NButton class="warn-button">{{ footer.button }}</NButton>
+            <RouterLink :to="{ path: '/models' }">
+               <NButton class="warn-button" type="warning">{{ footer.button }}</NButton>
+            </RouterLink>
          </NSpace>
          <div class="footer-right-decoration"></div>
       </div>
@@ -127,19 +131,19 @@ export default defineComponent({
                name: 'Stable Diffusion',
                description: 'Do consectetur proident proident id eiusmod deserunt consequat',
                button: 'Try',
-               link: 'javascript:void(0)'//'https://www.naiveui.com/zh-CN/light/components/card',
+               link: 'https://6tq33-2iaaa-aaaap-qbhpa-cai.icp0.io/#/home'
             }, {
                cover: cover2,
                name: 'LLaMa',
                description: 'Adipisicing labore ea nulla dolor et adad quis proident laboris',
                button: 'Coming soon',
-               link: 'javascript:void(0)'//'https://www.naiveui.com/zh-CN/light/components/card',
+               link: 'javascript:void(0)',
             }, {
                cover: cover3,
                name: 'Feature',
                description: 'Consequat dolor exercitation minim eaaliquip officia et',
                button: 'Coming soon',
-               link: 'javascript:void(0)'//'https://www.naiveui.com/zh-CN/light/components/card',
+               link: 'javascript:void(0)',
             }
          ]
       })
@@ -189,7 +193,6 @@ rollback models - all super easily.
          title: "Embark on your AI journey in the Web3 world now!",
          description: "Upload your own Al model, and in the future, you can manage the model's revenue rights and explore various unique features through NFTs.",
          button: "Browser Models",
-         link: '',
       })
 
       return { cardList, worksList, footer, };
