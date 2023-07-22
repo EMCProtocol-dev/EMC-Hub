@@ -8,6 +8,7 @@
 import { ref, onMounted, defineComponent } from 'vue';
 import { useLoadingBar, useMessage, NSpin } from 'naive-ui';
 import { router } from '@/routes/index';
+import { useUserStore } from '@/stores/user';
 
 export default defineComponent({
   name: 'app',
@@ -16,7 +17,7 @@ export default defineComponent({
     const ready = ref(false);
     const loadingBar = useLoadingBar();
     const message = useMessage();
-
+    const userStore = useUserStore();
     const cacheRoutes = ref<string[]>([]);
     const routes = router?.options?.routes || [];
 
@@ -29,6 +30,10 @@ export default defineComponent({
     onMounted(() => {
       window.$message = message;
       window.$loadingBar = loadingBar;
+      userStore.initLocalData();
+      if (userStore.user.id) {
+        //init user info
+      }
       ready.value = true;
     });
 

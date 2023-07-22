@@ -1,5 +1,6 @@
 import axios from 'axios';
-
+import { instance as authClient } from '@emcecosystem/auth-client';
+import type { FormItemRule } from 'naive-ui';
 function getLocalStorage(key: string) {
   let data = window.localStorage.getItem(key);
   if (!data) return data;
@@ -113,6 +114,22 @@ function metaData() {
   });
 }
 
+const emcLogin = (): Promise<{ _result: number; _desc?: string; data?: { principal: string; account: string } }> => {
+  return new Promise((resolve) => {
+    authClient.login({
+      onSuccess: (message: { type: string; data?: any }) => {
+        resolve({ _result: 0, data: message.data });
+      },
+      onError: (err?: string) => {
+        resolve({ _result: 1, _desc: err || 'Unknow error' });
+      },
+    });
+  });
+};
+const validatorNotEmpty = (rule: FormItemRule, value: string) => {
+  return !value ? new Error('Can not be empty') : true;
+};
+
 export const Utils = {
   getLocalStorage,
   setLocalStorage,
@@ -125,4 +142,6 @@ export const Utils = {
   textOverflow,
   formatAddress,
   metaData,
+  emcLogin,
+  validatorNotEmpty,
 };

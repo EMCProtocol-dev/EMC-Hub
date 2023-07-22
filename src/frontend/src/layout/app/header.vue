@@ -24,35 +24,34 @@
           </template>
         </template>
       </NSpace>
-      <template v-if="isLogin">
-        <div class="header-user" @click="onPressUser">Logined</div>
+      <template v-if="user.id">
+        <NDropdown :options="userMenus" size="large" @select="onUserMenu">
+          <NButton class="header-user" type="default" @click="onPressUser">
+            <template #icon>
+              <NIcon><IconPerson /></NIcon>
+            </template>
+            {{ user.nickname }}
+          </NButton>
+        </NDropdown>
       </template>
       <template v-else>
-        <NButton type="default" size="large" strong @click="onPressLogin">Sign Up</NButton>
+        <NButton type="default" size="large" strong @click="onPressSignIn">Sign In</NButton>
       </template>
     </NSpace>
   </NSpace>
 </template>
 <script lang="ts">
-import { ref, defineComponent, watch, nextTick } from 'vue';
-import {
-  NButton,
-  NSpin,
-  NSpace,
-  NMenu,
-  NCard,
-  NA,
-  NTag,
-  NModal,
-  NCarousel,
-  NCollapse,
-  NCollapseItem,
-  useMessage,
-} from 'naive-ui';
+import { ref, defineComponent, computed, watch, h } from 'vue';
+import type { Component } from 'vue';
+import { NButton, NSpin, NSpace, NCard, NA, NIcon, NDropdown, useMessage } from 'naive-ui';
 import { RouterLink } from 'vue-router';
 import { useRouter, useRoute } from 'vue-router';
-import { useLogin } from '@/composables/use-login';
-import { instance as emcAuthClient, AuthClient } from '@emcecosystem/auth-client';
+import { useUserStore } from '@/stores/user';
+import {
+  PersonSharp as IconPerson,
+  PersonCircleOutline as IconUser,
+  LogOutOutline as IconSignOut,
+} from '@vicons/ionicons5';
 
 type tabkey = number;
 
@@ -70,30 +69,50 @@ const tabConfigs: TabItem[] = [
 
 const initTabKey = -1;
 
+const renderIcon = (icon: Component) => {
+  return () => {
+    return h(
+      NIcon,
+      { size: 24 },
+      {
+        default: () => h(icon),
+      }
+    );
+  };
+};
+const userMenus = [
+  {
+    label: 'User profile',
+    key: 'profile',
+    icon: renderIcon(IconUser),
+  },
+  {
+    label: 'Sign out',
+    key: 'signout',
+    icon: renderIcon(IconSignOut),
+  },
+];
+
 export default defineComponent({
   components: {
     RouterLink,
     NButton,
     NSpin,
     NSpace,
-    NMenu,
-    NCarousel,
+    NDropdown,
     NCard,
     NA,
-    NTag,
-    NModal,
-    NCollapse,
-    NCollapseItem,
+    NIcon,
+    IconPerson,
   },
-  emits: ['isLoading'],
   setup(props, context) {
     const message = useMessage();
     const tabs = ref<TabItem[]>(tabConfigs);
-
     const currentTabKey = ref<tabkey>(initTabKey);
-    const isLogin = ref(false);
     const router = useRouter();
     const route = useRoute();
+    const userStore = useUserStore();
+
     watch(
       () => route.path,
       (path, oldVal) => {
@@ -106,25 +125,21 @@ export default defineComponent({
     return {
       tabs,
       currentTabKey,
-      isLogin,
+      user: computed(() => userStore.user),
+      userMenus,
       onPressUser() {
         console.info('user');
       },
-      onPressLogin() {
-        context.emit('isLoading', true);
-        emcAuthClient.login({
-          onSuccess: (message) => {
-            console.info('success', message);
-            if (message.type === 'authorize-success') {
-              isLogin.value = true;
-              context.emit('isLoading', false);
-            }
-          },
-          onError(message) {
-            console.info(message);
-            context.emit('isLoading', false);
-          },
-        });
+      onUserMenu(key: string) {
+        console.info(key);
+        if(key === 'profile'){
+
+        }else if(key==='signout'){
+          userStore.signOut()
+        }
+      },
+      onPressSignIn() {
+        router.push({ name: 'auth' });
       },
     };
   },
@@ -214,4 +229,3 @@ export default defineComponent({
   }
 }
 </style>
-@/composables/use-login
