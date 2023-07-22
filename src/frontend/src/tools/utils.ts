@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { instance as authClient } from '@emcecosystem/auth-client';
 import type { FormItemRule } from 'naive-ui';
 function getLocalStorage(key: string) {
@@ -94,28 +93,6 @@ function formatAddress(value = '', width = 10) {
   }
 }
 
-<<<<<<< HEAD
-=======
-function metaData() {
-  return new Promise((resolve, reject) => {
-    axios
-      .get('https://api.edgematrix.pro/api/v1/dip20simple', {
-        params: {
-          method: 'getMetadata',
-        },
-      })
-      .then((resp) => {
-        const data = resp.data;
-        if (data._result !== 0) return;
-        const metaData = JSON.parse(data.data);
-        resolve(metaData);
-      })
-      .catch((error) => {
-        reject(error);
-      });
-  });
-}
-
 const emcLogin = (): Promise<{ _result: number; _desc?: string; data?: { principal: string; account: string } }> => {
   return new Promise((resolve) => {
     authClient.login({
@@ -132,7 +109,6 @@ const validatorNotEmpty = (rule: FormItemRule, value: string) => {
   return !value ? new Error('Can not be empty') : true;
 };
 
->>>>>>> b6fe37ae831dd98dce8f49af3904635e9907c811
 export const Utils = {
   getLocalStorage,
   setLocalStorage,
@@ -144,10 +120,6 @@ export const Utils = {
   toFixed,
   textOverflow,
   formatAddress,
-<<<<<<< HEAD
-=======
-  metaData,
   emcLogin,
   validatorNotEmpty,
->>>>>>> b6fe37ae831dd98dce8f49af3904635e9907c811
 };
