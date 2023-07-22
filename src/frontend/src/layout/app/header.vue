@@ -1,18 +1,27 @@
 <template>
-  <NSpace class="header" align="center" justify="space-between" :size="[0, 0]" :wrap-item="false">
+  <NSpace class="header" align="center" justify="space-between" :size="[0, 0]" :wrap-item="false" :wrap="false">
     <NSpace class="header-cell">
       <RouterLink :to="{ path: '/' }">
         <img class="header-icon" />
       </RouterLink>
     </NSpace>
-    <NSpace class="header-cell" align="center" justify="space-between" :wrap-item="false">
-      <NSpace class="header-tabs" align="center" :size="[24, 0]" :wrap-item="false">
+    <NSpace class="header-cell" align="center" justify="space-between" :wrap-item="false" :wrap="false">
+      <NSpace class="header-tabs" align="center" :size="[24, 0]" :wrap-item="false" :wrap="false">
         <template v-for="item in tabs">
-          <RouterLink :to="{ path: item.path }" style="text-decoration: none; color: inherit">
-            <div class="header-tabs-item" :class="{ 'header-tabs-item__actived': item.id === currentTabKey }">
-              <span class="header-tabs-item-text">{{ item.name }}</span>
-            </div>
-          </RouterLink>
+          <template v-if="item.path.startsWith('http')">
+            <NA :href="item.path" style="text-decoration: none; color: inherit">
+              <div class="header-tabs-item" :class="{ 'header-tabs-item__actived': item.id === currentTabKey }">
+                <span class="header-tabs-item-text">{{ item.name }}</span>
+              </div>
+            </NA>
+          </template>
+          <template v-else>
+            <RouterLink :to="item.path" style="text-decoration: none; color: inherit">
+              <div class="header-tabs-item" :class="{ 'header-tabs-item__actived': item.id === currentTabKey }">
+                <span class="header-tabs-item-text">{{ item.name }}</span>
+              </div>
+            </RouterLink>
+          </template>
         </template>
       </NSpace>
       <template v-if="isLogin">
@@ -32,6 +41,7 @@ import {
   NSpace,
   NMenu,
   NCard,
+  NA,
   NTag,
   NModal,
   NCarousel,
@@ -55,7 +65,7 @@ type TabItem = {
 const tabConfigs: TabItem[] = [
   { id: 1, name: 'Home', path: '/home' },
   { id: 2, name: 'Models', path: '/models' },
-  { id: 3, name: 'EMC Nodes', path: '/nodes' },
+  { id: 3, name: 'EMC Nodes', path: 'https://dashboard.edgematrix.pro' },
 ];
 
 const initTabKey = -1;
@@ -69,6 +79,7 @@ export default defineComponent({
     NMenu,
     NCarousel,
     NCard,
+    NA,
     NTag,
     NModal,
     NCollapse,
@@ -123,6 +134,7 @@ export default defineComponent({
 .header {
   --header-height: 84px;
   height: var(--header-height);
+  min-width: 1440px;
   border-bottom: solid 1px #e7e7e7;
 }
 .header-cell {
@@ -148,6 +160,7 @@ export default defineComponent({
   flex-direction: column;
   justify-content: center;
   height: var(--header-height);
+  white-space: nowrap;
 }
 
 .carousel-item {

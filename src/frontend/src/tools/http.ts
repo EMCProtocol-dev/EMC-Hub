@@ -155,11 +155,11 @@ class Http {
         }
       }
 
-      if (result._result !== 0) {
-        if (!options.noAutoHint) {
-          window.$message.warning(result._desc);
-        }
-      }
+      // if (result._result !== 0) {
+      //   if (!options.noAutoHint) {
+      //     window.$message.warning(result._desc);
+      //   }
+      // }
 
       return result;
     };

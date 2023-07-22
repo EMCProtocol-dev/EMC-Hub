@@ -44,19 +44,9 @@
           </div>
         </template>
         <template #header-extra>
-          <NUpload
-            action="https://www.mocky.io/v2/5e4bafc63100007100d8b70f"
-            :headers="{
-              'naive-info': 'hello!',
-            }"
-            :data="{
-              'naive-data': 'cool! naive!',
-            }"
-          >
-            <NButton>Click to upload</NButton>
-          </NUpload>
+          <NButton type="primary" ghost strong @click="onPressUpload">Click to upload</NButton>
         </template>
-        <NSpace :wrap-item="false" :size="[24, 0]" :wrap="true">
+        <NSpace :wrap-item="false" :size="[24, 0]" :wrap="true" style="margin-bottom: -24px; min-height: 400px">
           <template v-for="item in list">
             <div class="item">
               <NCarousel class="item-carousel" :autoplay="true">
@@ -73,7 +63,7 @@
                 </div> -->
                 <div class="item-body-row">
                   <template v-for="tag in item.tags">
-                    <NTag :color="{ color: '#BBB', textColor: '#555', borderColor: '#555' }">
+                    <NTag round size="small" :bordered="false" :color="{ color: '#8f7df8', textColor: '#f1f1f1' }">
                       {{ tag }}
                     </NTag>
                   </template>
@@ -90,7 +80,7 @@
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, watch, onActivated, ComputedRef } from 'vue';
 import { NPagination, NSpace, NUpload, NButton, NSpin, NCard, NCarousel, NTag, NH4 } from 'naive-ui';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useList } from '../../composables/use-list';
 import { Http } from '../../tools/http';
 const ArticleDefaultCover = require('../../assets/article-default-cover.png');
@@ -111,10 +101,11 @@ export default defineComponent({
   },
   setup() {
     const route = useRoute();
+    const router = useRouter();
     const list = ref<any[]>([]);
     const loading = ref(true);
     const pageNo = ref(1);
-    const pageSize = ref(20);
+    const pageSize = ref(80);
     const queryParams = ref<any>({});
     const pageCount = ref(1);
     const itemCount = ref(0);
@@ -132,8 +123,8 @@ export default defineComponent({
     const updateList = async () => {
       loading.value = true;
       const resp = await http.postJSON({
-        url: 'http://36.155.7.134:9080/mrchaiemc/queryModelInfoForMainView.do',
-        data: { custId: '', bussData: { pageIndex: pageNo.value - 1, pageSize: pageSize.value } },
+        url: 'https://api.emchub.ai/mrchaiemc/queryModelInfoForMainView.do',
+        data: { custId: '1690226134332', bussData: { pageIndex: pageNo.value - 1, pageSize: pageSize.value } },
       });
       loading.value = false;
 
@@ -143,8 +134,8 @@ export default defineComponent({
 
       newList.forEach((item) => {
         let status = item.modelStat;
-        if (status === 'HIDDEN') return;
-        let tags = [];
+        // if (status === 'HIDDEN') return;
+        let tags: any[] = [];
         tagsProps.forEach((p) => {
           const vals = item[p] ? item[p].split(',') : [];
           if (vals.length > 0) {
@@ -168,11 +159,12 @@ export default defineComponent({
     };
 
     onActivated(() => {
-      if (route.meta.isBack) {
-        updateList();
-      } else {
-        initList();
-      }
+      // if (route.meta.isBack) {
+      //   updateList();
+      // } else {
+      //   initList();
+      // }
+      initList();
     });
 
     return {
@@ -187,6 +179,9 @@ export default defineComponent({
       article2,
       initList,
       updateList,
+      onPressUpload() {
+        router.push({ name: 'model-upload' });
+      },
     };
   },
 });
@@ -257,6 +252,7 @@ export default defineComponent({
   border: solid 1px #f1f1f1;
   border-radius: 8px;
   box-shadow: 1px 1px 6px 0 #ccc;
+  margin-bottom: 24px;
 }
 
 .item-carousel {
