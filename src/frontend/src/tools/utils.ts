@@ -93,26 +93,6 @@ function formatAddress(value = '', width = 10) {
   }
 }
 
-function metaData() {
-  return new Promise((resolve, reject) => {
-    axios
-      .get('https://api.edgematrix.pro/api/v1/dip20simple', {
-        params: {
-          method: 'getMetadata',
-        },
-      })
-      .then((resp) => {
-        const data = resp.data;
-        if (data._result !== 0) return;
-        const metaData = JSON.parse(data.data);
-        resolve(metaData);
-      })
-      .catch((error) => {
-        reject(error);
-      });
-  });
-}
-
 export const Utils = {
   getLocalStorage,
   setLocalStorage,
@@ -124,5 +104,4 @@ export const Utils = {
   toFixed,
   textOverflow,
   formatAddress,
-  metaData,
 };
