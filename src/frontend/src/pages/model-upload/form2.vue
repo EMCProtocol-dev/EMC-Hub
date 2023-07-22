@@ -173,7 +173,7 @@ function defaultFormData() {
 }
 type UploadFinishOptions = { file: UploadFileInfo; event?: ProgressEvent };
 type UploadRemoveOptions = { file: UploadFileInfo; fileList: Array<UploadFileInfo> };
-
+type UploadProperties = 'images' | 'archive';
 export default defineComponent({
   components: {
     NForm,
@@ -212,7 +212,7 @@ export default defineComponent({
     const formSubmitting = ref(false);
     const message = useMessage();
 
-    const handleUploadFinish = ({ file, event }: UploadFinishOptions, property: 'images' | 'archive') => {
+    const handleUploadFinish = ({ file, event }: UploadFinishOptions, property: UploadProperties) => {
       const resp = Utils.parseJSON((event?.target as XMLHttpRequest).response) || {};
       const url = resp?.bussData?.file_link as string;
       file.url = url;
@@ -220,7 +220,7 @@ export default defineComponent({
       return file;
     };
 
-    const handleUploadRemove = ({ file, fileList }: UploadRemoveOptions, property: 'images' | 'archive') => {
+    const handleUploadRemove = ({ file, fileList }: UploadRemoveOptions, property: UploadProperties) => {
       const list: any[] = [];
       fileList.forEach((item) => {
         if (item.id === file.id) return;

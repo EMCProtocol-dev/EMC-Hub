@@ -1,6 +1,4 @@
 import { Axios } from 'axios';
-import type { RouteLocationRaw } from 'vue-router';
-import { router } from '@/routes/index';
 import { Utils } from '@/tools/utils';
 
 const HTTP_METHOD = {
@@ -23,14 +21,15 @@ const _defaultHttpConfig = {
 };
 
 type Session = {
-  adminSid: string;
-  clientSid: string;
+  token: '';
+  [k: string]: string;
 };
+
+const STORAGE_KEY = 'emchub.session';
 
 class Http {
   private client: Axios;
-  private adminSid: string = '';
-  private clientSid: string = '';
+  private session: Session | null = null;
 
   static _instance: any;
 
@@ -51,24 +50,21 @@ class Http {
   }
 
   initSession() {
-    const session = Utils.getLocalStorage('yfw365.ticket.session');
+    const session = Utils.getLocalStorage(STORAGE_KEY);
     if (session) {
       this.setSession(session);
     }
   }
 
   clearSession() {
-    this.adminSid = '';
-    this.clientSid = '';
-    Utils.removeLocalStorage('yfw365.ticket.session');
+    this.session = null;
+    Utils.removeLocalStorage(STORAGE_KEY);
   }
 
   setSession(session: Session) {
-    const { adminSid, clientSid } = session;
-    if (adminSid && clientSid) {
-      Utils.setLocalStorage('yfw365.ticket.session', session);
-      this.adminSid = adminSid;
-      this.clientSid = clientSid;
+    if (session && session.token) {
+      Utils.setLocalStorage(STORAGE_KEY, session);
+      this.session = session;
     }
   }
 
@@ -121,9 +117,17 @@ class Http {
       options.method = 'PUT';
       options.headers['content-type'] = 'application/json';
     }
-    if (options.url.startsWith('/admin') && this.adminSid) {
+    if (this.session) {
       const and = options.url.includes('?') ? '&' : '?';
-      options.url = `${options.url}${and}JSESSIONID=${this.adminSid}`;
+      const session = this.session as Session;
+      const sessions: string[] = [];
+      Object.assign(session).forEach((k: string) => {
+        if (!session[k]) return;
+        sessions.push(`${k}=${session[k]}`);
+      });
+      if (sessions.length > 0) {
+        options.url = `${options.url}${and}${sessions.join('&')}`;
+      }
     }
     return options;
   }
