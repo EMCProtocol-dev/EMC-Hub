@@ -3,37 +3,10 @@
     <NSpace vertical :size="[0, 24]" :wrap-item="false">
       <NSpace class="banners" align="center" justify="space-between" :wrap-item="false" :size="[24, 0]">
         <NCard :bordered="false" class="banner-cell" style="width: calc(40% - 24px)" content-style="padding:0">
-          <div class="article article-bg" style="--article-text: #ffffff">
-            <div class="article-wrapper">
-              <div class="article-header">
-                <span>{{ article.title }}</span>
-              </div>
-              <div class="article-body">
-                <span>{{ article.content }}</span>
-              </div>
-              <div class="article-footer">
-                <span>Read more</span>
-              </div>
-            </div>
-          </div>
+          <ArticleItem :item="article" class="article-bg" style="--article-text: #ffffff" />
         </NCard>
         <NCard :bordered="false" class="banner-cell" content-style="padding:0">
-          <div class="article" style="--article-text: #000000">
-            <div class="article-wrapper">
-              <div class="article-header">
-                <span>{{ article2.title }}</span>
-              </div>
-              <div class="article-body">
-                <span>{{ article2.content }}</span>
-              </div>
-              <div class="article-footer">
-                <span>Read more</span>
-              </div>
-            </div>
-            <div class="article-cover">
-              <img class="article-cover-image" :src="article2.cover" />
-            </div>
-          </div>
+          <ArticleItem :item="article2" style="--article-text: #000000" />
         </NCard>
       </NSpace>
       <NCard :bordered="false">
@@ -56,6 +29,7 @@
             <NButton>Click to upload</NButton>
           </NUpload>
         </template>
+<<<<<<< HEAD
         <NSpace :wrap-item="false" :size="[24, 0]" :wrap="true">
           <template v-for="item in list">
             <div class="item">
@@ -80,6 +54,18 @@
                 </div>
               </div>
             </div>
+=======
+        <NSpace :wrap-item="false" :size="[24, 0]" :wrap="true" style="margin-bottom: -24px">
+          <template v-if="loading">
+            <NSpace align="center" justify="center" style="width: 100%; height: 400px">
+              <NSpin />
+            </NSpace>
+          </template>
+          <template v-else>
+            <template v-for="item in list">
+              <ModelItem :item="item" @press="onPressItem" />
+            </template>
+>>>>>>> 4a3626c (~)
           </template>
         </NSpace>
       </NCard>
@@ -90,14 +76,20 @@
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, watch, onActivated, ComputedRef } from 'vue';
 import { NPagination, NSpace, NUpload, NButton, NSpin, NCard, NCarousel, NTag, NH4 } from 'naive-ui';
+<<<<<<< HEAD
 import { useRoute } from 'vue-router';
 import { useList } from '../../composables/use-list';
+=======
+import { useRoute, useRouter } from 'vue-router';
+>>>>>>> 4a3626c (~)
 import { Http } from '../../tools/http';
+import ArticleItem from './article-item.vue';
+import ModelItem from './model-item.vue';
 const ArticleDefaultCover = require('../../assets/article-default-cover.png');
 
 export default defineComponent({
   name: 'nodes',
-  components: { NPagination, NSpace, NUpload, NButton, NSpin, NCard, NCarousel, NTag, NH4 },
+  components: { NPagination, NSpace, NUpload, NButton, NSpin, NCard, NCarousel, NTag, NH4, ArticleItem, ModelItem },
   beforeRouteEnter(to, from, next) {
     if (typeof to.meta !== 'object') {
       to.meta = {};
@@ -119,7 +111,6 @@ export default defineComponent({
     const pageCount = ref(1);
     const itemCount = ref(0);
     const article = ref({
-      cover: ArticleDefaultCover,
       title: "EMC Hub will soon launch Lora NFT, the world's first AI model NFT",
       content: `EMC Hub is about to release Lora NFT, which is the industry's first AI model NFT. This innovation represents EMC Hub's innovation in the AI+web3 field. Lora NFT will use AI technology to bring more possibilities and innovations to the NFT market, creating more revenue and value for AI model creators and collectors. Stay tuned for the release of Lora NFT!`,
     });
@@ -152,6 +143,7 @@ export default defineComponent({
           }
         });
         list.value.push({
+          id: item.modelId,
           covers: item.sampleImgFileLinks ? item.sampleImgFileLinks.split(',') : [],
           name: item.modelName,
           tags: tags,
@@ -187,6 +179,15 @@ export default defineComponent({
       article2,
       initList,
       updateList,
+<<<<<<< HEAD
+=======
+      onPressUpload() {
+        router.push({ name: 'model-upload' });
+      },
+      onPressItem(item) {
+        router.push({ name: 'model-detail', params: { id: item.id } });
+      },
+>>>>>>> 4a3626c (~)
     };
   },
 });
@@ -201,6 +202,7 @@ export default defineComponent({
   /* border-radius: var(--card-radius); */
   /* border-radius: 16px; */
 }
+<<<<<<< HEAD
 .article {
   padding: 24px;
   display: flex;
@@ -278,4 +280,6 @@ export default defineComponent({
 .item-body-row:not(:last-child) {
   margin-bottom: 8px;
 }
+=======
+>>>>>>> 4a3626c (~)
 </style>

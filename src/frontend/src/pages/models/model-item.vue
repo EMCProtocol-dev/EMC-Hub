@@ -1,5 +1,6 @@
 <template>
   <div class="item" @click="onPressItem">
+<<<<<<< HEAD
     <NSpace class="item-carousel-wrap" :wrap-item="false">
       <!-- <NCarousel class="item-carousel" :autoplay="true">
         <template v-for="cover in item.covers">
@@ -18,11 +19,34 @@
         </NSpace>
       </NSpace>
     </NSpace>
+=======
+    <NCarousel class="item-carousel" :autoplay="true">
+      <template v-for="cover in item.covers">
+        <img class="item-cover" :src="cover" />
+      </template>
+    </NCarousel>
+    <div class="item-body">
+      <div class="item-body-row">
+        <NH4 style="margin-bottom: 0">{{ item.name }}</NH4>
+      </div>
+      <!-- <div class="item-body-row">
+                  <NTag type="success"> {{ item.status }} </NTag>
+                </div> -->
+      <div class="item-body-row">
+        <template v-for="tag in item.tags">
+          <NTag round size="small" :bordered="false" :color="{ color: '#8f7df8', textColor: '#f1f1f1' }">
+            {{ tag }}
+          </NTag>
+        </template>
+      </div>
+    </div>
+>>>>>>> 4a3626c (~)
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
+<<<<<<< HEAD
 import { NSpace, NCarousel, NTag, NAvatar, NText } from 'naive-ui';
 import AppImage from '@/components/app-image.vue';
 import { useUserStore } from '@/stores/user';
@@ -35,6 +59,16 @@ export default defineComponent({
   setup(props, ctx) {
     // const userStore = useUserStore();
     // const userNickname = ref(userStore.user.nickname);
+=======
+import { NSpace, NCarousel, NTag, NH4 } from 'naive-ui';
+
+export default defineComponent({
+  name: 'model-item',
+  components: { NSpace, NCarousel, NTag, NH4 },
+  props: { item: { type: Object, default: () => ({}) } },
+  emits: ['press'],
+  setup(props, ctx) {
+>>>>>>> 4a3626c (~)
     return {
       onPressItem() {
         ctx.emit('press', props.item);
@@ -45,6 +79,7 @@ export default defineComponent({
 </script>
 <style scoped>
 .item {
+<<<<<<< HEAD
   border-radius: 6px;
   box-shadow: 1px 1px 6px 0 #ccc;
   cursor: pointer;
@@ -96,11 +131,35 @@ export default defineComponent({
   align-items: center;
   white-space: nowrap;
   overflow: hidden;
+=======
+  width: 240px;
+  border: solid 1px #f1f1f1;
+  border-radius: 8px;
+  box-shadow: 1px 1px 6px 0 #ccc;
+  margin-bottom: 24px;
+}
+
+.item-carousel {
+  width: 240px;
+  height: calc(240px * 1.25);
+}
+.item-cover {
+  width: 240px;
+  height: calc(240px * 1.25);
+}
+.item-body {
+  padding: 16px 16px;
+}
+.item-body-row {
+  display: flex;
+  align-items: center;
+>>>>>>> 4a3626c (~)
 }
 
 .item-body-row:not(:last-child) {
   margin-bottom: 8px;
 }
+<<<<<<< HEAD
 
 .item-body-row-tag {
   margin-right: 12px;
@@ -130,4 +189,6 @@ export default defineComponent({
   padding: 12px;
   background-color: #00000052;
 }
+=======
+>>>>>>> 4a3626c (~)
 </style>

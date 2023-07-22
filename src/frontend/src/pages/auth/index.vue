@@ -4,6 +4,7 @@
     style="background-color: blueviolet"
     content-style="display:flex;align-items:center;justify-content:center;"
   >
+<<<<<<< HEAD
     <div class="content" :style="{ 'background-color': bgColor }">
       <NGrid cols="5" item-responsive>
         <NGridItem span="0 720:3">
@@ -53,6 +54,46 @@
         </NGridItem>
       </NGrid>
     </div>
+=======
+    <NSpace class="content" :wrap-item="false" :size="[0, 0]" :style="{ 'background-color': bgColor }">
+      <div class="bg" style="width: 600px">
+        <transition name="auth-fade">
+          <template v-if="action === 'signup'">
+            <img class="bg-img-overlay" src="@/assets/login-img1.jpg" key="signupimg" />
+          </template>
+          <template v-else>
+            <img class="bg-img-overlay" src="@/assets/login-img.jpg" key="signinimg" />
+          </template>
+        </transition>
+      </div>
+      <div class="form" :bordered="false" size="huge" :style="{ height: formHeight }">
+        <template v-if="action === 'signin'">
+          <div class="sign-header">
+            <NSpace :wrap-item="false" justify="space-between" align="center">
+              <div class="sign-title">Edge Matrix Hub</div>
+              <NA class="sign-signup" @click="onPressSignUpToggle">SignUp</NA>
+            </NSpace>
+            <div class="sign-subtitle">Welcome #AI</div>
+          </div>
+          <SignIn
+            ref="signinRef"
+            @signin="onSignInSuccess"
+            @signinbefore="signinLoading = true"
+            @signinafter="signinLoading = false"
+          />
+        </template>
+        <template v-else-if="action === 'signup'">
+          <div class="sign-header">
+            <NSpace :wrap-item="false" justify="space-between" align="center">
+              <div class="sign-title">Edge Matrix Hub</div>
+              <NA class="sign-signup" @click="onPressSignUpToggle">SignIn</NA>
+            </NSpace>
+          </div>
+          <SignUp @signup="onSignUpSuccess" @signupbefore="signupLoading = true" @signupafter="signupLoading = false" />
+        </template>
+      </div>
+    </NSpace>
+>>>>>>> 4a3626c (~)
   </NLayout>
 </template>
 
@@ -60,12 +101,21 @@
 import { defineComponent, nextTick, onMounted, ref, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import type { RouteLocationRaw } from 'vue-router';
+<<<<<<< HEAD
 import { NLayout, NLayoutContent, NCard, NH1, NH3, NA, NSpace, NGrid, NGridItem } from 'naive-ui';
 import SignUp from './signup.vue';
 import SignIn from './signin.vue';
 
 const bgImg1 = require('@/assets/login-img.png');
 const bgImg2 = require('@/assets/login-img1.png');
+=======
+import { NLayout, NLayoutContent, NCard, NH1, NH3, NA, NSpace, NTag, NSpin, NButton, NModal } from 'naive-ui';
+import SignIn from './signin.vue';
+import SignUp from './signup.vue';
+
+const bgImg1 = require('@/assets/login-img.jpg');
+const bgImg2 = require('@/assets/login-img1.jpg');
+>>>>>>> 4a3626c (~)
 
 export default defineComponent({
   name: 'auth',
@@ -77,10 +127,15 @@ export default defineComponent({
     NH3,
     NA,
     NSpace,
+<<<<<<< HEAD
     NGrid,
     NGridItem,
     SignUp,
     SignIn,
+=======
+    SignIn,
+    SignUp,
+>>>>>>> 4a3626c (~)
   },
   setup() {
     const router = useRouter();
@@ -97,14 +152,24 @@ export default defineComponent({
       signupLoading,
       formHeight: computed(() => {
         if (action.value === 'signup') {
+<<<<<<< HEAD
           return '510px';
         } else {
           return '520px';
+=======
+          return '610px';
+        } else {
+          return '454px';
+>>>>>>> 4a3626c (~)
         }
       }),
       bgColor: computed(() => {
         if (action.value === 'signup') {
+<<<<<<< HEAD
           return 'rgb(228, 216, 232)';
+=======
+          return '#9d95d0';
+>>>>>>> 4a3626c (~)
         } else {
           return 'rgb(228, 216, 232)';
         }
@@ -128,10 +193,26 @@ export default defineComponent({
           router.replace({ name: 'home' });
         }
       },
+<<<<<<< HEAD
       async onSignUpSuccess({ account, password }: { account: string; password: string }) {
         action.value = 'signin';
         await nextTick();
         signinRef.value?.postLogin({ account, password });
+=======
+      async onSignUpSuccess({
+        account,
+        password,
+        principal,
+      }: {
+        account: string;
+        password: string;
+        principal: string;
+      }) {
+        action.value = 'signin';
+        await nextTick();
+        signinRef.value?.postLogin({ account, password, principal });
+        console.info('sss');
+>>>>>>> 4a3626c (~)
       },
     };
   },
@@ -140,18 +221,29 @@ export default defineComponent({
 
 <style scoped>
 .content {
+<<<<<<< HEAD
   max-width: 1000px;
   width: 100%;
   padding: 32px;
   border-radius: 16px;
+=======
+  width: 1000px;
+  padding: 40px 64px;
+  border-radius: 40px;
+>>>>>>> 4a3626c (~)
   transition: all 0.2s;
 }
 
 .bg {
   position: relative;
+<<<<<<< HEAD
   overflow: hidden;
   width: 100%;
   height: 100%;
+=======
+
+  overflow: hidden;
+>>>>>>> 4a3626c (~)
 }
 
 .bg-img-overlay {
@@ -164,11 +256,20 @@ export default defineComponent({
   transition: all 0.2s;
 }
 .form {
+<<<<<<< HEAD
   width: 100%;
   border-radius: 16px;
   padding: 32px;
   background-color: #ffffff;
   transition: all 0.2s;
+=======
+  width: 400px;
+  border-radius: 40px;
+  padding: 40px;
+  background-color: #ffffff;
+  transition: all 0.2s;
+  flex: 1;
+>>>>>>> 4a3626c (~)
   box-sizing: border-box;
 }
 

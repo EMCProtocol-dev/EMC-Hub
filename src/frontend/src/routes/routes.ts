@@ -1,5 +1,10 @@
 export const routes = [
   {
+    name: 'auth',
+    path: '/auth',
+    component: () => import('@/pages/auth/index.vue'),
+  },
+  {
     name: 'layout',
     path: '/',
     component: () => import('@/layout/app/index.vue'),

@@ -17,7 +17,11 @@
       size="large"
       :loading="submitting"
       @click.stop.prevent="onPressSubmit"
+<<<<<<< HEAD
       >Sign In</NButton
+=======
+      >Sign in</NButton
+>>>>>>> 4a3626c (~)
     >
     <NDivider style="width: 40px" />
     <NButton
