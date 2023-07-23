@@ -6,7 +6,13 @@
       <NInput v-model:value="formData.account" placeholder="" @keydown.enter.prevent />
     </NFormItem>
     <NFormItem path="password" label="Password" label-style="font-size:12px;">
-      <NInput v-model:value="formData.password" type="password" placeholder="" @keydown.enter.prevent />
+      <NInput
+        v-model:value="formData.password"
+        type="password"
+        show-password-on="mousedown"
+        placeholder=""
+        @keydown.enter.prevent
+      />
     </NFormItem>
     <NFormItem path="nickname" label="Nickname" label-style="font-size:12px;">
       <NInput v-model:value="formData.nickname" placeholder="" @keydown.enter.prevent />

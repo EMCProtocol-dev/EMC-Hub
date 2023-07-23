@@ -95,6 +95,9 @@ export const useUserStore = defineStore('user', () => {
       if (resp?.resultCode === 'SUCCESS') {
         result._result = 0;
         result._desc = '';
+      } else if (resp?.resultCode === 'NEEDREGISTER') {
+        result._result = 1;
+        result._desc = 'Account does not exist';
       } else {
         result._result = 1;
         result._desc = 'Failure';

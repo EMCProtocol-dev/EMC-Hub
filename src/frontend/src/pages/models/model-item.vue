@@ -58,6 +58,7 @@ export default defineComponent({
 .item-cover {
   width: 240px;
   height: calc(240px * 1.25);
+  object-fit: cover;
   transform: scale(1);
   transition: all 0.2s;
 }
