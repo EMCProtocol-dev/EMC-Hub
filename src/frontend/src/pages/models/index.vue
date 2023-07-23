@@ -90,7 +90,7 @@ export default defineComponent({
       const newList: any[] = resp.modelInfoList || [];
       const total = resp.totalNum || 0;
       const tagsProps = ['cateGory1', 'cateGory2', 'cateGory3'];
-
+      list.value = [];
       newList.forEach((item) => {
         let status = item.modelStat;
         // if (status === 'HIDDEN') return;
