@@ -137,6 +137,7 @@ import type { UploadFileInfo } from 'naive-ui';
 import { Http } from '@/tools/http';
 import { ArchiveOutline as ArchiveIcon } from '@vicons/ionicons5';
 import { Utils } from '@/tools/utils';
+import { useUserStore } from '@/stores/user';
 
 type FormData = {
   images: string[];
@@ -203,7 +204,7 @@ export default defineComponent({
     const formRef = ref<FormInst | null>(null);
     const formItemPassword1Ref = ref<FormItemInst | null>(null);
     const formData = ref<FormData>(defaultFormData());
-
+    const userStore = useUserStore();
     const formRule: FormRules = {
       images: [{ required: true, type: 'array', message: 'Can not be empty', trigger: ['input', 'blur'] }],
       archive: [{ required: true, type: 'array', message: 'Can not be empty', trigger: ['input', 'blur'] }],
@@ -230,6 +231,11 @@ export default defineComponent({
     };
 
     const handleSubmit = async () => {
+      if (!userStore.user.id) {
+        message.error('Please sign in first');
+        return;
+      }
+
       let modelId = props.modelId;
 
       let modelHashCode = formData.value.modelHashCode;
@@ -250,7 +256,7 @@ export default defineComponent({
 
       let url = 'https://api.emchub.ai/mrchaiemc/modModelDetailInfo.do';
       let params = {
-        custId: '1690226134332',
+        custId: userStore.user.id,
         bussData: {
           modelId,
           modelHashCode,

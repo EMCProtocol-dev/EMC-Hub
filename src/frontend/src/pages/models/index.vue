@@ -38,11 +38,12 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, watch, onActivated, ComputedRef } from 'vue';
-import { NPagination, NSpace, NUpload, NButton, NSpin, NCard, NCarousel, NTag, NH4 } from 'naive-ui';
+import { NPagination, NSpace, NUpload, NButton, NSpin, NCard, NCarousel, NTag, NH4, useMessage } from 'naive-ui';
 import { useRoute, useRouter } from 'vue-router';
 import { Http } from '../../tools/http';
 import ArticleItem from './article-item.vue';
 import ModelItem from './model-item.vue';
+import { useUserStore } from '@/stores/user';
 const ArticleDefaultCover = require('../../assets/article-default-cover.png');
 
 export default defineComponent({
@@ -60,6 +61,8 @@ export default defineComponent({
     next();
   },
   setup() {
+    const userStore = useUserStore();
+    const message = useMessage();
     const route = useRoute();
     const router = useRouter();
     const list = ref<any[]>([]);
@@ -83,12 +86,13 @@ export default defineComponent({
       loading.value = true;
       const resp = await http.postJSON({
         url: 'https://api.emchub.ai/mrchaiemc/queryModelInfoForMainView.do',
-        data: { custId: '1690226134332', bussData: { pageIndex: pageNo.value - 1, pageSize: pageSize.value } },
+        data: { custId: userStore.user.id, bussData: { pageIndex: pageNo.value - 1, pageSize: pageSize.value } },
       });
       loading.value = false;
 
       const newList: any[] = resp.modelInfoList || [];
       const total = resp.totalNum || 0;
+      //'modelSubName',
       const tagsProps = ['cateGory1', 'cateGory2', 'cateGory3'];
       list.value = [];
       newList.forEach((item) => {
@@ -140,6 +144,10 @@ export default defineComponent({
       initList,
       updateList,
       onPressUpload() {
+        if (!userStore.user.id) {
+          message.error('Please sign in first');
+          return;
+        }
         router.push({ name: 'model-upload' });
       },
       onPressItem(item: any) {

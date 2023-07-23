@@ -62,7 +62,7 @@ import {
   useMessage,
 } from 'naive-ui';
 import { Http } from '@/tools/http';
-
+import { useUserStore } from '@/stores/user';
 type FormData = {
   name: string;
   tags: string[];
@@ -112,7 +112,7 @@ export default defineComponent({
     const formRef = ref<FormInst | null>(null);
     const formItemPassword1Ref = ref<FormItemInst | null>(null);
     const formData = ref<FormData>(defaultFormData());
-
+    const userStore = useUserStore();
     const formRule: FormRules = {
       name: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
       tags: [{ required: true, type: 'array', message: 'Can not be empty', trigger: ['input', 'blur'] }],
@@ -125,10 +125,14 @@ export default defineComponent({
       let name = formData.value.name;
       let tags = formData.value.tags.join(',');
       let category = formData.value.category;
+      if (!userStore.user.id) {
+        message.error('Please sign in first');
+        return;
+      }
 
       let url = 'https://api.emchub.ai/mrchaiemc/addNewModel.do';
       let params = {
-        custId: '1690226134332',
+        custId: userStore.user.id,
         bussData: { modelName: name, modelSubName: tags, category1: category },
       } as any;
 

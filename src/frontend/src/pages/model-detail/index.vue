@@ -24,7 +24,13 @@
               </div>
               <div class="tags">
                 <template v-for="tag in tags">
-                  <NTag round size="small" :bordered="false" :color="{ color: '#8f7df8', textColor: '#f1f1f1' }">
+                  <NTag
+                    class="tags-item"
+                    round
+                    size="small"
+                    :bordered="false"
+                    :color="{ color: '#8f7df8', textColor: '#f1f1f1' }"
+                  >
                     {{ tag }}
                   </NTag>
                 </template>
@@ -122,7 +128,7 @@ export default defineComponent({
       });
       const data = resp.bussData || { sampleImgFileLinks: '' };
 
-      let tagsProps = ['cateGory1', 'cateGory2', 'cateGory3'];
+      let tagsProps = ['modelSubName', 'cateGory1', 'cateGory2', 'cateGory3'];
       let _tags: string[] = [];
       tagsProps.forEach((p) => {
         const vals = data[p] ? data[p].split(',') : [];
@@ -210,6 +216,9 @@ export default defineComponent({
 }
 .header-row:not(:last-child) {
   margin-bottom: 8px;
+}
+.tags-item:not(:last-child) {
+  margin-right: 4px;
 }
 .name {
   font-size: 26px;
