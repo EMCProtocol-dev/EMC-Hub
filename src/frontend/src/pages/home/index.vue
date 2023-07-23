@@ -3,8 +3,8 @@
       <NSpace align="center" style="position: relative;height: 600px;">
          <NSpace class="carouse" :vertical="true">
             <NH2 class="carouse-title">Fully <span class="carouse-title-span">Decentralized</span> Al Application</NH2>
-            <NH4 class="carouse-content">With the help of idle GPU computing power distributed onEdgeMatrix worldwide, you
-               can generate the Al images youdesire from anywhere at any time. It is a fully decentralized Alapplication.
+            <NH4 class="carouse-content">With the help of idle GPU computing power distributed on EdgeMatrix worldwide, you
+               can generate the AI images you desire from anywhere at any time. It is a fully decentralized AI platform.
             </NH4>
             <RouterLink :to="{ path: '/models' }">
                <NButton class="warn-button" type="warning">
@@ -45,8 +45,9 @@
          <template v-for="(item, index) in worksList.data">
             <NSpace class="section-item" :wrap="false" justify="space-between" :size="[78, 0]"
                :style="{ 'flex-flow': index % 2 != 1 ? 'row' : 'row-reverse' }">
-               <NCard class="section-item-content" :title="index + 1 + '. ' + item.title" :bordered="false">
-                  <pre class="section-item-pre" v-html="item.content"></pre>
+               <NCard class="section-item-content" :title="index + 1 + '. ' + item.title" :bordered="false"
+                  header-style="font-size:28px;font-weight:700">
+                  <span class="section-item-pre" v-html="item.content"></span>
                </NCard>
                <NSpace class="section-item-side" :wrap-item="false" justify="center">
                   <img class="section-item-side-image" :src="item.image" />
@@ -123,25 +124,25 @@ export default defineComponent({
       // )
 
       const cardList = ref({
-         title: 'A Better way to experiment with AI in Web3',
+         title: 'A better way to experiment AI in Web3',
          subtitle: 'Generate any image you want and unleash your imagination',
          data: [
             {
                cover: cover1,
                name: 'Stable Diffusion',
-               description: 'Do consectetur proident proident id eiusmod deserunt consequat',
+               description: 'Creators can flexibly conduct AI model training and inference, unleashing their creative potential.',
                button: 'Try',
                link: 'https://6tq33-2iaaa-aaaap-qbhpa-cai.icp0.io/#/home'
             }, {
                cover: cover2,
                name: 'LLaMa',
-               description: 'Adipisicing labore ea nulla dolor et adad quis proident laboris',
+               description: 'Developers can use LLMs to create exciting language generation and text applications.',
                button: 'Coming soon',
                link: 'javascript:void(0)',
             }, {
                cover: cover3,
-               name: 'Feature',
-               description: 'Consequat dolor exercitation minim eaaliquip officia et',
+               name: 'MusicGen',
+               description: 'Musicians and music enthusiasts can unlock a world of creativity and innovation through the AI Music Model.',
                button: 'Coming soon',
                link: 'javascript:void(0)',
             }
@@ -154,43 +155,32 @@ export default defineComponent({
          data: [{
             title: 'Select a model',
             content: `
-Select the modell you wrant to use . You can a custommodel or any of the 60,000. 
-Transformers, Diffusers orSentence Transformers models aailable on the Hub for NLP.
-computer vislon, or speech tarsks.
+            Select the model you want to use. You can discover a wide variety of categories: characters, animations, clothing, cars, buildings, and more. There are also different model types available: checkpoint, Lora, and others. 
             `,
             image: setup1,
          }, {
             title: 'Choose a node',
             content: `
-Plck your cloud and select a region close to your data incompliance with your 
-requirements (e.g. Europe NorthAmerica or Asin Pacific).
+            Choose the appropriate node based on your specific needs and considering factors such as price, location, efficiency, stability, and security on the EMC computing power network.
             `,
             image: setup2,
          }, {
             title: 'Input the prompts',
             content: `
-Protected Endpoints are accessible from the Internet andrequire valid authentication.
-
-Public Endpoints are accessible from the internet and do notrequire authentication.
-
-Private Endpoints are only available through an intra-regionsecured AWS or Azure 
-PrivateLink direct connection to a VPCand are not accessible from the internet.
+            The purpose of prompts is to guide AIGC models to create images that align with your expectations. You can learn and utilize better prompts techniques in the EMC Hub community.
             `,
             image: setup3,
          }, {
             title: 'Generate your image',
             content: `
-Click create and your new endpoint is ready in a couple ofminutes. 
-Dofine autoscaling. accass logs and monitoring. setcustom metrics routes, 
-manage endpoints programmaticallywith APICLl, and 
-rollback models - all super easily.
+            By continuously trying different prompts, you can explore various styles and themes of images, resulting in more personalized, diverse, and tailored artistic outcomes that meet your individual or business needs.
             `,
             image: setup4,
          }]
       })
 
       const footer = ref({
-         title: "Embark on your AI journey in the Web3 world now!",
+         title: "Embark on your Al journey in the Web3 world now!",
          description: "Upload your own Al model, and in the future, you can manage the model's revenue rights and explore various unique features through NFTs.",
          button: "Browser Models",
       })
