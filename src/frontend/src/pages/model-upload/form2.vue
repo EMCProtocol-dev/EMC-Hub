@@ -61,9 +61,9 @@
       <NFormItem path="invokeGuide" label="Invoke Guide">
         <NInput v-model:value="formData.invokeGuide" placeholder="Please enter something..." @keydown.enter.prevent />
       </NFormItem>
-      <NFormItem path="positivePromts" label="Positive Promts">
+      <NFormItem path="positivePrompt" label="Positive Promts">
         <NInput
-          v-model:value="formData.positivePromts"
+          v-model:value="formData.positivePrompt"
           placeholder="Please enter something..."
           @keydown.enter.prevent
         />
@@ -75,8 +75,8 @@
           @keydown.enter.prevent
         />
       </NFormItem>
-      <NFormItem path="enhancePromt" label="Enhance Promts">
-        <NInput v-model:value="formData.enhancePromt" placeholder="Please enter something..." @keydown.enter.prevent />
+      <NFormItem path="enhancePrompt" label="Enhance Promts">
+        <NInput v-model:value="formData.enhancePrompt" placeholder="Please enter something..." @keydown.enter.prevent />
       </NFormItem>
       <NFormItem path="numInferenceSteps" label="Inference Steps Number">
         <NInput
@@ -148,9 +148,9 @@ type FormData = {
   paramsGuideLink: string;
   sampleCodeLink: string;
   invokeGuide: string;
-  positivePromts: string;
+  positivePrompt: string;
   negativePrompt: string;
-  enhancePromt: string;
+  enhancePrompt: string;
   numInferenceSteps: string;
   seed: string;
 };
@@ -165,9 +165,9 @@ function defaultFormData() {
     paramsGuideLink: '',
     sampleCodeLink: '',
     invokeGuide: '',
-    positivePromts: '',
+    positivePrompt: '',
     negativePrompt: '',
-    enhancePromt: '',
+    enhancePrompt: '',
     numInferenceSteps: '',
     seed: '-1',
   };
@@ -243,9 +243,9 @@ export default defineComponent({
       let paramsGuideLink = formData.value.paramsGuideLink;
       let sampleCodeLink = formData.value.sampleCodeLink;
       let invokeGuide = formData.value.invokeGuide;
-      let positivePromts = formData.value.positivePromts;
+      let positivePrompt = formData.value.positivePrompt;
       let negativePrompt = formData.value.negativePrompt;
-      let enhancePromt = formData.value.enhancePromt;
+      let enhancePrompt = formData.value.enhancePrompt;
       let numInferenceSteps = formData.value.numInferenceSteps;
 
       let seed = formData.value.seed;
@@ -264,9 +264,9 @@ export default defineComponent({
           paramsGuideLink,
           sampleCodeLink,
           invokeGuide,
-          positivePromts,
+          positivePrompt,
           negativePrompt,
-          enhancePromt,
+          enhancePrompt,
           numInferenceSteps,
           seed,
           version,

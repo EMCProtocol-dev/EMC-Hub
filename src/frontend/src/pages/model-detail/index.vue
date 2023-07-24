@@ -2,9 +2,14 @@
   <div class="page">
     <NCard :bordered="false" content-style="padding:0">
       <NSpace class="layout" :wrap-item="false" :size="[0, 0]">
-        <template v-if="!ready">
+        <template v-if="error === -1">
           <NSpace class="layout-loading" align="center" justify="center">
             <NSpin />
+          </NSpace>
+        </template>
+        <template v-else-if="error > 0">
+          <NSpace class="layout-loading" align="center" justify="center">
+            <span>{{ errorText }}</span>
           </NSpace>
         </template>
         <template v-else>
@@ -58,17 +63,42 @@
                 <div class="with-value with-value__area">{{ negativePrompt }}</div>
               </div>
             </div>
-            <NButton type="primary" size="large" strong @click="onPressArchive" style="margin-top: 12px">
-              <template #icon>
-                <NIcon><IconDownload /></NIcon>
-              </template>
-              Download model package
-            </NButton>
+            <NSpace align="center" :size="[24, 0]" style="margin-top: 12px">
+              <NButton type="warning" size="large" strong @click="onPressRun">
+                <template #icon>
+                  <NIcon><IconRun /></NIcon>
+                </template>
+                Run model
+              </NButton>
+              <NButton type="primary" size="large" strong @click="onPressArchive">
+                <template #icon>
+                  <NIcon><IconDownload /></NIcon>
+                </template>
+                Download model package
+              </NButton>
+            </NSpace>
           </div>
         </template>
       </NSpace>
     </NCard>
   </div>
+  <NModal v-model:show="nodeVisible" :mask-closable="false">
+    <NCard :bordered="false" style="width: 640px" content-style="">
+      <template #header>
+        <NH3 style="margin-bottom: 0">Nodes for run</NH3>
+      </template>
+      <template #header-extra>
+        <NButton quaternary circle @click="onNodeClose">
+          <template #icon>
+            <NIcon>
+              <IconClose />
+            </NIcon>
+          </template>
+        </NButton>
+      </template>
+      <NodeList :hash="nodeHashCode" @pressitem="onNodeClose" />
+    </NCard>
+  </NModal>
 </template>
 
 <script lang="ts">
@@ -76,6 +106,7 @@ import { ref, defineComponent, onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import {
   NCard,
+  NH3,
   NSpace,
   NSpin,
   NTag,
@@ -84,15 +115,22 @@ import {
   NDescriptionsItem,
   NButton,
   NIcon,
+  NModal,
   useMessage,
 } from 'naive-ui';
 import { useUserStore } from '@/stores/user';
 import { Http } from '@/tools/http';
-import { DownloadSharp as IconDownload } from '@vicons/ionicons5';
+import {
+  DownloadSharp as IconDownload,
+  CaretForwardCircleOutline as IconRun,
+  CloseSharp as IconClose,
+} from '@vicons/ionicons5';
+import NodeList from './node-list.vue';
 
 export default defineComponent({
   components: {
     NCard,
+    NH3,
     NSpace,
     NSpin,
     NTag,
@@ -101,14 +139,23 @@ export default defineComponent({
     NDescriptionsItem,
     NButton,
     NIcon,
+    NModal,
     IconDownload,
+    IconRun,
+    IconClose,
+    NodeList,
   },
   setup() {
     const router = useRouter();
     const route = useRoute();
     const message = useMessage();
     const modelId = ref(route.params.id);
-    const ready = ref(false);
+    const error = ref(-1);
+    const errorText = ref('');
+    //modal property
+    const nodeVisible = ref(false);
+    const nodeHashCode = ref('');
+
     const name = ref('');
     const covers = ref<string[]>([]);
     const archive = ref('');
@@ -122,16 +169,43 @@ export default defineComponent({
     const http = Http.getInstance();
     const useStore = useUserStore();
     const init = async () => {
+      error.value = -1;
+      errorText.value = '';
       const resp = await http.postJSON({
         url: 'https://api.emchub.ai/mrchaiemc/queryModelDetailInfo.do',
         data: { custId: useStore.user.id, bussData: { modelId: modelId.value } },
       });
-      const data = resp.bussData || { sampleImgFileLinks: '' };
+      // const data = resp.bussData || {};
+      const data: { modelId: number; [k: string]: any } = {
+        modelId: 1,
+        modelName: 'TTT',
+        version: '2',
+        seed: '',
+        modelHashCode: '7f96a1a9ca',
+        positivePrompt: '',
+        negativePrompt: '',
+        sampleImgFileLinks:
+          'https://img1.baidu.com/it/u=3236765060%2C3227913522&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=750,https://img1.baidu.com/it/u=3236765060%2C3227913522&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=750',
+        modelFileLinks: '',
+      };
+      if (!data.modelId) {
+        error.value = 1;
+        errorText.value = 'Not found model';
+        return;
+      }
+
+      if (typeof data.sampleImgFileLinks !== 'string') {
+        data.sampleImgFileLinks = '';
+      }
+      if (typeof data.modelFileLinks !== 'string') {
+        data.modelFileLinks = '';
+      }
 
       let tagsProps = ['modelSubName', 'cateGory1', 'cateGory2', 'cateGory3'];
       let _tags: string[] = [];
       tagsProps.forEach((p) => {
-        const vals = data[p] ? data[p].split(',') : [];
+        const v = data[p] as string;
+        const vals = v ? v.split(',') : [];
         if (vals.length > 0) {
           _tags = _tags.concat(vals);
         }
@@ -144,9 +218,9 @@ export default defineComponent({
       archive.value = data.modelFileLinks;
       seed.value = data.seed || '-';
       modelHashCode.value = data.modelHashCode || '-';
-      positivePrompt.value = data.positivePromts || '-';
+      positivePrompt.value = data.positivePrompt || '-';
       negativePrompt.value = data.negativePrompt || '-';
-      ready.value = true;
+      error.value = 0;
     };
 
     onMounted(() => {
@@ -154,9 +228,14 @@ export default defineComponent({
     });
 
     return {
-      ready,
-      covers,
+      error,
+      errorText,
+
+      nodeVisible,
+      nodeHashCode,
+
       name,
+      covers,
       version,
       tags,
       archive,
@@ -164,9 +243,21 @@ export default defineComponent({
       modelHashCode,
       positivePrompt,
       negativePrompt,
+      onPressRun() {
+        if (!modelHashCode.value) {
+          message.error('Sorry, This model without model-hash');
+          return;
+        }
+        nodeVisible.value = true;
+        nodeHashCode.value = modelHashCode.value;
+      },
+      onNodeClose() {
+        nodeVisible.value = false;
+      },
       onPressArchive() {
         if (!archive.value) {
           message.error('Sorry, The package disappears');
+          return;
         }
         window.open(archive.value);
       },
