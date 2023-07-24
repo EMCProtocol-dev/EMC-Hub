@@ -105,7 +105,7 @@ export const useUserStore = defineStore('user', () => {
         const session = { token: '' };
         result.user = {
           id: resp?.bussData?.custId,
-          nickname: 'Hi, EMCHub',
+          nickname: (resp?.bussData?.nickName as string) || 'EMCHub',
           avatar: '',
         };
         const cache = {

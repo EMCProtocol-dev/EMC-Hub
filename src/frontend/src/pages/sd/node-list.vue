@@ -111,6 +111,10 @@ export default defineComponent({
       list,
       onPressItem(item: NodeItem) {
         ctx.emit('pressitem', item);
+<<<<<<< HEAD:src/frontend/src/pages/sd/node-list.vue
+=======
+        window.open(`https://sd.edgematrix.pro/#/txt2img?nodeid=${item.nodeId}`);
+>>>>>>> 985d1b5 (~):src/frontend/src/pages/model-detail/node-list.vue
       },
     };
   },

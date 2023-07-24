@@ -21,7 +21,7 @@
             <template #icon>
               <NIcon><IconPerson /></NIcon>
             </template>
-            {{ user.nickname }}
+            Hi, {{ user.nickname }}
           </NButton>
         </NDropdown>
       </template>
