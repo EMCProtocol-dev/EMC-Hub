@@ -12,7 +12,7 @@
       <NCard :bordered="false">
         <template #header>
           <div>
-            <span>Recommend models</span>
+            <span>Recommended models</span>
             <div style="font-size: 14px; font-weight: 400">Total {{ itemCount }}</div>
           </div>
         </template>

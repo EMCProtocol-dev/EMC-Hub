@@ -5,15 +5,7 @@
     </NFormItem>
   </NForm>
   <NSpace vertical align="center" :wrap-item="false">
-    <NButton
-      class="signin-btn"
-      type="primary"
-      strong
-      size="large"
-      :loading="submitting"
-      @click.stop.prevent="onPressSubmit"
-      >Linked Wallet</NButton
-    >
+    <NButton class="signin-btn" type="primary" strong size="large" :loading="submitting" @click.stop.prevent="onPressSubmit">Connect Wallet</NButton>
   </NSpace>
 </template>
 <script lang="ts">

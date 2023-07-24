@@ -1,49 +1,12 @@
 <template>
-  <NTabs
-    class="card-tabs"
-    default-value="signin"
-    size="large"
-    animated
-    :value="current"
-    @update:value="onChangeTab"
-    tab-style="display:none;"
-    pane-style="padding-top:0"
-  >
+  <NTabs class="card-tabs" default-value="signin" size="large" animated :value="current" @update:value="onChangeTab" tab-style="display:none;" pane-style="padding-top:0">
     <NTabPane name="signin-wallet" tab="ICP Wallet">
-      <SignInWallet
-        ref="signInWalletRef"
-        @signin="onSignin"
-        @signinbefore="onSigninBefore"
-        @signinafter="onSigninAfter"
-      />
-      <NButton
-        class="tab-toggle"
-        quaternary
-        type="primary"
-        :disabled="business"
-        strong
-        size="large"
-        @click="current = 'signin-account'"
-        >Account signin</NButton
-      >
+      <SignInWallet ref="signInWalletRef" @signin="onSignin" @signinbefore="onSigninBefore" @signinafter="onSigninAfter" />
+      <NButton class="tab-toggle" quaternary type="primary" :disabled="business" strong size="large" @click="current = 'signin-account'">Account Log in</NButton>
     </NTabPane>
     <NTabPane name="signin-account" tab="Account">
-      <SignInAccount
-        ref="signInAccountRef"
-        @signin="onSignin"
-        @signinbefore="onSigninBefore"
-        @signinafter="onSigninAfter"
-      />
-      <NButton
-        class="tab-toggle"
-        quaternary
-        type="primary"
-        :disabled="business"
-        strong
-        size="large"
-        @click="current = 'signin-wallet'"
-        >Wallet signin</NButton
-      >
+      <SignInAccount ref="signInAccountRef" @signin="onSignin" @signinbefore="onSigninBefore" @signinafter="onSigninAfter" />
+      <NButton class="tab-toggle" quaternary type="primary" :disabled="business" strong size="large" @click="current = 'signin-wallet'">Wallet signin</NButton>
     </NTabPane>
   </NTabs>
 </template>

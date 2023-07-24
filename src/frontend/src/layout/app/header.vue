@@ -35,7 +35,7 @@
         </NDropdown>
       </template>
       <template v-else>
-        <NButton type="default" size="large" strong @click="onPressSignIn">Sign In</NButton>
+        <NButton type="default" size="large" strong @click="onPressSignIn">Log in</NButton>
       </template>
     </NSpace>
   </NSpace>
