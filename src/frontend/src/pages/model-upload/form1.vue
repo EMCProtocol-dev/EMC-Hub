@@ -130,7 +130,7 @@ export default defineComponent({
         return;
       }
 
-      let url = 'https://api.emchub.ai/mrchaiemc/addNewModel.do';
+      let url = '/mrchaiemc/addNewModel.do';
       let params = {
         custId: userStore.user.id,
         bussData: { modelName: name, modelSubName: tags, category1: category },

@@ -47,7 +47,7 @@ import { useUserStore } from '@/stores/user';
 const ArticleDefaultCover = require('../../assets/article-default-cover.png');
 
 export default defineComponent({
-  name: 'nodes',
+  name: 'models',
   components: { NPagination, NSpace, NUpload, NButton, NSpin, NCard, NCarousel, NTag, NH4, ArticleItem, ModelItem },
   beforeRouteEnter(to, from, next) {
     if (typeof to.meta !== 'object') {
@@ -85,7 +85,7 @@ export default defineComponent({
     const updateList = async () => {
       loading.value = true;
       const resp = await http.postJSON({
-        url: 'https://api.emchub.ai/mrchaiemc/queryModelInfoForMainView.do',
+        url: '/mrchaiemc/queryModelInfoForMainView.do',
         data: { custId: userStore.user.id, bussData: { pageIndex: pageNo.value - 1, pageSize: pageSize.value } },
       });
       loading.value = false;

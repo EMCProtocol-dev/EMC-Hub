@@ -5,7 +5,7 @@
 import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
-  name: 'NotFound',
+  name: 'not-found',
   setup() {
     return {};
   },

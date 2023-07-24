@@ -48,19 +48,23 @@
               </div>
               <div class="with">
                 <div class="with-label">Hash Code</div>
-                <div class="with-value">{{ modelHashCode }}</div>
+                <div class="with-value">{{ modelHashCode || '-' }}</div>
               </div>
               <div class="with">
-                <div class="with-label">Seed</div>
-                <div class="with-value">{{ seed }}</div>
+                <div class="with-label">Base Model</div>
+                <div class="with-value">{{ baseModel || '-' }}</div>
+              </div>
+              <div class="with">
+                <div class="with-label">Model Size</div>
+                <div class="with-value">{{ modelSize || '-' }}</div>
+              </div>
+              <div class="with">
+                <div class="with-label">Floating Point</div>
+                <div class="with-value">{{ floatingPoint || '-' }}</div>
               </div>
               <div class="with with__column">
-                <div class="with-label">Positive Prompt</div>
-                <div class="with-value with-value__area">{{ positivePrompt }}</div>
-              </div>
-              <div class="with with__column">
-                <div class="with-label">Negative Prompt</div>
-                <div class="with-value with-value__area">{{ negativePrompt }}</div>
+                <div class="with-label">Description</div>
+                <div class="with-value with-value__area">{{ description }}</div>
               </div>
             </div>
             <NSpace align="center" :size="[24, 0]" style="margin-top: 12px">
@@ -81,24 +85,24 @@
         </template>
       </NSpace>
     </NCard>
+    <NModal v-model:show="nodeVisible" :mask-closable="false">
+      <NCard :bordered="false" style="width: 640px" content-style="">
+        <template #header>
+          <NH3 style="margin-bottom: 0">Nodes for run</NH3>
+        </template>
+        <template #header-extra>
+          <NButton quaternary circle @click="onNodeClose">
+            <template #icon>
+              <NIcon>
+                <IconClose />
+              </NIcon>
+            </template>
+          </NButton>
+        </template>
+        <NodeList :hash="nodeHashCode" @pressitem="onNodeClose" />
+      </NCard>
+    </NModal>
   </div>
-  <NModal v-model:show="nodeVisible" :mask-closable="false">
-    <NCard :bordered="false" style="width: 640px" content-style="">
-      <template #header>
-        <NH3 style="margin-bottom: 0">Nodes for run</NH3>
-      </template>
-      <template #header-extra>
-        <NButton quaternary circle @click="onNodeClose">
-          <template #icon>
-            <NIcon>
-              <IconClose />
-            </NIcon>
-          </template>
-        </NButton>
-      </template>
-      <NodeList :hash="nodeHashCode" @pressitem="onNodeClose" />
-    </NCard>
-  </NModal>
 </template>
 
 <script lang="ts">
@@ -128,6 +132,7 @@ import {
 import NodeList from './node-list.vue';
 
 export default defineComponent({
+  name: 'node-detail',
   components: {
     NCard,
     NH3,
@@ -161,10 +166,11 @@ export default defineComponent({
     const archive = ref('');
     const version = ref('');
     const tags = ref<string[]>([]);
-    const seed = ref('');
+    const baseModel = ref('');
     const modelHashCode = ref('');
-    const positivePrompt = ref('');
-    const negativePrompt = ref('');
+    const floatingPoint = ref('');
+    const modelSize = ref('');
+    const description = ref('');
 
     const http = Http.getInstance();
     const useStore = useUserStore();
@@ -172,22 +178,10 @@ export default defineComponent({
       error.value = -1;
       errorText.value = '';
       const resp = await http.postJSON({
-        url: 'https://api.emchub.ai/mrchaiemc/queryModelDetailInfo.do',
+        url: '/mrchaiemc/queryModelDetailInfo.do',
         data: { custId: useStore.user.id, bussData: { modelId: modelId.value } },
       });
-      // const data = resp.bussData || {};
-      const data: { modelId: number; [k: string]: any } = {
-        modelId: 1,
-        modelName: 'TTT',
-        version: '2',
-        seed: '',
-        modelHashCode: '7f96a1a9ca',
-        positivePrompt: '',
-        negativePrompt: '',
-        sampleImgFileLinks:
-          'https://img1.baidu.com/it/u=3236765060%2C3227913522&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=750,https://img1.baidu.com/it/u=3236765060%2C3227913522&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=750',
-        modelFileLinks: '',
-      };
+      const data = resp.bussData || {};
       if (!data.modelId) {
         error.value = 1;
         errorText.value = 'Not found model';
@@ -197,6 +191,7 @@ export default defineComponent({
       if (typeof data.sampleImgFileLinks !== 'string') {
         data.sampleImgFileLinks = '';
       }
+
       if (typeof data.modelFileLinks !== 'string') {
         data.modelFileLinks = '';
       }
@@ -216,10 +211,11 @@ export default defineComponent({
       version.value = data.version || '1';
       tags.value = _tags;
       archive.value = data.modelFileLinks;
-      seed.value = data.seed || '-';
-      modelHashCode.value = data.modelHashCode || '-';
-      positivePrompt.value = data.positivePrompt || '-';
-      negativePrompt.value = data.negativePrompt || '-';
+      baseModel.value = data.baseModel;
+      modelHashCode.value = data.modelHashCode;
+      floatingPoint.value = data.floatingPoint;
+      modelSize.value = data.modelSize;
+      description.value = data.description;
       error.value = 0;
     };
 
@@ -239,13 +235,14 @@ export default defineComponent({
       version,
       tags,
       archive,
-      seed,
+      baseModel,
       modelHashCode,
-      positivePrompt,
-      negativePrompt,
+      floatingPoint,
+      modelSize,
+      description,
       onPressRun() {
         if (!modelHashCode.value) {
-          message.error('Sorry, This model without model-hash');
+          message.error('Sorry, This model without \'Hash Code\'');
           return;
         }
         nodeVisible.value = true;
@@ -325,7 +322,7 @@ export default defineComponent({
 }
 
 .with-label {
-  width: 88px;
+  width: 120px;
   font-weight: 500;
 }
 

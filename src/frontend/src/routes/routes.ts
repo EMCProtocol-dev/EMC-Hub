@@ -21,6 +21,9 @@ export const routes = [
         name: 'models',
         path: 'models',
         component: () => import('@/pages/models/index.vue'),
+        meta: {
+          keepAlive: true,
+        },
       },
       {
         name: 'model-upload',
