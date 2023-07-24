@@ -74,6 +74,7 @@ module.exports = {
         options: {
           appendTsSuffixTo: [/\.vue$/],
           transpileOnly: isDevelopment,
+          // { compilerOptions: { noImplicitAny: false } })
         },
       },
       { test: /\.css$/, use: ['vue-style-loader', 'css-loader'] },

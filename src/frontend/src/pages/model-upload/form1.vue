@@ -126,7 +126,7 @@ export default defineComponent({
       let tags = formData.value.tags.join(',');
       let category = formData.value.category;
 
-      let url = 'https://api.emchub.ai/mrchaiemc/addNewModel.do';
+      let url = '/mrchaiemc/addNewModel.do';
       let params = {
         custId: '1690226134332',
         bussData: { modelName: name, modelSubName: tags, category1: category },

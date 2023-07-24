@@ -53,7 +53,11 @@ export const useUserStore = defineStore('user', () => {
       }
     ): Promise<{ _result: number; _desc?: string }> {
       const resp1 = await http.postJSON({
+<<<<<<< HEAD
         url: 'http://36.155.7.134:9080/mrchaiemc/applyRegister.do',
+=======
+        url: '/mrchaiemc/applyRegister.do',
+>>>>>>> ac1038c (~)
         data: { bussData: { loginId: account, nickName: nickname, email: email } },
       });
       const userId = resp1?.bussData?.custId;
@@ -62,11 +66,19 @@ export const useUserStore = defineStore('user', () => {
       }
       const [resp2, resp3] = await Promise.all([
         http.postJSON({
+<<<<<<< HEAD
           url: 'http://36.155.7.134:9080/mrchaiemc/setAutoration.do',
           data: { custId: userId, bussData: { identityType: 'PASSWD', authToken: password } },
         }),
         http.postJSON({
           url: 'http://36.155.7.134:9080/mrchaiemc/setAutoration.do',
+=======
+          url: '/mrchaiemc/setAutoration.do',
+          data: { custId: userId, bussData: { identityType: 'PASSWD', authToken: password } },
+        }),
+        http.postJSON({
+          url: '/mrchaiemc/setAutoration.do',
+>>>>>>> ac1038c (~)
           data: { custId: userId, bussData: { identityType: 'PRINCIPAL', authToken: principal } },
         }),
       ]);
@@ -91,7 +103,11 @@ export const useUserStore = defineStore('user', () => {
         authData.authToken = _principal as string;
       }
       const resp = await http.postJSON({
+<<<<<<< HEAD
         url: 'http://36.155.7.134:9080/mrchaiemc/userLogin.do',
+=======
+        url: '/mrchaiemc/userLogin.do',
+>>>>>>> ac1038c (~)
         data: { loginId: _account, bussData: authData },
       });
       if (resp?.resultCode === 'SUCCESS') {
@@ -103,9 +119,10 @@ export const useUserStore = defineStore('user', () => {
       }
       if (result._result === 0) {
         const session = { token: '' };
+        const nickname: string = resp?.bussData?.nickName as string;
         result.user = {
           id: resp?.bussData?.custId,
-          nickname: (resp?.bussData?.nickName as string) || 'EMCHub',
+          nickname: nickname || 'EMCHub',
           avatar: '',
         };
         const cache = {

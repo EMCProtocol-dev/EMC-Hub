@@ -18,6 +18,27 @@ export const routes = [
         component: () => import('@/pages/home/index.vue'),
       },
       {
+<<<<<<< HEAD
+=======
+        name: 'models',
+        path: 'models',
+        component: () => import('@/pages/models/index.vue'),
+        meta: {
+          keepAlive: true,
+        },
+      },
+      {
+        name: 'model-upload',
+        path: 'model-upload',
+        component: () => import('@/pages/model-upload/index.vue'),
+      },
+      {
+        name: 'model-detail',
+        path: 'models/:id',
+        component: () => import('@/pages/model-detail/index.vue'),
+      },
+      {
+>>>>>>> ac1038c (~)
         name: 'nodes',
         path: 'nodes',
         component: () => import('@/pages/nodes/index.vue'),

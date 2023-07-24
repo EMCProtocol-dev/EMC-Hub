@@ -88,7 +88,7 @@ import ModelItem from './model-item.vue';
 const ArticleDefaultCover = require('../../assets/article-default-cover.png');
 
 export default defineComponent({
-  name: 'nodes',
+  name: 'models',
   components: { NPagination, NSpace, NUpload, NButton, NSpin, NCard, NCarousel, NTag, NH4, ArticleItem, ModelItem },
   beforeRouteEnter(to, from, next) {
     if (typeof to.meta !== 'object') {
@@ -123,8 +123,13 @@ export default defineComponent({
     const updateList = async () => {
       loading.value = true;
       const resp = await http.postJSON({
+<<<<<<< HEAD
         url: 'http://36.155.7.134:9080/mrchaiemc/queryModelInfoForMainView.do',
         data: { custId: '', bussData: { pageIndex: pageNo.value - 1, pageSize: pageSize.value } },
+=======
+        url: '/mrchaiemc/queryModelInfoForMainView.do',
+        data: { custId: userStore.user.id, bussData: { pageIndex: pageNo.value - 1, pageSize: pageSize.value } },
+>>>>>>> ac1038c (~)
       });
       loading.value = false;
 

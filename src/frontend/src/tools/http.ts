@@ -16,7 +16,7 @@ interface HttpConfig {
 }
 
 const _defaultHttpConfig = {
-  baseURL: 'https://api.edgematrix.pro/api/v1',
+  baseURL: 'https://api.emchub.ai',//'http://36.155.7.134:9080', //
   timeout: 60000,
 };
 

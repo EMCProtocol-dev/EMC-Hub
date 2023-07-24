@@ -8,8 +8,8 @@
           action="https://api.emchub.ai/mrchaiemc/fileUpload.do"
           :max="6"
           list-type="image-card"
-          @finish="(options) => handleUploadFinish(options, 'images')"
-          @remove="(options) => handleUploadRemove(options, 'images')"
+          @finish="(options:any) => handleUploadFinish(options, 'images')"
+          @remove="(options:any) => handleUploadRemove(options, 'images')"
         >
           <NUploadDragger style="max-width: 320px">
             <NSpace vertical :wrap-item="false" align="center" justify="center">
@@ -28,8 +28,8 @@
           action="https://api.emchub.ai/mrchaiemc/fileUpload.do"
           :max="1"
           style="max-width: 320px"
-          @finish="(options) => handleUploadFinish(options, 'archive')"
-          @remove="(options) => handleUploadRemove(options, 'archive')"
+          @finish="(options:any) => handleUploadFinish(options, 'archive')"
+          @remove="(options:any) => handleUploadRemove(options, 'archive')"
         >
           <NUploadDragger style="max-width: 320px">
             <NSpace vertical :wrap-item="false" align="center" justify="center">
@@ -248,7 +248,7 @@ export default defineComponent({
       let modelFileLinks = formData.value.archive.join(',');
       let sampleImgFileLinks = formData.value.images.join(',');
 
-      let url = 'https://api.emchub.ai/mrchaiemc/modModelDetailInfo.do';
+      let url = '/mrchaiemc/modModelDetailInfo.do';
       let params = {
         custId: '1690226134332',
         bussData: {
