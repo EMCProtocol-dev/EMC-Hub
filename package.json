@@ -10,9 +10,9 @@
     "Canister"
   ],
   "scripts": {
-    "build": "webpack",
+    "build": "NODE_ENV=production webpack",
     "prebuild": "dfx generate",
-    "start": "webpack serve --env development",
+    "start": "webpack serve",
     "deploy:local": "dfx deploy --network=local",
     "deploy:ic": "dfx deploy --network=ic",
     "generate": "dfx generate"
@@ -40,6 +40,7 @@
     "assert": "2.0.0",
     "buffer": "6.0.3",
     "copy-webpack-plugin": "^11.0.0",
+    "cross-env": "^7.0.3",
     "crypto-browserify": "^3.12.0",
     "css-loader": "^6.7.4",
     "dotenv": "^16.0.3",

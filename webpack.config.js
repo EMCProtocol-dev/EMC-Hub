@@ -7,8 +7,9 @@ const CopyPlugin = require('copy-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
-
 const frontendDirectory = 'frontend';
+
+console.info('isDevelopment--->' + isDevelopment);
 
 module.exports = {
   target: 'web',

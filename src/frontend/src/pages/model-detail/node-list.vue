@@ -132,7 +132,7 @@ export default defineComponent({
       list,
       onPressItem(item: NodeItem) {
         ctx.emit('pressitem', item);
-        window.open(`https://sd.edgematrix.pro/#/text2img?nodeid=${item.nodeId}`);
+        window.open(`https://sd.edgematrix.pro/#/txt2img?nodeid=${item.nodeId}`);
       },
     };
   },
