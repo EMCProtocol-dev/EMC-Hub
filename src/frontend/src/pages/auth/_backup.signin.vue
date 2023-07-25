@@ -17,7 +17,7 @@
       size="large"
       :loading="submitting"
       @click.stop.prevent="onPressSubmit"
-      >Sign in</NButton
+      >Sign In</NButton
     >
     <NDivider style="width: 40px" />
     <NButton

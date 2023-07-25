@@ -17,7 +17,9 @@
           </div>
         </template>
         <template #header-extra>
-          <NButton type="primary" ghost strong @click="onPressUpload">Click to upload</NButton>
+          <template v-if="nickname === '顺子'">
+            <NButton type="primary" ghost strong @click="onPressUpload">Click to upload</NButton>
+          </template>
         </template>
         <NSpace :wrap-item="false" :size="[24, 0]" :wrap="true" style="margin-bottom: -24px">
           <template v-if="loading">
@@ -132,6 +134,7 @@ export default defineComponent({
     });
 
     return {
+      nickname: computed(() => userStore.user.nickname),
       list,
       loading,
       pageNo,

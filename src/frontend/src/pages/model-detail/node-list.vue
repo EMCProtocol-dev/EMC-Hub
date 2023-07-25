@@ -18,14 +18,14 @@
               <div class="item-name">{{ item.nodeId }}</div>
             </div>
             <div class="item-row">
-              <NTag style="margin-right: 8px">
+              <!-- <NTag style="margin-right: 8px">
                 <NSpace align="center" :wrap-item="false" :size="[8, 0]">
                   <NIcon>
                     <IconEarth />
                   </NIcon>
                   <NText style="font-size: 12px">{{ item.countryName || 'Unknow' }}</NText>
                 </NSpace>
-              </NTag>
+              </NTag> -->
               <NTag>
                 <NSpace align="center" :wrap-item="false" :size="[8, 0]">
                   <NIcon>

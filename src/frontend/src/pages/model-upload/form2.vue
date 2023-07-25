@@ -48,51 +48,28 @@
       <NFormItem path="modelHashCode" label="Model Hash Code">
         <NInput v-model:value="formData.modelHashCode" placeholder="Please enter something..." @keydown.enter.prevent />
       </NFormItem>
-      <NFormItem path="guideLink" label="Guide Link">
-        <NInput v-model:value="formData.guideLink" placeholder="Please enter something..." @keydown.enter.prevent />
+      <NFormItem path="baseModel" label="Base Model">
+        <NInput v-model:value="formData.baseModel" placeholder="Please enter something..." @keydown.enter.prevent />
       </NFormItem>
-      <NFormItem path="paramsGuideLink" label="Guide Link Params">
+      <NFormItem path="floatingPoint" label="Floating Point">
+        <NInput v-model:value="formData.floatingPoint" placeholder="Please enter something..." @keydown.enter.prevent />
+      </NFormItem>
+      <NFormItem path="modelSize" label="Model Size">
+        <NInput v-model:value="formData.modelSize" placeholder="Please enter something..." @keydown.enter.prevent />
+      </NFormItem>
+      <NFormItem path="description" label="Description">
         <NInput
-          v-model:value="formData.paramsGuideLink"
+          v-model:value="formData.description"
+          type="textarea"
           placeholder="Please enter something..."
           @keydown.enter.prevent
         />
       </NFormItem>
-      <NFormItem path="invokeGuide" label="Invoke Guide">
-        <NInput v-model:value="formData.invokeGuide" placeholder="Please enter something..." @keydown.enter.prevent />
-      </NFormItem>
-      <NFormItem path="positivePrompt" label="Positive Promts">
-        <NInput
-          v-model:value="formData.positivePrompt"
-          placeholder="Please enter something..."
-          @keydown.enter.prevent
-        />
-      </NFormItem>
-      <NFormItem path="negativePrompt" label="Negative Promts">
-        <NInput
-          v-model:value="formData.negativePrompt"
-          placeholder="Please enter something..."
-          @keydown.enter.prevent
-        />
-      </NFormItem>
-      <NFormItem path="enhancePrompt" label="Enhance Promts">
-        <NInput v-model:value="formData.enhancePrompt" placeholder="Please enter something..." @keydown.enter.prevent />
-      </NFormItem>
-      <NFormItem path="numInferenceSteps" label="Inference Steps Number">
-        <NInput
-          v-model:value="formData.numInferenceSteps"
-          placeholder="Please enter something..."
-          @keydown.enter.prevent
-        />
-      </NFormItem>
-      <NFormItem path="seed" label="Seed">
-        <NInput v-model:value="formData.seed" placeholder="Please enter something..." @keydown.enter.prevent />
-      </NFormItem>
-
       <template v-if="!disabled">
         <NSpace justify="end" :size="[16, 0]">
           <NButton
             type="default"
+            strong
             :disabled="!ready || formSubmitting"
             :loading="formSubmitting"
             @click.stop.prevent="onPressReset"
@@ -100,6 +77,7 @@
           >
           <NButton
             type="primary"
+            strong
             :disabled="!ready || formSubmitting"
             :loading="formSubmitting"
             @click.stop.prevent="onPressSubmit"
@@ -144,15 +122,10 @@ type FormData = {
   archive: string[];
   version: string;
   modelHashCode: string;
-  guideLink: string;
-  paramsGuideLink: string;
-  sampleCodeLink: string;
-  invokeGuide: string;
-  positivePrompt: string;
-  negativePrompt: string;
-  enhancePrompt: string;
-  numInferenceSteps: string;
-  seed: string;
+  baseModel: string;
+  modelSize: string;
+  floatingPoint: string;
+  description: string;
 };
 
 function defaultFormData() {
@@ -161,15 +134,10 @@ function defaultFormData() {
     archive: [],
     version: '',
     modelHashCode: '',
-    guideLink: '',
-    paramsGuideLink: '',
-    sampleCodeLink: '',
-    invokeGuide: '',
-    positivePrompt: '',
-    negativePrompt: '',
-    enhancePrompt: '',
-    numInferenceSteps: '',
-    seed: '-1',
+    baseModel: '',
+    modelSize: '',
+    floatingPoint: '',
+    description: '',
   };
 }
 type UploadFinishOptions = { file: UploadFileInfo; event?: ProgressEvent };
@@ -237,20 +205,13 @@ export default defineComponent({
       }
 
       let modelId = props.modelId;
+      let baseModel = formData.value.baseModel;
+      let modelSize = formData.value.modelSize;
+      let floatingPoint = formData.value.floatingPoint;
+      let description = formData.value.description;
 
-      let modelHashCode = formData.value.modelHashCode;
-      let guideLink = formData.value.guideLink;
-      let paramsGuideLink = formData.value.paramsGuideLink;
-      let sampleCodeLink = formData.value.sampleCodeLink;
-      let invokeGuide = formData.value.invokeGuide;
-      let positivePrompt = formData.value.positivePrompt;
-      let negativePrompt = formData.value.negativePrompt;
-      let enhancePrompt = formData.value.enhancePrompt;
-      let numInferenceSteps = formData.value.numInferenceSteps;
-
-      let seed = formData.value.seed;
       let version = formData.value.version;
-
+      let modelHashCode = formData.value.modelHashCode;
       let modelFileLinks = formData.value.archive.join(',');
       let sampleImgFileLinks = formData.value.images.join(',');
 
@@ -260,15 +221,10 @@ export default defineComponent({
         bussData: {
           modelId,
           modelHashCode,
-          guideLink,
-          paramsGuideLink,
-          sampleCodeLink,
-          invokeGuide,
-          positivePrompt,
-          negativePrompt,
-          enhancePrompt,
-          numInferenceSteps,
-          seed,
+          baseModel,
+          modelSize,
+          floatingPoint,
+          description,
           version,
           modelFileLinks,
           sampleImgFileLinks,

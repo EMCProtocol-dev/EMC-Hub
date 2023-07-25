@@ -17,7 +17,7 @@
       size="large"
       :loading="submitting"
       @click.stop.prevent="onPressSubmit"
-      >Sign in</NButton
+      >Sign In</NButton
     >
   </NSpace>
 </template>

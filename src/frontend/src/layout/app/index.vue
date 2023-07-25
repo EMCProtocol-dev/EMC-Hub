@@ -5,7 +5,7 @@
     </NLayoutHeader>
     <NLayoutContent
       style="background-color: #f9f9f9"
-      content-style="width:1440px;margin:auto;padding: 24px;min-height:calc(100vh - 84px)"
+      content-style="max-width:1440px;margin:auto;padding: 24px;min-height:calc(100vh - 84px)"
     >
       <template v-if="ready">
         <router-view v-slot="{ Component, route }">

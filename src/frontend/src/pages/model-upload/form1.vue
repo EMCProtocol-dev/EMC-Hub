@@ -26,6 +26,7 @@
         <NSpace justify="end" :size="[16, 0]">
           <NButton
             type="default"
+            strong
             :disabled="!ready || formSubmitting"
             :loading="formSubmitting"
             @click.stop.prevent="onPressReset"
@@ -33,6 +34,7 @@
           >
           <NButton
             type="primary"
+            strong
             :disabled="!ready || formSubmitting"
             :loading="formSubmitting"
             @click.stop.prevent="onPressSubmit"
@@ -91,12 +93,56 @@ const tagItemOptions = [
   { val: 'PERSON', label: 'PERSON' },
   { val: 'WEDDING', label: 'WEDDING' },
   { val: 'WOMEN', label: 'WOMEN' },
-  { val: 'PHOTOREALISTIC', label: 'PHOTOREALISTIC' },
   { val: 'HIGHLY', label: 'HIGHLY' },
   { val: 'DETAILED', label: 'DETAILED' },
+  { val: 'CHARACTER', label: 'CHARACTER' },
+  { val: 'ANIME', label: 'ANIME' },
+  { val: 'GIRL', label: 'GIRL' },
+  { val: 'BACKGROUND', label: 'BACKGROUND' },
+  { val: 'CONCEPT', label: 'CONCEPT' },
+  { val: 'OBJECTS', label: 'OBJECTS' },
+  { val: 'PHOTOREALISTIC', label: 'PHOTOREALISTIC' },
+  { val: 'SURREALISM', label: 'SURREALISM' },
+  { val: 'DIGITAL', label: 'DIGITAL' },
+  { val: 'FOOD', label: 'FOOD' },
+  { val: 'BUILDINGS', label: 'BUILDINGS' },
+  { val: 'LANDSCAPES', label: 'LANDSCAPES' },
+  { val: '3D', label: '3D' },
+  { val: 'ARCHITECTURE', label: 'ARCHITECTURE' },
+  { val: 'VEHICLE', label: 'VEHICLE' },
+  { val: 'CAR', label: 'CAR' },
+  { val: 'FANTASY', label: 'FANTASY' },
+  { val: 'MIDJOURNEY', label: 'MIDJOURNEY' },
+  { val: 'CARTOON', label: 'CARTOON' },
+  { val: 'PORTRAIT', label: 'PORTRAIT' },
+  { val: 'NATURE', label: 'NATURE' },
+  { val: 'ANIMALS', label: 'ANIMALS' },
+  { val: 'ABSTRACT', label: 'ABSTRACT' },
+  { val: 'TECHNOLOGY', label: 'TECHNOLOGY' },
+  { val: 'FASHION', label: 'FASHION' },
+  { val: 'ART', label: 'ART' },
+  { val: 'VINTAGE', label: 'VINTAGE' },
+  { val: 'TEXTURE', label: 'TEXTURE' },
+  { val: 'ASTRONOMY', label: 'ASTRONOMY' },
+  { val: 'UNDERWATER', label: 'UNDERWATER' },
+  { val: 'MEDICAL', label: 'MEDICAL' },
+  { val: 'CELEBRITIES', label: 'CELEBRITIES' },
+  { val: 'SPORTS', label: 'SPORTS' },
+  { val: 'HOLIDAYS', label: 'HOLIDAYS' },
+  { val: 'MUSIC', label: 'MUSIC' },
+  { val: 'FUTURISTIC', label: 'FUTURISTIC' },
+  { val: 'LANDMARKS', label: 'LANDMARKS' },
+  { val: 'WILDLIFE', label: 'WILDLIFE' },
+  { val: 'SURREAL', label: 'SURREAL' },
+  { val: 'CITIES', label: 'CITIES' },
+  { val: 'TRAVEL', label: 'TRAVEL' },
+  { val: 'SPACE', label: 'SPACE' },
 ];
 
-const categoryItemOptions = [{ val: 'CHECKPOINT', label: 'CHECKPOINT' }];
+const categoryItemOptions = [
+  { val: 'CHECKPOINT', label: 'CHECKPOINT' },
+  { val: 'LORA', label: 'LORA' },
+];
 
 export default defineComponent({
   components: { NForm, NFormItem, NButton, NInput, NSpace, NRadioGroup, NRadio, NCheckboxGroup, NCheckbox },
@@ -150,6 +196,15 @@ export default defineComponent({
 
     const init = async () => {
       ready.value = false;
+      const tagmap = {};
+      tagItemOptions.forEach((i)=>{
+        if(!tagmap[i.val]){
+          tagmap[i.val] = 1
+        }else{
+          tagmap[i.val]++ 
+        }
+      });
+      console.info(tagmap);
       tagItems.value = tagItemOptions;
       categoryItems.value = categoryItemOptions;
       // set default

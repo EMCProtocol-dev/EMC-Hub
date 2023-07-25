@@ -139,7 +139,6 @@ export default defineComponent({
 .header {
   --header-height: 84px;
   height: var(--header-height);
-  min-width: 1440px;
   border-bottom: solid 1px #e7e7e7;
 }
 .header-cell {
