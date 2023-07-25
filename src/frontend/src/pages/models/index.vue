@@ -13,7 +13,7 @@
         <template #header>
           <div>
             <span>Recommended models</span>
-            <div style="font-size: 14px; font-weight: 400">Total {{ itemCount }}</div>
+            <!-- <div style="font-size: 14px; font-weight: 400">Total {{ itemCount }}</div> -->
           </div>
         </template>
         <template #header-extra>
