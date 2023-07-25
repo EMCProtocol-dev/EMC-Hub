@@ -168,7 +168,7 @@ export default defineComponent({
     const footer = ref({
       title: 'Embark on your Al journey in the Web3 world now!',
       description: "Upload your own Al model, and in the future, you can manage the model's revenue rights and explore various unique features through NFTs.",
-      button: 'Browser Models',
+      button: 'Browse Models',
     });
 
     return { cardList, worksList, footer };

@@ -1,13 +1,49 @@
 <template>
   <div class="page">
     <NSpace vertical :size="[0, 24]" :wrap-item="false">
-      <NSpace class="banners" align="center" justify="space-between" :wrap-item="false" :size="[24, 0]">
-        <NCard :bordered="false" class="banner-cell" style="width: calc(40% - 24px)" content-style="padding:0">
+      <NSpace class="banners" align="center" justify="space-between" :wrap-item="false" :wrap="false" :size="[24, 0]">
+        <template v-for="item in articleModelList">
+          <NA :href="item.link" target="_blank">
+            <NCard class="article-card" content-style="padding:12px;" footer-style="padding:0 12px 12px">
+              <template #cover>
+                <img class="article-card-cover" :src="item.cover" />
+              </template>
+
+              <template #default>
+                <NSpace align="center" :wrap-item="false">
+                  <img :src="item.avatar" width="32" height="32" style="object-fit: cover; border-radius: 8px; margin-left: 4px" />
+                  <NEllipsis style="max-width: 190px">
+                    <span style="font-size: 14px; font-weight: 700">{{ item.name }}</span>
+                  </NEllipsis>
+                </NSpace>
+              </template>
+              <template #footer>
+                <NSpace justify="space-between" align="center">
+                  <template v-for="items in item.data">
+                    <NSpace vertical justify="center" align="center" style="height: 38px" :size="[0, 0]">
+                      <div style="font-size: 12px; color: #999">{{ items.name }}</div>
+                      <div style="font-weight: 700">{{ items.value }}</div>
+                    </NSpace>
+                  </template>
+                </NSpace>
+              </template>
+            </NCard>
+          </NA>
+        </template>
+
+        <NCarousel class="carousel" autoplay>
+          <template v-for="item in carouselList">
+            <NA :href="item.link" target="_blank">
+              <img class="carousel-img" :src="item.cover" />
+            </NA>
+          </template>
+        </NCarousel>
+        <!-- <NCard :bordered="false" class="banner-cell" style="width: calc(40% - 24px)" content-style="padding:0">
           <ArticleItem :item="article" class="article-bg" style="--article-text: #ffffff" />
-        </NCard>
-        <NCard :bordered="false" class="banner-cell" content-style="padding:0">
+        </NCard> -->
+        <!-- <NCard :bordered="false" class="banner-cell" content-style="padding:0" style="width: 500px">
           <ArticleItem :item="article2" style="--article-text: #000000" />
-        </NCard>
+        </NCard> -->
       </NSpace>
       <NCard :bordered="false">
         <template #header>
@@ -40,17 +76,21 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, watch, onActivated, ComputedRef } from 'vue';
-import { NPagination, NSpace, NUpload, NButton, NSpin, NCard, NCarousel, NTag, NH4, useMessage } from 'naive-ui';
+import { NA, NPagination, NSpace, NUpload, NButton, NSpin, NCard, NCarousel, NEllipsis, NTag, NH4, useMessage } from 'naive-ui';
 import { useRoute, useRouter } from 'vue-router';
 import { Http } from '../../tools/http';
 import ArticleItem from './article-item.vue';
 import ModelItem from './model-item.vue';
 import { useUserStore } from '@/stores/user';
 const ArticleDefaultCover = require('../../assets/article-default-cover.png');
+import ArticleCardAvatar from '@/assets/article-card-avatar.png';
+import ArticleCardCover from '@/assets/article-card-cover.png';
+import CarouselCover1 from '@/assets/model-banner1.png';
+import CarouselCover2 from '@/assets/model-banner2.png';
 
 export default defineComponent({
   name: 'models',
-  components: { NPagination, NSpace, NUpload, NButton, NSpin, NCard, NCarousel, NTag, NH4, ArticleItem, ModelItem },
+  components: { NA, NPagination, NSpace, NUpload, NButton, NSpin, NCard, NCarousel, NEllipsis, NTag, NH4, ArticleItem, ModelItem },
   beforeRouteEnter(to, from, next) {
     if (typeof to.meta !== 'object') {
       to.meta = {};
@@ -74,6 +114,54 @@ export default defineComponent({
     const queryParams = ref<any>({});
     const pageCount = ref(1);
     const itemCount = ref(0);
+    const articleModelList = ref([
+      {
+        cover: ArticleCardAvatar,
+        name: 'EMC Genesis AI Computing Power RWA-NFT',
+        avatar: ArticleCardAvatar,
+        data: [
+          {
+            name: 'Floor',
+            value: '45.0 ICP',
+          },
+          {
+            name: 'Owners',
+            value: '42',
+          },
+          {
+            name: 'Volume',
+            value: '4.04K ICP',
+          },
+        ],
+        link: 'https://yumi.io/market/collection-nft-list?id=aak4r-6aaaa-aaaah-adlhq-cai',
+      },
+      {
+        cover: ArticleCardCover,
+        name: 'Genesis AI Model NFT',
+        avatar: ArticleCardAvatar,
+        data: [
+          {
+            name: 'Floor',
+            value: '23.9 ICP',
+          },
+          {
+            name: 'Owners',
+            value: '61',
+          },
+          {
+            name: 'Volume',
+            value: '1.05K ICP',
+          },
+        ],
+
+        link: 'https://yumi.io/market/collection-nft-list?id=hc3r6-6yaaa-aaaah-admkq-cai',
+      },
+    ]);
+
+    const carouselList = ref([
+      { link: 'https://medium.com/p/5f13b2474ba4/edit', cover: CarouselCover1 },
+      { link: 'https://medium.com/@EMCProtocol/introduction-of-emc-hub-ad1930d805f9', cover: CarouselCover2 },
+    ]);
     const article = ref({
       title: "EMC Hub will soon launch Lora NFT, the world's first AI model NFT",
       content: `EMC Hub is about to release Lora NFT, which is the industry's first AI model NFT. This innovation represents EMC Hub's innovation in the AI+web3 field. Lora NFT will use AI technology to bring more possibilities and innovations to the NFT market, creating more revenue and value for AI model creators and collectors. Stay tuned for the release of Lora NFT!`,
@@ -146,6 +234,8 @@ export default defineComponent({
       article2,
       initList,
       updateList,
+      articleModelList,
+      carouselList,
       onPressUpload() {
         if (!userStore.user.id) {
           message.error('Please sign in first');
@@ -162,12 +252,33 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.page {
-}
 .banner-cell {
   width: 60%;
   /* background-color: var(--fg-color); */
   /* border-radius: var(--card-radius); */
   /* border-radius: 16px; */
+}
+.article-card {
+  width: 280px;
+  height: 360px;
+  border-radius: 10px;
+}
+.article-card-cover {
+  height: 252px;
+  object-fit: cover;
+  transition: 0.2s all;
+}
+.article-card-cover:hover {
+  transform: scale(1.2);
+}
+.carousel {
+  width: calc(100% - 624px);
+  height: 360px;
+  border-radius: 10px;
+}
+.carousel-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 </style>
