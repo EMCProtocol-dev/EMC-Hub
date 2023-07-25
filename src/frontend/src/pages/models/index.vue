@@ -159,7 +159,7 @@ export default defineComponent({
     ]);
 
     const carouselList = ref([
-      { link: 'https://medium.com/p/5f13b2474ba4/edit', cover: CarouselCover1 },
+      { link: 'https://medium.com/@EMCProtocol/emc-hub-launching-reward-campaign-coming-soon-5f13b2474ba4', cover: CarouselCover1 },
       { link: 'https://medium.com/@EMCProtocol/introduction-of-emc-hub-ad1930d805f9', cover: CarouselCover2 },
     ]);
     const article = ref({

@@ -28,10 +28,11 @@
               </NTag> -->
               <NTag>
                 <NSpace align="center" :wrap-item="false" :size="[8, 0]">
-                  <NIcon>
+                  <!-- <NIcon>
                     <IconCpu />
-                  </NIcon>
-                  <NText style="font-size: 12px">{{ item.cpuName }}</NText>
+                  </NIcon> -->
+                  <!-- <NText style="font-size: 12px">{{ item.cpuName }}</NText> -->
+                  <NText style="font-size: 12px">{{ item.avgPower }}E</NText>
                 </NSpace>
               </NTag>
             </div>
@@ -51,16 +52,13 @@ import { useRouter, useRoute } from 'vue-router';
 import { NCard, NH3, NH5, NSpace, NText, NSpin, NTag, NButton, NIcon, NScrollbar, useMessage } from 'naive-ui';
 import { useUserStore } from '@/stores/user';
 import { Http } from '@/tools/http';
-import {
-  EarthSharp as IconEarth,
-  HardwareChipSharp as IconCpu,
-  ChevronForwardSharp as IconArrowRight,
-} from '@vicons/ionicons5';
+import { EarthSharp as IconEarth, HardwareChipSharp as IconCpu, ChevronForwardSharp as IconArrowRight } from '@vicons/ionicons5';
 import { Utils } from '@/tools/utils';
 
 type NodeItem = {
   nodeId: string;
   cpuName: string;
+  avgPower: string;
   countryName: string;
 };
 
@@ -116,6 +114,7 @@ export default defineComponent({
           nodeId: item._id,
           cpuName: cpuName,
           countryName: countryName,
+          avgPower: item.avgPower,
         });
       });
       list.value = newList;
