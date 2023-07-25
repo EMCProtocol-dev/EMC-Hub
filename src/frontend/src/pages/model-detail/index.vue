@@ -88,7 +88,7 @@
     <NModal v-model:show="nodeVisible" :mask-closable="false">
       <NCard :bordered="false" style="width: 640px" content-style="">
         <template #header>
-          <NH3 style="margin-bottom: 0">Nodes for run</NH3>
+          <NH3 style="margin-bottom: 0">Nodes for running</NH3>
         </template>
         <template #header-extra>
           <NButton quaternary circle @click="onNodeClose">
