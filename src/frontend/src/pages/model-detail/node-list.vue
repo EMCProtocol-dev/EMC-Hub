@@ -28,11 +28,9 @@
               </NTag> -->
               <NTag>
                 <NSpace align="center" :wrap-item="false" :size="[8, 0]">
-                  <!-- <NIcon>
-                    <IconCpu />
-                  </NIcon> -->
+                  <NIcon> <IconCpu /> </NIcon>
                   <!-- <NText style="font-size: 12px">{{ item.cpuName }}</NText> -->
-                  <NText style="font-size: 12px">{{ item.avgPower }}E</NText>
+                  <NText style="font-size: 12px">Computing Power : {{ item.avgPower }}E</NText>
                 </NSpace>
               </NTag>
             </div>
