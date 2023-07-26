@@ -4,10 +4,10 @@
       <div class="bg" style="width: 600px">
         <transition name="auth-fade">
           <template v-if="action === 'signup'">
-            <img class="bg-img-overlay" src="@/assets/login-img1.jpg" key="signupimg" />
+            <img class="bg-img-overlay" src="@/assets/login-img1.png" key="signupimg" />
           </template>
           <template v-else>
-            <img class="bg-img-overlay" src="@/assets/login-img.jpg" key="signinimg" />
+            <img class="bg-img-overlay" src="@/assets/login-img.png" key="signinimg" />
           </template>
         </transition>
       </div>
@@ -44,8 +44,8 @@ import { NLayout, NLayoutContent, NCard, NH1, NH3, NA, NSpace, NTag, NSpin, NBut
 import SignIn from './signin.vue';
 import SignUp from './signup.vue';
 
-const bgImg1 = require('@/assets/login-img.jpg');
-const bgImg2 = require('@/assets/login-img1.jpg');
+const bgImg1 = require('@/assets/login-img.png');
+const bgImg2 = require('@/assets/login-img1.png');
 
 export default defineComponent({
   name: 'auth',
@@ -82,7 +82,7 @@ export default defineComponent({
       }),
       bgColor: computed(() => {
         if (action.value === 'signup') {
-          return '#9d95d0';
+          return 'rgb(228, 216, 232)';
         } else {
           return 'rgb(228, 216, 232)';
         }
