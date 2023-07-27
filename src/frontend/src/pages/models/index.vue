@@ -140,7 +140,9 @@ export default defineComponent({
 
     onMounted(async () => {
       const resp = await http.get({ url: 'https://ma.emchub.ai/config.json' });
-      bannerList.value = resp.banner;
+      console.log(resp);
+
+      bannerList.value = resp.banners;
       nftsList.value = resp.nfts;
     });
 
