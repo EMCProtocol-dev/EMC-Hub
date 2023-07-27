@@ -153,7 +153,6 @@ export default defineComponent({
             value: '1.05K ICP',
           },
         ],
-
         link: 'https://yumi.io/market/collection-nft-list?id=hc3r6-6yaaa-aaaah-admkq-cai',
       },
     ]);

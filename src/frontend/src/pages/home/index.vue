@@ -1,12 +1,14 @@
 <template>
   <div class="page">
-    <NSpace align="center" style="position: relative; height: 640px">
-      <NSpace class="carouse" :vertical="true">
-        <NH2 class="carouse-title">Fully <span class="carouse-title-span">Decentralized</span> Al Application</NH2>
-        <NH4 class="carouse-content">With the help of idle GPU computing power distributed on EdgeMatrix worldwide, you can generate the AI images you desire from anywhere at any time. It is a fully decentralized AI platform. </NH4>
-        <RouterLink :to="{ path: '/models' }">
-          <NButton class="warn-button" type="warning"> Generate Your First Al lmage on Chain </NButton>
-        </RouterLink>
+    <NSpace align="center" style="position: relative; height: 640px" :wrap-item="false">
+      <NSpace class="carouse" :vertical="true" :wrap-item="false">
+        <NSpace class="carouse-box" :vertical="true" justify="center">
+          <NH2 class="carouse-title">Fully <span class="carouse-title-span">Decentralized</span> Al Application</NH2>
+          <NH4 class="carouse-content">With the help of idle GPU computing power distributed on EdgeMatrix worldwide, you can generate the AI images you desire from anywhere at any time. It is a fully decentralized AI platform. </NH4>
+          <RouterLink :to="{ path: '/models' }">
+            <NButton class="warn-button" type="warning"> Generate Your First Al lmage on Chain </NButton>
+          </RouterLink>
+        </NSpace>
         <img class="carouse-background" src="@/assets/home-background.png" />
         <img class="carouse-background-image" src="@/assets/home-background-image.png" />
       </NSpace>
@@ -179,6 +181,7 @@ export default defineComponent({
 <style scoped>
 .carouse {
   width: 552px;
+  height: 100%;
 }
 
 .carouse-background {
@@ -194,7 +197,13 @@ export default defineComponent({
   width: 560px;
   height: 546px;
 }
-
+.carouse-box {
+  position: absolute;
+  top: 0;
+  width: 552px;
+  height: 100%;
+  z-index: 1;
+}
 .carouse-title {
   font-size: 52px;
   font-weight: 700;
