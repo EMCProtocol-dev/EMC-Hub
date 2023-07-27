@@ -29,13 +29,7 @@
               </div>
               <div class="tags">
                 <template v-for="tag in tags">
-                  <NTag
-                    class="tags-item"
-                    round
-                    size="small"
-                    :bordered="false"
-                    :color="{ color: '#8f7df8', textColor: '#f1f1f1' }"
-                  >
+                  <NTag class="tags-item" round size="small" :bordered="false" :color="{ color: '#8f7df8', textColor: '#f1f1f1' }">
                     {{ tag }}
                   </NTag>
                 </template>
@@ -108,27 +102,10 @@
 <script lang="ts">
 import { ref, defineComponent, onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import {
-  NCard,
-  NH3,
-  NSpace,
-  NSpin,
-  NTag,
-  NCarousel,
-  NDescriptions,
-  NDescriptionsItem,
-  NButton,
-  NIcon,
-  NModal,
-  useMessage,
-} from 'naive-ui';
+import { NCard, NH3, NSpace, NSpin, NTag, NCarousel, NDescriptions, NDescriptionsItem, NButton, NIcon, NModal, useMessage } from 'naive-ui';
 import { useUserStore } from '@/stores/user';
 import { Http } from '@/tools/http';
-import {
-  DownloadSharp as IconDownload,
-  CaretForwardCircleOutline as IconRun,
-  CloseSharp as IconClose,
-} from '@vicons/ionicons5';
+import { DownloadSharp as IconDownload, CaretForwardCircleOutline as IconRun, CloseSharp as IconClose } from '@vicons/ionicons5';
 import NodeList from './node-list.vue';
 
 export default defineComponent({
@@ -242,7 +219,7 @@ export default defineComponent({
       description,
       onPressRun() {
         if (!modelHashCode.value) {
-          message.error('Sorry, This model without \'Hash Code\'');
+          message.error("Sorry, This model without 'Hash Code'");
           return;
         }
         nodeVisible.value = true;

@@ -2,7 +2,7 @@
   <div class="page">
     <NSpace vertical :size="[0, 24]" :wrap-item="false">
       <NSpace class="banners" align="center" justify="space-between" :wrap-item="false" :wrap="false" :size="[24, 0]">
-        <template v-for="item in articleModelList">
+        <template v-for="item in nftsList">
           <NA :href="item.link" target="_blank">
             <NCard class="article-card" content-style="padding:12px;" footer-style="padding:0 12px 12px">
               <template #cover>
@@ -32,7 +32,7 @@
         </template>
 
         <NCarousel class="carousel" autoplay>
-          <template v-for="item in carouselList">
+          <template v-for="item in bannerList">
             <NA :href="item.link" target="_blank">
               <img class="carousel-img" :src="item.cover" />
             </NA>
@@ -78,7 +78,7 @@
 import { defineComponent, ref, computed, onMounted, watch, onActivated, ComputedRef } from 'vue';
 import { NA, NPagination, NSpace, NUpload, NButton, NSpin, NCard, NCarousel, NEllipsis, NTag, NH4, useMessage } from 'naive-ui';
 import { useRoute, useRouter } from 'vue-router';
-import { Http } from '../../tools/http';
+import { Http } from '@/tools/http';
 import ArticleItem from './article-item.vue';
 import ModelItem from './model-item.vue';
 import { useUserStore } from '@/stores/user';
@@ -102,6 +102,7 @@ export default defineComponent({
     }
     next();
   },
+
   setup() {
     const userStore = useUserStore();
     const message = useMessage();
@@ -114,53 +115,35 @@ export default defineComponent({
     const queryParams = ref<any>({});
     const pageCount = ref(1);
     const itemCount = ref(0);
-    const articleModelList = ref([
+    const http = Http.getInstance();
+
+    const bannerList = ref([
       {
-        cover: ArticleCardAvatar,
-        name: 'EMC Genesis AI Computing Power RWA-NFT',
-        avatar: ArticleCardAvatar,
+        cover: '',
+        link: '',
+      },
+    ]);
+    const nftsList = ref([
+      { avatar: '' },
+      { cover: '' },
+      {
         data: [
           {
-            name: 'Floor',
-            value: '45.0 ICP',
-          },
-          {
-            name: 'Owners',
-            value: '42',
-          },
-          {
-            name: 'Volume',
-            value: '4.04K ICP',
+            name: '',
+            value: '',
           },
         ],
-        link: 'https://yumi.io/market/collection-nft-list?id=aak4r-6aaaa-aaaah-adlhq-cai',
       },
-      {
-        cover: ArticleCardCover,
-        name: 'Genesis AI Model NFT',
-        avatar: ArticleCardAvatar,
-        data: [
-          {
-            name: 'Floor',
-            value: '23.9 ICP',
-          },
-          {
-            name: 'Owners',
-            value: '61',
-          },
-          {
-            name: 'Volume',
-            value: '1.05K ICP',
-          },
-        ],
-        link: 'https://yumi.io/market/collection-nft-list?id=hc3r6-6yaaa-aaaah-admkq-cai',
-      },
+      { link: '' },
+      { name: '' },
     ]);
 
-    const carouselList = ref([
-      { link: 'https://medium.com/@EMCProtocol/emc-hub-launching-reward-campaign-coming-soon-5f13b2474ba4', cover: CarouselCover1 },
-      { link: 'https://medium.com/@EMCProtocol/introduction-of-emc-hub-ad1930d805f9', cover: CarouselCover2 },
-    ]);
+    onMounted(async () => {
+      const resp = await http.get({ url: 'https://ma.emchub.ai/config.json' });
+      bannerList.value = resp.banner;
+      nftsList.value = resp.nfts;
+    });
+
     const article = ref({
       title: "EMC Hub will soon launch Lora NFT, the world's first AI model NFT",
       content: `EMC Hub is about to release Lora NFT, which is the industry's first AI model NFT. This innovation represents EMC Hub's innovation in the AI+web3 field. Lora NFT will use AI technology to bring more possibilities and innovations to the NFT market, creating more revenue and value for AI model creators and collectors. Stay tuned for the release of Lora NFT!`,
@@ -170,7 +153,6 @@ export default defineComponent({
       title: 'EMC Genesis AI Computing Power RWA-NFT',
       content: `EMC AI Computing Power RWA-NFT is the world's first AI computing power Real-World Asset Non-Fungible Token (RWA-NFT). The Genesis edition, limited to 80 units, is now available for sale. The introduction of EMC's AI computing power RWA-NFT represents the introduction of a new Web3 asset in the era of AI. This new form of asset will greatly expand the value of NFTs, anchored to the real-world asset of computing power, specifically GPU hardware and the various products and services it generates. The aggregated rights of EMC's AI computing power RWA-NFT will include actual GPU computing power usage rights, earnings from correspondi`,
     });
-    const http = Http.getInstance();
     const updateList = async () => {
       loading.value = true;
       const resp = await http.postJSON({
@@ -233,8 +215,8 @@ export default defineComponent({
       article2,
       initList,
       updateList,
-      articleModelList,
-      carouselList,
+      nftsList,
+      bannerList,
       onPressUpload() {
         if (!userStore.user.id) {
           message.error('Please sign in first');
