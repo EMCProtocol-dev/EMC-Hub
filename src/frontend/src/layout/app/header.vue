@@ -6,22 +6,19 @@
       </RouterLink>
     </NSpace>
     <NSpace class="header-cell" align="center" justify="space-between" :wrap-item="false" :wrap="false">
+      <div>
+        {{ [isMobile, isTablet, isSmallDesktop, isDesktop] }}
+      </div>
       <NSpace class="header-tabs" align="center" :size="[24, 0]" :wrap-item="false" :wrap="false">
         <template v-for="item in tabs">
-          <template v-if="item.path.startsWith('http')">
-            <NA :href="item.path" style="text-decoration: none; color: inherit">
-              <div class="header-tabs-item" :class="{ 'header-tabs-item__actived': item.id === currentTabKey }">
-                <span class="header-tabs-item-text">{{ item.name }}</span>
-              </div>
-            </NA>
-          </template>
-          <template v-else>
-            <RouterLink :to="item.path" style="text-decoration: none; color: inherit">
-              <div class="header-tabs-item" :class="{ 'header-tabs-item__actived': item.id === currentTabKey }">
-                <span class="header-tabs-item-text">{{ item.name }}</span>
-              </div>
-            </RouterLink>
-          </template>
+          <AppLink
+            class="header-tabs-item"
+            active-class="header-tabs-item__actived"
+            :link="item.path"
+            :target="item.path.startsWith('http') ? '_blank' : '_self'"
+          >
+            <span class="header-tabs-item-text">{{ item.name }}</span>
+          </AppLink>
         </template>
       </NSpace>
       <template v-if="user.id">
@@ -44,14 +41,16 @@
 import { ref, defineComponent, computed, watch, h } from 'vue';
 import type { Component } from 'vue';
 import { NButton, NSpin, NSpace, NText, NCard, NA, NIcon, NDropdown, useMessage } from 'naive-ui';
-import { RouterLink } from 'vue-router';
-import { useRouter, useRoute } from 'vue-router';
+import { RouterLink, useRouter, useRoute } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 import {
   PersonSharp as IconPerson,
   PersonCircleOutline as IconUser,
   LogOutSharp as IconSignOut,
 } from '@vicons/ionicons5';
+import AppLink from '@/components/app-link.vue';
+
+import { useIsMobile, useIsTablet, useIsSmallDesktop, useIsDesktop } from '@/composables/use-screen';
 
 type tabkey = number;
 
@@ -95,6 +94,7 @@ export default defineComponent({
     NIcon,
     NText,
     IconPerson,
+    AppLink,
   },
   setup(props, context) {
     const message = useMessage();
@@ -104,6 +104,10 @@ export default defineComponent({
     const route = useRoute();
     const userStore = useUserStore();
 
+    const isMobile = useIsMobile();
+    const isTablet = useIsTablet();
+    const isSmallDesktop = useIsSmallDesktop();
+    const isDesktop = useIsDesktop();
     watch(
       () => route.path,
       (path, oldVal) => {
@@ -118,6 +122,10 @@ export default defineComponent({
       currentTabKey,
       user: computed(() => userStore.user),
       userMenus,
+      isMobile,
+      isTablet,
+      isSmallDesktop,
+      isDesktop,
       onPressUser() {
         console.info('user');
       },
@@ -165,6 +173,7 @@ export default defineComponent({
   justify-content: center;
   height: var(--header-height);
   white-space: nowrap;
+  color: inherit;
 }
 
 .carousel-item {

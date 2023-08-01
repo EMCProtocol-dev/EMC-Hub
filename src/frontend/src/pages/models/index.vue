@@ -1,50 +1,27 @@
 <template>
   <div class="page">
     <NSpace vertical :size="[0, 24]" :wrap-item="false">
-      <NSpace class="banners" align="center" justify="space-between" :wrap-item="false" :wrap="false" :size="[24, 0]">
-        <template v-for="item in nftsList">
-          <NA :href="item.link" target="_blank">
-            <NCard class="article-card" content-style="padding:12px;" footer-style="padding:0 12px 12px">
-              <template #cover>
-                <img class="article-card-cover" :src="item.cover" />
+      <!--  -->
+      <NGrid cols="5" :x-gap="24" :y-gap="24" item-responsive>
+        <NGridItem span="5 1000:2">
+          <NSpace :wrap-item="false" :wrap="false" :size="[24, 0]">
+            <template v-for="item in nftList">
+              <NFTItem :item="item" style="flex: 1; width: 0" />
+            </template>
+          </NSpace>
+        </NGridItem>
+        <NGridItem span="5 1000:3">
+          <div class="grid-item-content">
+            <NCarousel class="carousel" autoplay>
+              <template v-for="item in bannerList">
+                <NA :href="item.link" target="_blank">
+                  <img class="carousel-img" :src="item.cover" />
+                </NA>
               </template>
-
-              <template #default>
-                <NSpace align="center" :wrap-item="false">
-                  <img :src="item.avatar" width="32" height="32" style="object-fit: cover; border-radius: 8px; margin-left: 4px" />
-                  <NEllipsis style="max-width: 190px">
-                    <span style="font-size: 14px; font-weight: 700">{{ item.name }}</span>
-                  </NEllipsis>
-                </NSpace>
-              </template>
-              <template #footer>
-                <NSpace justify="space-between" align="center">
-                  <template v-for="items in item.data">
-                    <NSpace vertical justify="center" align="center" style="height: 38px" :size="[0, 0]">
-                      <div style="font-size: 12px; color: #999">{{ items.name }}</div>
-                      <div style="font-weight: 700">{{ items.value }}</div>
-                    </NSpace>
-                  </template>
-                </NSpace>
-              </template>
-            </NCard>
-          </NA>
-        </template>
-
-        <NCarousel class="carousel" autoplay>
-          <template v-for="item in bannerList">
-            <NA :href="item.link" target="_blank">
-              <img class="carousel-img" :src="item.cover" />
-            </NA>
-          </template>
-        </NCarousel>
-        <!-- <NCard :bordered="false" class="banner-cell" style="width: calc(40% - 24px)" content-style="padding:0">
-          <ArticleItem :item="article" class="article-bg" style="--article-text: #ffffff" />
-        </NCard> -->
-        <!-- <NCard :bordered="false" class="banner-cell" content-style="padding:0" style="width: 500px">
-          <ArticleItem :item="article2" style="--article-text: #000000" />
-        </NCard> -->
-      </NSpace>
+            </NCarousel>
+          </div>
+        </NGridItem>
+      </NGrid>
       <NCard :bordered="false">
         <template #header>
           <div>
@@ -57,16 +34,20 @@
             <NButton type="primary" ghost strong @click="onPressUpload">Click to upload</NButton>
           </template>
         </template>
-        <NSpace :wrap-item="false" :size="[24, 0]" :wrap="true" style="margin-bottom: -24px">
+        <NSpace :wrap-item="false" :size="[24, 0]" :wrap="true">
           <template v-if="loading">
-            <NSpace align="center" justify="center" style="width: 100%; height: 400px">
+            <NSpace align="center" justify="center" :wrap-item="false" :wrap="false" style="width: 100%; height: 400px">
               <NSpin />
             </NSpace>
           </template>
           <template v-else>
-            <template v-for="item in list">
-              <ModelItem :item="item" @press="onPressItem" />
-            </template>
+            <NGrid cols="2 600:3 800:4 1000:5" :x-gap="24" :y-gap="24" item-responsive>
+              <template v-for="item in list">
+                <NGridItem>
+                  <ModelItem :item="item" @press="onPressItem" style="width: auto" />
+                </NGridItem>
+              </template>
+            </NGrid>
           </template>
         </NSpace>
       </NCard>
@@ -75,22 +56,37 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted, watch, onActivated, ComputedRef } from 'vue';
-import { NA, NPagination, NSpace, NUpload, NButton, NSpin, NCard, NCarousel, NEllipsis, NTag, NH4, useMessage } from 'naive-ui';
-import { useRoute, useRouter } from 'vue-router';
+import { defineComponent, ref, computed, onActivated } from 'vue';
+import { NA, NPagination, NSpace, NButton, NGrid, NGridItem, NSpin, NCard, NCarousel, useMessage } from 'naive-ui';
+import { useRouter } from 'vue-router';
 import { Http } from '@/tools/http';
-import ArticleItem from './article-item.vue';
-import ModelItem from './model-item.vue';
 import { useUserStore } from '@/stores/user';
-const ArticleDefaultCover = require('../../assets/article-default-cover.png');
-import ArticleCardAvatar from '@/assets/article-card-avatar.png';
-import ArticleCardCover from '@/assets/article-card-cover.png';
-import CarouselCover1 from '@/assets/model-banner1.png';
-import CarouselCover2 from '@/assets/model-banner2.png';
+
+import NFTItem from './nft-item.vue';
+import type { item as nftItem } from './nft-item.vue';
+
+import ModelItem from './model-item.vue';
+
+type bannerItem = {
+  cover: string;
+  link: string;
+};
 
 export default defineComponent({
   name: 'models',
-  components: { NA, NPagination, NSpace, NUpload, NButton, NSpin, NCard, NCarousel, NEllipsis, NTag, NH4, ArticleItem, ModelItem },
+  components: {
+    NA,
+    NPagination,
+    NSpace,
+    NButton,
+    NGrid,
+    NGridItem,
+    NSpin,
+    NCard,
+    NCarousel,
+    NFTItem,
+    ModelItem,
+  },
   beforeRouteEnter(to, from, next) {
     if (typeof to.meta !== 'object') {
       to.meta = {};
@@ -106,8 +102,11 @@ export default defineComponent({
   setup() {
     const userStore = useUserStore();
     const message = useMessage();
-    const route = useRoute();
     const router = useRouter();
+
+    const bannerList = ref<bannerItem[]>([]);
+    const nftList = ref<nftItem[]>([]);
+
     const list = ref<any[]>([]);
     const loading = ref(true);
     const pageNo = ref(1);
@@ -117,44 +116,6 @@ export default defineComponent({
     const itemCount = ref(0);
     const http = Http.getInstance();
 
-    const bannerList = ref([
-      {
-        cover: '',
-        link: '',
-      },
-    ]);
-    const nftsList = ref([
-      { avatar: '' },
-      { cover: '' },
-      {
-        data: [
-          {
-            name: '',
-            value: '',
-          },
-        ],
-      },
-      { link: '' },
-      { name: '' },
-    ]);
-
-    onMounted(async () => {
-      const resp = await http.get({ url: 'https://ma.emchub.ai/config.json' });
-      console.log(resp);
-
-      bannerList.value = resp.banners;
-      nftsList.value = resp.nfts;
-    });
-
-    const article = ref({
-      title: "EMC Hub will soon launch Lora NFT, the world's first AI model NFT",
-      content: `EMC Hub is about to release Lora NFT, which is the industry's first AI model NFT. This innovation represents EMC Hub's innovation in the AI+web3 field. Lora NFT will use AI technology to bring more possibilities and innovations to the NFT market, creating more revenue and value for AI model creators and collectors. Stay tuned for the release of Lora NFT!`,
-    });
-    const article2 = ref({
-      cover: ArticleDefaultCover,
-      title: 'EMC Genesis AI Computing Power RWA-NFT',
-      content: `EMC AI Computing Power RWA-NFT is the world's first AI computing power Real-World Asset Non-Fungible Token (RWA-NFT). The Genesis edition, limited to 80 units, is now available for sale. The introduction of EMC's AI computing power RWA-NFT represents the introduction of a new Web3 asset in the era of AI. This new form of asset will greatly expand the value of NFTs, anchored to the real-world asset of computing power, specifically GPU hardware and the various products and services it generates. The aggregated rights of EMC's AI computing power RWA-NFT will include actual GPU computing power usage rights, earnings from correspondi`,
-    });
     const updateList = async () => {
       loading.value = true;
       const resp = await http.postJSON({
@@ -195,17 +156,27 @@ export default defineComponent({
       return updateList();
     };
 
-    onActivated(() => {
+    onActivated(async () => {
       // if (route.meta.isBack) {
-      //   updateList();
       // } else {
-      //   initList();
       // }
+      const resp = await http.get({ url: 'https://ma.emchub.ai/config.json' });
+      bannerList.value = resp.banners;
+      nftList.value = resp.nfts.map((item: any) => ({
+        link: item.link,
+        cover: item.cover,
+        publisherName: item.name,
+        publisherAvatar: item.avatar,
+        numericals: item.data,
+      }));
+
       initList();
     });
 
     return {
       nickname: computed(() => userStore.user.nickname),
+      nftList,
+      bannerList,
       list,
       loading,
       pageNo,
@@ -213,12 +184,8 @@ export default defineComponent({
       queryParams,
       pageCount,
       itemCount,
-      article,
-      article2,
       initList,
       updateList,
-      nftsList,
-      bannerList,
       onPressUpload() {
         if (!userStore.user.id) {
           message.error('Please sign in first');
@@ -235,28 +202,20 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.banner-cell {
-  width: 60%;
-  /* background-color: var(--fg-color); */
-  /* border-radius: var(--card-radius); */
-  /* border-radius: 16px; */
-}
-.article-card {
-  width: 280px;
-  height: 360px;
-  border-radius: 10px;
-}
-.article-card-cover {
-  height: 252px;
-  object-fit: cover;
-  transition: 0.2s all;
-}
-.article-card-cover:hover {
-  transform: scale(1.2);
+.grid-item-content {
+  width: 100%;
+  height: 100%;
+  /* size of banner image file  */
+  padding-top: calc(100% * 0.46);
+  box-sizing: border-box;
+  position: relative;
 }
 .carousel {
-  width: calc(100% - 624px);
-  height: 360px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
   border-radius: 10px;
 }
 .carousel-img {
