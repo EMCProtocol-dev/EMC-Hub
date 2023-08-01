@@ -1,6 +1,7 @@
 <template>
   <div class="page">
     <NSpace vertical :size="[0, 24]" :wrap-item="false">
+<<<<<<< HEAD
       <NSpace class="banners" align="center" justify="space-between" :wrap-item="false" :size="[24, 0]">
         <NCard :bordered="false" class="banner-cell" style="width: calc(40% - 24px)" content-style="padding:0">
           <ArticleItem :item="article" class="article-bg" style="--article-text: #ffffff" />
@@ -9,6 +10,29 @@
           <ArticleItem :item="article2" style="--article-text: #000000" />
         </NCard>
       </NSpace>
+=======
+      <!--  -->
+      <NGrid cols="5" :x-gap="24" :y-gap="24" item-responsive>
+        <NGridItem span="5 1000:2">
+          <NSpace :wrap-item="false" :wrap="false" :size="[24, 0]">
+            <template v-for="item in nftList">
+              <NFTItem :item="item" style="flex: 1; width: 0" />
+            </template>
+          </NSpace>
+        </NGridItem>
+        <NGridItem span="5 1000:3">
+          <div class="grid-item-content">
+            <NCarousel class="carousel" autoplay>
+              <template v-for="item in bannerList">
+                <NA :href="item.link" target="_blank">
+                  <img class="carousel-img" :src="item.cover" />
+                </NA>
+              </template>
+            </NCarousel>
+          </div>
+        </NGridItem>
+      </NGrid>
+>>>>>>> 677e47b (~)
       <NCard :bordered="false">
         <template #header>
           <div>
@@ -29,6 +53,7 @@
             <NButton>Click to upload</NButton>
           </NUpload>
         </template>
+<<<<<<< HEAD
 <<<<<<< HEAD
         <NSpace :wrap-item="false" :size="[24, 0]" :wrap="true">
           <template v-for="item in list">
@@ -56,16 +81,29 @@
             </div>
 =======
         <NSpace :wrap-item="false" :size="[24, 0]" :wrap="true" style="margin-bottom: -24px">
+=======
+        <NSpace :wrap-item="false" :size="[24, 0]" :wrap="true">
+>>>>>>> 677e47b (~)
           <template v-if="loading">
-            <NSpace align="center" justify="center" style="width: 100%; height: 400px">
+            <NSpace align="center" justify="center" :wrap-item="false" :wrap="false" style="width: 100%; height: 400px">
               <NSpin />
             </NSpace>
           </template>
           <template v-else>
+<<<<<<< HEAD
             <template v-for="item in list">
               <ModelItem :item="item" @press="onPressItem" />
             </template>
 >>>>>>> 4a3626c (~)
+=======
+            <NGrid cols="2 600:3 800:4 1000:5" :x-gap="24" :y-gap="24" item-responsive>
+              <template v-for="item in list">
+                <NGridItem>
+                  <ModelItem :item="item" @press="onPressItem" style="width: auto" />
+                </NGridItem>
+              </template>
+            </NGrid>
+>>>>>>> 677e47b (~)
           </template>
         </NSpace>
       </NCard>
@@ -74,6 +112,7 @@
 </template>
 
 <script lang="ts">
+<<<<<<< HEAD
 import { defineComponent, ref, computed, onMounted, watch, onActivated, ComputedRef } from 'vue';
 import { NPagination, NSpace, NUpload, NButton, NSpin, NCard, NCarousel, NTag, NH4 } from 'naive-ui';
 <<<<<<< HEAD
@@ -90,6 +129,39 @@ const ArticleDefaultCover = require('../../assets/article-default-cover.png');
 export default defineComponent({
   name: 'models',
   components: { NPagination, NSpace, NUpload, NButton, NSpin, NCard, NCarousel, NTag, NH4, ArticleItem, ModelItem },
+=======
+import { defineComponent, ref, computed, onActivated } from 'vue';
+import { NA, NPagination, NSpace, NButton, NGrid, NGridItem, NSpin, NCard, NCarousel, useMessage } from 'naive-ui';
+import { useRouter } from 'vue-router';
+import { Http } from '@/tools/http';
+import { useUserStore } from '@/stores/user';
+
+import NFTItem from './nft-item.vue';
+import type { item as nftItem } from './nft-item.vue';
+
+import ModelItem from './model-item.vue';
+
+type bannerItem = {
+  cover: string;
+  link: string;
+};
+
+export default defineComponent({
+  name: 'models',
+  components: {
+    NA,
+    NPagination,
+    NSpace,
+    NButton,
+    NGrid,
+    NGridItem,
+    NSpin,
+    NCard,
+    NCarousel,
+    NFTItem,
+    ModelItem,
+  },
+>>>>>>> 677e47b (~)
   beforeRouteEnter(to, from, next) {
     if (typeof to.meta !== 'object') {
       to.meta = {};
@@ -102,7 +174,17 @@ export default defineComponent({
     next();
   },
   setup() {
+<<<<<<< HEAD
     const route = useRoute();
+=======
+    const userStore = useUserStore();
+    const message = useMessage();
+    const router = useRouter();
+
+    const bannerList = ref<bannerItem[]>([]);
+    const nftList = ref<nftItem[]>([]);
+
+>>>>>>> 677e47b (~)
     const list = ref<any[]>([]);
     const loading = ref(true);
     const pageNo = ref(1);
@@ -110,6 +192,7 @@ export default defineComponent({
     const queryParams = ref<any>({});
     const pageCount = ref(1);
     const itemCount = ref(0);
+<<<<<<< HEAD
     const article = ref({
       title: "EMC Hub will soon launch Lora NFT, the world's first AI model NFT",
       content: `EMC Hub is about to release Lora NFT, which is the industry's first AI model NFT. This innovation represents EMC Hub's innovation in the AI+web3 field. Lora NFT will use AI technology to bring more possibilities and innovations to the NFT market, creating more revenue and value for AI model creators and collectors. Stay tuned for the release of Lora NFT!`,
@@ -120,6 +203,10 @@ export default defineComponent({
       content: `EMC AI Computing Power RWA-NFT is the world's first AI computing power Real-World Asset Non-Fungible Token (RWA-NFT). The Genesis edition, limited to 80 units, is now available for sale. The introduction of EMC's AI computing power RWA-NFT represents the introduction of a new Web3 asset in the era of AI. This new form of asset will greatly expand the value of NFTs, anchored to the real-world asset of computing power, specifically GPU hardware and the various products and services it generates. The aggregated rights of EMC's AI computing power RWA-NFT will include actual GPU computing power usage rights, earnings from correspondi`,
     });
     const http = Http.getInstance();
+=======
+    const http = Http.getInstance();
+
+>>>>>>> 677e47b (~)
     const updateList = async () => {
       loading.value = true;
       const resp = await http.postJSON({
@@ -164,6 +251,7 @@ export default defineComponent({
       return updateList();
     };
 
+<<<<<<< HEAD
     onActivated(() => {
       if (route.meta.isBack) {
         updateList();
@@ -173,6 +261,29 @@ export default defineComponent({
     });
 
     return {
+=======
+    onActivated(async () => {
+      // if (route.meta.isBack) {
+      // } else {
+      // }
+      const resp = await http.get({ url: 'https://ma.emchub.ai/config.json' });
+      bannerList.value = resp.banners;
+      nftList.value = resp.nfts.map((item: any) => ({
+        link: item.link,
+        cover: item.cover,
+        publisherName: item.name,
+        publisherAvatar: item.avatar,
+        numericals: item.data,
+      }));
+
+      initList();
+    });
+
+    return {
+      nickname: computed(() => userStore.user.nickname),
+      nftList,
+      bannerList,
+>>>>>>> 677e47b (~)
       list,
       loading,
       pageNo,
@@ -180,12 +291,13 @@ export default defineComponent({
       queryParams,
       pageCount,
       itemCount,
-      article,
-      article2,
       initList,
       updateList,
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 677e47b (~)
       onPressUpload() {
         router.push({ name: 'model-upload' });
       },
@@ -199,6 +311,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
+<<<<<<< HEAD
 .page {
 }
 .banner-cell {
@@ -231,6 +344,23 @@ export default defineComponent({
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+=======
+.grid-item-content {
+  width: 100%;
+  height: 100%;
+  /* size of banner image file  */
+  padding-top: calc(100% * 0.46);
+  box-sizing: border-box;
+  position: relative;
+}
+.carousel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+>>>>>>> 677e47b (~)
 }
 .article-body {
   font-size: 14px;

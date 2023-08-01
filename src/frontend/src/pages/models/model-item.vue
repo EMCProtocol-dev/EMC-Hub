@@ -1,6 +1,7 @@
 <template>
   <div class="item" @click="onPressItem">
 <<<<<<< HEAD
+<<<<<<< HEAD
     <NSpace class="item-carousel-wrap" :wrap-item="false">
       <!-- <NCarousel class="item-carousel" :autoplay="true">
         <template v-for="cover in item.covers">
@@ -25,6 +26,15 @@
         <img class="item-cover" :src="cover" />
       </template>
     </NCarousel>
+=======
+    <div class="item-carousel-wrap">
+      <NCarousel class="item-carousel" :autoplay="true">
+        <template v-for="cover in item.covers">
+          <img class="item-cover" :src="cover" />
+        </template>
+      </NCarousel>
+    </div>
+>>>>>>> 677e47b (~)
     <div class="item-body">
       <div class="item-body-row">
         <NH4 style="margin-bottom: 0">{{ item.name }}</NH4>
@@ -79,6 +89,7 @@ export default defineComponent({
 </script>
 <style scoped>
 .item {
+<<<<<<< HEAD
 <<<<<<< HEAD
   border-radius: 6px;
   box-shadow: 1px 1px 6px 0 #ccc;
@@ -137,15 +148,43 @@ export default defineComponent({
   border-radius: 8px;
   box-shadow: 1px 1px 6px 0 #ccc;
   margin-bottom: 24px;
+=======
+  border: solid 1px #f1f1f1;
+  border-radius: 8px;
+  box-shadow: 1px 1px 6px 0 #ccc;
+  cursor: pointer;
+>>>>>>> 677e47b (~)
 }
 
+.item-carousel-wrap {
+  width: 100%;
+  padding-top: calc(100% * 1.25);
+  position: relative;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  overflow: hidden;
+}
 .item-carousel {
-  width: 240px;
-  height: calc(240px * 1.25);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
 }
 .item-cover {
+<<<<<<< HEAD
   width: 240px;
   height: calc(240px * 1.25);
+=======
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1);
+  transition: all 0.2s;
+}
+.item-cover:hover {
+  transform: scale(1.2);
+>>>>>>> 677e47b (~)
 }
 .item-body {
   padding: 16px 16px;
@@ -153,9 +192,13 @@ export default defineComponent({
 .item-body-row {
   display: flex;
   align-items: center;
+<<<<<<< HEAD
 >>>>>>> 4a3626c (~)
+=======
+  white-space: nowrap;
+  overflow: hidden;
+>>>>>>> 677e47b (~)
 }
-
 .item-body-row:not(:last-child) {
   margin-bottom: 8px;
 }

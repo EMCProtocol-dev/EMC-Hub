@@ -5,6 +5,7 @@
         <img class="header-icon" />
       </RouterLink>
     </NSpace>
+<<<<<<< HEAD
     <NSpace class="header-cell" align="center" justify="space-between" :wrap-item="false">
       <NSpace class="header-tabs" align="center" :size="[24, 0]" :wrap-item="false">
         <template v-for="item in tabs">
@@ -13,6 +14,22 @@
               <span class="header-tabs-item-text">{{ item.name }}</span>
             </div>
           </RouterLink>
+=======
+    <NSpace class="header-cell" align="center" justify="space-between" :wrap-item="false" :wrap="false">
+      <div>
+        {{ [isMobile, isTablet, isSmallDesktop, isDesktop] }}
+      </div>
+      <NSpace class="header-tabs" align="center" :size="[24, 0]" :wrap-item="false" :wrap="false">
+        <template v-for="item in tabs">
+          <AppLink
+            class="header-tabs-item"
+            active-class="header-tabs-item__actived"
+            :link="item.path"
+            :target="item.path.startsWith('http') ? '_blank' : '_self'"
+          >
+            <span class="header-tabs-item-text">{{ item.name }}</span>
+          </AppLink>
+>>>>>>> 677e47b (~)
         </template>
       </NSpace>
       <template v-if="user.id">
@@ -50,16 +67,24 @@ import {
 =======
 import { ref, defineComponent, computed, watch, h } from 'vue';
 import type { Component } from 'vue';
+<<<<<<< HEAD
 import { NButton, NSpin, NSpace, NCard, NA, NIcon, NDropdown, useMessage } from 'naive-ui';
 >>>>>>> 4a3626c (~)
 import { RouterLink } from 'vue-router';
 import { useRouter, useRoute } from 'vue-router';
+=======
+import { NButton, NSpin, NSpace, NText, NCard, NA, NIcon, NDropdown, useMessage } from 'naive-ui';
+import { RouterLink, useRouter, useRoute } from 'vue-router';
+>>>>>>> 677e47b (~)
 import { useUserStore } from '@/stores/user';
 import {
   PersonSharp as IconPerson,
   PersonCircleOutline as IconUser,
   LogOutOutline as IconSignOut,
 } from '@vicons/ionicons5';
+import AppLink from '@/components/app-link.vue';
+
+import { useIsMobile, useIsTablet, useIsSmallDesktop, useIsDesktop } from '@/composables/use-screen';
 
 type tabkey = number;
 
@@ -118,7 +143,11 @@ export default defineComponent({
     NA,
     NIcon,
     IconPerson,
+<<<<<<< HEAD
 >>>>>>> 4a3626c (~)
+=======
+    AppLink,
+>>>>>>> 677e47b (~)
   },
   setup(props, context) {
     const message = useMessage();
@@ -128,6 +157,10 @@ export default defineComponent({
     const route = useRoute();
     const userStore = useUserStore();
 
+    const isMobile = useIsMobile();
+    const isTablet = useIsTablet();
+    const isSmallDesktop = useIsSmallDesktop();
+    const isDesktop = useIsDesktop();
     watch(
       () => route.path,
       (path, oldVal) => {
@@ -142,6 +175,10 @@ export default defineComponent({
       currentTabKey,
       user: computed(() => userStore.user),
       userMenus,
+      isMobile,
+      isTablet,
+      isSmallDesktop,
+      isDesktop,
       onPressUser() {
         console.info('user');
       },
@@ -189,6 +226,11 @@ export default defineComponent({
   flex-direction: column;
   justify-content: center;
   height: var(--header-height);
+<<<<<<< HEAD
+=======
+  white-space: nowrap;
+  color: inherit;
+>>>>>>> 677e47b (~)
 }
 
 .carousel-item {
