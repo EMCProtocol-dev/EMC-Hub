@@ -4,22 +4,36 @@ import { Utils } from '@/tools/utils';
 import { Http } from '@/tools/http';
 import { useMessage } from 'naive-ui';
 
-interface User {
+interface user {
   id: string | number;
   nickname: string;
   avatar: string;
 }
-export type AuthType = 'password' | 'wallet';
+
+export type authType = 'password' | 'wallet';
+export type signupParams = {
+  account: string;
+  password: string;
+  nickname: string;
+  email: string;
+  principal: string;
+};
+export type signinParams = {
+  account: string;
+  password?: string;
+  principal?: string;
+  type: authType;
+};
 
 const STORAGE_KEY = 'emchub.user';
 
 export const useUserStore = defineStore('user', () => {
-  const defaultUser = (): User => ({
+  const defaultUser = (): user => ({
     id: '',
     nickname: '',
     avatar: '',
   });
-  const user = ref<User>(defaultUser());
+  const user = ref<user>(defaultUser());
   const http = Http.getInstance();
   return {
     user,
@@ -41,15 +55,8 @@ export const useUserStore = defineStore('user', () => {
         user.value = cache.user;
       }
     },
-    async signup(
-      { account, password, nickname, email, principal } = {
-        account: '',
-        password: '',
-        nickname: '',
-        email: '',
-        principal: '',
-      }
-    ): Promise<{ _result: number; _desc?: string }> {
+    async signup(params: signupParams): Promise<{ _result: number; _desc?: string }> {
+      const { account = '', password = '', nickname = '', email = '', principal = '' } = params;
       const resp1 = await http.postJSON({
         url: '/mrchaiemc/applyRegister.do',
         data: { bussData: { loginId: account, nickName: nickname, email: email } },
@@ -73,7 +80,7 @@ export const useUserStore = defineStore('user', () => {
       }
       return { _result: 0 };
     },
-    async signin(params: { account: string; password?: string; principal?: string; type: AuthType }) {
+    async signin(params: signinParams) {
       const _account = params.account;
       const _password = params.password || '';
       const _principal = params.principal || '';

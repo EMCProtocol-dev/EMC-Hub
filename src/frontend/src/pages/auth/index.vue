@@ -1,5 +1,9 @@
 <template>
-  <NLayout position="absolute" style="background-color: blueviolet" content-style="display:flex;align-items:center;justify-content:center;">
+  <NLayout
+    position="absolute"
+    style="background-color: blueviolet"
+    content-style="display:flex;align-items:center;justify-content:center;"
+  >
     <NSpace class="content" :wrap-item="false" :size="[0, 0]" :style="{ 'background-color': bgColor }">
       <div class="bg" style="width: 600px">
         <transition name="auth-fade">
@@ -20,13 +24,18 @@
             </NSpace>
             <div class="sign-subtitle">Welcome #AI</div>
           </div>
-          <SignIn ref="signinRef" @signin="onSignInSuccess" @signinbefore="signinLoading = true" @signinafter="signinLoading = false" />
+          <SignIn
+            ref="signinRef"
+            @signin="onSignInSuccess"
+            @signinbefore="signinLoading = true"
+            @signinafter="signinLoading = false"
+          />
         </template>
         <template v-else-if="action === 'signup'">
           <div class="sign-header">
             <NSpace :wrap-item="false" justify="space-between" align="center">
               <div class="sign-title">Edge Matrix Hub</div>
-              <NA class="sign-signup" @click="onPressSignUpToggle">Log in</NA>
+              <NA class="sign-signup" @click="onPressSignUpToggle">Sign In</NA>
             </NSpace>
           </div>
           <SignUp @signup="onSignUpSuccess" @signupbefore="signupLoading = true" @signupafter="signupLoading = false" />
@@ -106,7 +115,15 @@ export default defineComponent({
           router.replace({ name: 'home' });
         }
       },
-      async onSignUpSuccess({ account, password, principal }: { account: string; password: string; principal: string }) {
+      async onSignUpSuccess({
+        account,
+        password,
+        principal,
+      }: {
+        account: string;
+        password: string;
+        principal: string;
+      }) {
         action.value = 'signin';
         await nextTick();
         signinRef.value?.postLogin({ account, password, principal });
