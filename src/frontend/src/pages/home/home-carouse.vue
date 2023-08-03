@@ -1,23 +1,27 @@
 <template>
-  <NGrid cols="1 900:2" :x-gap="0" :y-gap="56" item-responsive style="position: relative; min-height: 640px">
-    <NGridItem>
-      <!-- <NSpace :wrap-item="false"> -->
-      <NSpace class="carouse-box" :wrap-item="false" :vertical="true" justify="center" :align="isMobile || isTablet ? 'center' : 'start'" :style="titleStyle.style">
-        <NH2 class="carouse-title">Fully <span class="carouse-title-span">Decentralized</span> Al Application</NH2>
-        <NH4 class="carouse-content">With the help of idle GPU computing power distributed on EdgeMatrix worldwide, you can generate the AI images you desire from anywhere at any time. It is a fully decentralized AI platform. </NH4>
-        <RouterLink :to="{ path: '/models' }">
-          <NButton class="carouse-button" type="warning"> Generate Your First Al lmage on Chain </NButton>
-        </RouterLink>
-      </NSpace>
-      <!-- </NSpace> -->
-    </NGridItem>
-    <NGridItem>
-      <NSpace class="carouse-cover" :vertical="true" :wrap-item="false" justify="center" :align="isMobile || isTablet ? 'center' : 'end'">
-        <img class="carouse-cover-img" src="@/assets/home-background-image.png" />
-      </NSpace>
-    </NGridItem>
-    <!-- <img class="carouse-background" src="@/assets/home-background.png" /> -->
-  </NGrid>
+  <div style="position: relative; min-height: 640px">
+    <NGrid cols="1 976:2" :x-gap="0" :y-gap="56" item-responsive style="position: absolute; z-index: 1; height: 100%">
+      <NGridItem>
+        <!-- <NSpace :wrap-item="false"> -->
+        <NSpace class="carouse-box" :wrap-item="false" :vertical="true" justify="center" :align="isMobile || isTablet ? 'center' : 'start'" :style="titleStyle.style">
+          <NH2 class="carouse-title">Fully <span class="carouse-title-span">Decentralized</span> Al Application</NH2>
+          <NH4 class="carouse-content">With the help of idle GPU computing power distributed on EdgeMatrix worldwide, you can generate the AI images you desire from anywhere at any time. It is a fully decentralized AI platform. </NH4>
+          <RouterLink :to="{ path: '/models' }">
+            <NButton class="carouse-button" type="warning"> Generate Your First Al lmage on Chain </NButton>
+          </RouterLink>
+        </NSpace>
+        <!-- </NSpace> -->
+      </NGridItem>
+      <NGridItem>
+        <NSpace class="carouse-cover" :vertical="true" :wrap-item="false" justify="center" :align="isMobile || isTablet ? 'center' : 'end'">
+          <img class="carouse-cover-img" src="@/assets/home-background-image.png" />
+        </NSpace>
+      </NGridItem>
+    </NGrid>
+    <template v-if="!isMobile && !isTablet">
+      <img class="carouse-background" src="@/assets/home-background.png" />
+    </template>
+  </div>
 </template>
 
 <script lang="ts">
@@ -30,7 +34,7 @@ type titleType = {
   style: { 'text-align': string; width: string };
 };
 
-export default defineComponent({
+export default defineComponent({  
   name: 'home-carouse',
   components: { RouterLink, NButton, NSpace, NH2, NH4, NGrid, NGridItem },
   setup(props, context) {
@@ -64,7 +68,6 @@ export default defineComponent({
 }
 .carouse-box {
   height: 100%;
-  z-index: 1;
 }
 .carouse-title {
   font-size: 52px;
