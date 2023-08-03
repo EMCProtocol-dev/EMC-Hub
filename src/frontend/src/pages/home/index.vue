@@ -1,58 +1,28 @@
 <template>
   <div class="page">
-    <NSpace align="center" style="position: relative; height: 640px" :wrap-item="false">
-      <NSpace class="carouse" :vertical="true" :wrap-item="false">
-        <NSpace class="carouse-box" :vertical="true" justify="center">
-          <NH2 class="carouse-title">Fully <span class="carouse-title-span">Decentralized</span> Al Application</NH2>
-          <NH4 class="carouse-content">With the help of idle GPU computing power distributed on EdgeMatrix worldwide, you can generate the AI images you desire from anywhere at any time. It is a fully decentralized AI platform. </NH4>
-          <RouterLink :to="{ path: '/models' }">
-            <NButton class="warn-button" type="warning"> Generate Your First Al lmage on Chain </NButton>
-          </RouterLink>
-        </NSpace>
-        <img class="carouse-background" src="@/assets/home-background.png" />
-        <img class="carouse-background-image" src="@/assets/home-background-image.png" />
-      </NSpace>
-    </NSpace>
-    <NSpace class="section" :vertical="true" align="center">
+    <HomeCarouse />
+    <NSpace class="section" :vertical="true">
       <NH2 class="section-title">{{ cardList.title }}</NH2>
       <NH4 class="section-subtitle">{{ cardList.subtitle }}</NH4>
-      <NSpace align="center">
+      <NGrid cols="1 800:3" :x-gap="24" :y-gap="24" item-responsive>
         <template v-for="(item, index) in cardList.data">
-          <NCard class="section-card" :title="item.name">
-            <template #cover>
-              <img class="section-card-cover" :src="item.cover" />
-            </template>
-            <div class="section-card-description">{{ item.description }}</div>
-            <template #footer>
-              <NSpace justify="center" align="center">
-                <NA :href="item.link" target="_blank" style="text-decoration: none; color: inherit">
-                  <NButton class="section-card-button" type="primary" ghost color="#6C2CFD">
-                    {{ item.button }}
-                  </NButton>
-                </NA>
-              </NSpace>
-            </template>
-          </NCard>
+          <NGridItem>
+            <ProjectItem :item="item" />
+          </NGridItem>
         </template>
-      </NSpace>
+      </NGrid>
     </NSpace>
+
     <NSpace class="section" :vertical="true" align="center">
       <NH2 class="section-title">{{ worksList.title }}</NH2>
       <NH4 class="section-subtitle">{{ worksList.subtitle }}</NH4>
       <template v-for="(item, index) in worksList.data">
-        <NSpace class="section-item" :wrap="false" justify="space-between" :size="[78, 0]" :style="{ 'flex-flow': index % 2 != 1 ? 'row' : 'row-reverse' }">
-          <NCard class="section-item-content" :title="index + 1 + '. ' + item.title" :bordered="false" header-style="font-size:28px;font-weight:700">
-            <span class="section-item-pre" v-html="item.content"></span>
-          </NCard>
-          <NSpace class="section-item-side" :wrap-item="false" justify="center">
-            <img class="section-item-side-image" :src="item.image" />
-          </NSpace>
-        </NSpace>
+        <SetupItem :item="item" :index="index" />
       </template>
     </NSpace>
     <div class="footer">
       <div class="footer-left-decoration"></div>
-      <NSpace class="footer-center" :vertical="true" align="center">
+      <NSpace class="footer-center" :vertical="true" align="center" :wrap="true">
         <div class="footer-title">{{ footer.title }}</div>
         <div class="footer-description">{{ footer.description }}</div>
         <RouterLink :to="{ path: '/models' }">
@@ -66,9 +36,13 @@
 
 <script lang="ts">
 import { ref, onMounted, computed, onUnmounted, defineComponent, nextTick } from 'vue';
-import { NCarousel, NPopover, NButton, NSpace, NSpin, NCard, NH2, NH4, NA } from 'naive-ui';
+import { NCarousel, NPopover, NButton, NSpace, NSpin, NGrid, NGridItem, NCard, NH2, NH4, NA } from 'naive-ui';
 import { RouterLink } from 'vue-router';
 import { Utils } from '@/tools/utils';
+
+import ProjectItem from './project-item.vue';
+import SetupItem from './setup-item.vue';
+import HomeCarouse from './home-carouse.vue';
 
 import setup1 from '@/assets/image-setup1.png';
 import setup2 from '@/assets/image-setup2.png';
@@ -80,12 +54,17 @@ import cover3 from '@/assets/image-card-cover3.png';
 
 export default defineComponent({
   components: {
+    HomeCarouse,
+    ProjectItem,
+    SetupItem,
     RouterLink,
     NCarousel,
     NPopover,
     NButton,
     NSpace,
     NSpin,
+    NGrid,
+    NGridItem,
     NCard,
     NH2,
     NH4,
@@ -93,17 +72,6 @@ export default defineComponent({
   },
 
   setup() {
-    // const carouselList = ref(
-    //    {
-    //       title: `Fully Decentralized Al Application`,
-    //       content: 'With the help of idle GPU computing power distributed onEdgeMatrix worldwide, you can generate the Al images youdesire from anywhere at any time. It is a fully decentralized Alapplication.',
-    //       button: 'Generate Your First Al lmage on Chain',
-    //       data: [
-    //          { background: '' }
-    //       ]
-    //    }
-    // )
-
     const cardList = ref({
       title: 'A better way to experiment AI in Web3',
       subtitle: 'Generate any image you want and unleash your imagination',
@@ -179,54 +147,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.carouse {
-  width: 552px;
-  height: 100%;
-}
-
-.carouse-background {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  width: 100%;
-}
-.carouse-background-image {
-  position: absolute;
-  top: 102px;
-  right: 0px;
-  width: 560px;
-  height: 546px;
-}
-.carouse-box {
-  position: absolute;
-  top: 0;
-  width: 552px;
-  height: 100%;
-  z-index: 1;
-}
-.carouse-title {
-  font-size: 52px;
-  font-weight: 700;
-  line-height: 72px;
-  letter-spacing: 2.6px;
-}
-
-.carouse-title-span {
-  background: linear-gradient(90deg, #da22ff 0%, #9733ee 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.carouse-content {
-  color: #7b7e86;
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 26px;
-  padding-right: 44px;
-  margin: 32px 0 64px;
-}
-
 .section {
   margin-top: 88px;
 }
@@ -234,96 +154,44 @@ export default defineComponent({
 .section-title {
   font-size: 32px;
   font-weight: 500;
-  line-height: 32px;
+  line-height: 44px;
+  text-align: center;
 }
 
 .section-subtitle {
-  margin-bottom: 44px;
-}
-
-.section-card {
-  width: 456px;
-  height: 520px;
-  padding: 2px;
-  border-radius: 12px;
-  border: 1px solid #e5e4e9;
-}
-
-.section-card-cover {
-  width: 100%;
-  height: 288px;
-  object-fit: cover;
-  border-radius: 12px 12px 0px 0px;
-  background-color: #d9d9d9;
-}
-
-.section-card-button {
-  min-width: 120px;
-  margin: 0 auto;
-}
-
-.section-item {
-  width: 100%;
-  margin-bottom: 120px;
-}
-
-/* .section-item:nth-child(odd) {
-   flex-flow: row-reverse;
-} */
-
-.section-item-content {
-  width: 618px;
-  background-color: transparent;
-}
-
-.section-item-pre {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  text-align: left;
-  white-space: pre-line;
-}
-
-.section-item-side {
-  flex: 1;
-  width: 696px;
-  height: 420px;
-  padding: 20px;
-  border-radius: 20px;
-  border: 1px solid #e5e4e9;
-  box-sizing: border-box;
-}
-
-.section-item-side-image {
-  border-radius: 10px;
-  width: 100%;
-  object-fit: cover;
+  margin-bottom: 32px;
+  text-align: center;
 }
 
 .footer {
   position: relative;
   width: 100%;
-  padding: 64px 0;
+  margin: 0 auto;
+  padding: 64px 24px;
   border-radius: 20px;
   background-color: #6c2cfd;
+  box-sizing: border-box;
   overflow: hidden;
 }
 
 .footer-center {
-  width: 800px;
+  position: relative;
+  width: 100%;
   margin: 0 auto;
+  z-index: 2;
 }
 
 .footer-title {
+  width: 100%;
   color: #fff;
   font-size: 32px;
   font-weight: 500;
-  line-height: 32px;
+  line-height: 44px;
+  text-align: center;
 }
 
 .footer-description {
-  padding: 16px 80px 32px;
+  padding: 16px 0px 32px;
   color: #fff;
   font-size: 16px;
   font-weight: 400;
@@ -348,6 +216,7 @@ export default defineComponent({
   height: 220px;
   border-radius: 266px;
   border: 8px solid #f1f5f920;
+  z-index: 1;
 }
 
 .footer-right-decoration {
@@ -358,5 +227,6 @@ export default defineComponent({
   height: 228px;
   border-radius: 280px;
   border: 8px solid #fff;
+  z-index: 1;
 }
 </style>
