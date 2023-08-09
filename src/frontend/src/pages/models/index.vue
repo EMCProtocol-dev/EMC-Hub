@@ -63,7 +63,7 @@ import { Http } from '@/tools/http';
 import { useUserStore } from '@/stores/user';
 
 import NFTItem from './nft-item.vue';
-import type { item as nftItem } from './nft-item.vue';
+import type { Item as NftItemDef } from './nft-item';
 
 import ModelItem from './model-item.vue';
 
@@ -105,7 +105,7 @@ export default defineComponent({
     const router = useRouter();
 
     const bannerList = ref<bannerItem[]>([]);
-    const nftList = ref<nftItem[]>([]);
+    const nftList = ref<NftItemDef[]>([]);
 
     const list = ref<any[]>([]);
     const loading = ref(true);

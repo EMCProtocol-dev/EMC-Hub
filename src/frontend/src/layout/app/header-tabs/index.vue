@@ -20,23 +20,16 @@ import { useRoute } from 'vue-router';
 import AppLink from '@/components/app-link.vue';
 
 import { useIsMobile, useIsTablet, useIsSmallDesktop, useIsDesktop } from '@/composables/use-screen';
-
-type tabkey = number;
-
-export type tabItem = {
-  id: tabkey;
-  name: string;
-  path: string;
-};
+import type { TabItem, tabkey } from './index';
 
 export default defineComponent({
   props: {
     initKey: { type: Number, default: -1 },
-    config: { type: Array<tabItem>, default: (): tabItem[] => [] },
+    config: { type: Array<TabItem>, default: (): TabItem[] => [] },
   },
   components: { NSpace, AppLink },
   setup(props, context) {
-    const tabs = ref<tabItem[]>(props.config);
+    const tabs = ref<TabItem[]>(props.config);
     const currentKey = ref<tabkey>(props.initKey);
     const route = useRoute();
 

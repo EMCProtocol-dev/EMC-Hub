@@ -24,6 +24,9 @@ module.exports = {
     minimize: !isDevelopment,
     minimizer: [new TerserPlugin()],
   },
+  externals: {
+    fs: require('fs'),
+  },
   resolve: {
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.vue'],
     alias: {
@@ -35,12 +38,18 @@ module.exports = {
       assert: require.resolve('assert/'),
       stream: require.resolve('stream-browserify/'),
       util: require.resolve('util/'),
+      path: require.resolve('path-browserify'),
+
       //add
       crypto: require.resolve('crypto-browserify'),
+      http: require.resolve('stream-http'),
+      https: require.resolve('https-browserify'),
       url: false,
       zlib: false,
-      http: false,
-      https: false,
+      // http: false,
+      // https: false,
+      // path: false,
+      timers: false,
     },
   },
   output: {

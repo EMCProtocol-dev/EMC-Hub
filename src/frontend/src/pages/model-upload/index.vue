@@ -41,11 +41,9 @@
           </NIconWrapper>
           <NH1>Successfully publish the model</NH1>
           <NSpace justify="center" align="center" :size="[24, 24]">
-            <NButton type="default" ghost size="large" strong @click="onPressBack" style="width: 144px">
-              <NText>Back</NText>
-            </NButton>
+            <NButton type="default" ghost size="large" strong @click="onPressBack" style="width: 144px"> Back </NButton>
             <NButton type="primary" size="large" strong @click="onPressViewModel" style="width: 144px">
-              <NText>View Model</NText>
+              View Model
             </NButton>
           </NSpace>
         </NSpace>
@@ -109,7 +107,7 @@ export default defineComponent({
       current,
       currentStatus,
       modelId,
-      onForm1Submit({ modelId: _modelId }: { modelId: string}) {
+      onForm1Submit({ modelId: _modelId }: { modelId: string }) {
         current.value = 2;
         modelId.value = _modelId;
       },
@@ -124,7 +122,7 @@ export default defineComponent({
         router.back();
       },
       onPressViewModel() {
-        console.info('view');
+        router.back();
       },
     };
   },

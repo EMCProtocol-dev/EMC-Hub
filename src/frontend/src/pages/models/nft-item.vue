@@ -38,19 +38,6 @@
 import { defineComponent, ref } from 'vue';
 import { NA, NSpace, NCard, NEllipsis } from 'naive-ui';
 
-export type numerical = {
-  name: string;
-  value: number;
-};
-
-export type item = {
-  link:string;
-  cover: string;
-  publisherAvatar: string;
-  publisherName: string;
-  numericals: numerical[];
-};
-
 export default defineComponent({
   name: 'nft-item',
   props: {

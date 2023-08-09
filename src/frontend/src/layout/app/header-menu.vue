@@ -13,7 +13,7 @@ import type { Component } from 'vue';
 import { useRouter } from 'vue-router';
 import { NSpace, NText, NIcon, NDropdown, NButton } from 'naive-ui';
 import type { DropdownOption } from 'naive-ui';
-import type { tabItem } from './header-tabs.vue';
+import type { TabItem } from './header-tabs';
 import HeaderUser from './header-user.vue';
 import { MenuSharp as IconMenu } from '@vicons/ionicons5';
 
@@ -36,7 +36,7 @@ const renderMenuHeader = () => {
 
 export default defineComponent({
   components: { NSpace, NDropdown, NIcon, NText, NButton, HeaderUser, IconMenu },
-  props: { config: { type: Array<tabItem>, default: (): tabItem[] => [] } },
+  props: { config: { type: Array<TabItem>, default: (): TabItem[] => [] } },
   setup(props, context) {
     const router = useRouter();
 
@@ -45,7 +45,7 @@ export default defineComponent({
       { key: 'header-divider', type: 'divider' },
     ];
 
-    props.config.forEach((item: tabItem) => {
+    props.config.forEach((item: TabItem) => {
       options.push({ key: item.path, label: renderMenuItem(item.name) });
     });
 

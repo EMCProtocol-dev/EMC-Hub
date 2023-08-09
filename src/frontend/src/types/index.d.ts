@@ -15,3 +15,9 @@ declare var __PUBLIC_PATH__: string;
 interface Window {
   ic: any;
 }
+
+interface Resp365 {
+  _result: number;
+  _desc?: string;
+  [k: string]: any;
+}

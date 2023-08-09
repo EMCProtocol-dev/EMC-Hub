@@ -1,5 +1,5 @@
 <template>
-  <NScrollbar style="max-height: 80vh">
+  <NScrollbar style="max-height: 80vh; padding: 0 20px; box-sizing: border-box">
     <template v-if="error === -1">
       <div class="placeholder-view">
         <NSpin />
@@ -18,17 +18,9 @@
               <div class="item-name">{{ item.nodeId }}</div>
             </div>
             <div class="item-row">
-              <!-- <NTag style="margin-right: 8px">
-                <NSpace align="center" :wrap-item="false" :size="[8, 0]">
-                  <NIcon>
-                    <IconEarth />
-                  </NIcon>
-                  <NText style="font-size: 12px">{{ item.countryName || 'Unknow' }}</NText>
-                </NSpace>
-              </NTag> -->
               <NTag>
                 <NSpace align="center" :wrap-item="false" :size="[8, 0]">
-                  <NIcon> <IconCpu /> </NIcon>
+                  <NIcon><IconCpu /></NIcon>
                   <!-- <NText style="font-size: 12px">{{ item.cpuName }}</NText> -->
                   <NText style="font-size: 12px">Computing Power : {{ item.avgPower }}E</NText>
                 </NSpace>
@@ -50,7 +42,11 @@ import { useRouter, useRoute } from 'vue-router';
 import { NCard, NH3, NH5, NSpace, NText, NSpin, NTag, NButton, NIcon, NScrollbar, useMessage } from 'naive-ui';
 import { useUserStore } from '@/stores/user';
 import { Http } from '@/tools/http';
-import { EarthSharp as IconEarth, HardwareChipSharp as IconCpu, ChevronForwardSharp as IconArrowRight } from '@vicons/ionicons5';
+import {
+  EarthSharp as IconEarth,
+  HardwareChipSharp as IconCpu,
+  ChevronForwardSharp as IconArrowRight,
+} from '@vicons/ionicons5';
 import { Utils } from '@/tools/utils';
 
 type NodeItem = {
@@ -158,6 +154,7 @@ export default defineComponent({
 
 .item-body {
   flex: 1;
+  width: 0;
 }
 .item-row {
   display: flex;

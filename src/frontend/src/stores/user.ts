@@ -4,36 +4,38 @@ import { Utils } from '@/tools/utils';
 import { Http } from '@/tools/http';
 import { useMessage } from 'naive-ui';
 
-interface user {
+interface User {
   id: string | number;
   nickname: string;
   avatar: string;
 }
 
-export type authType = 'password' | 'wallet';
-export type signupParams = {
+export type AuthType = 'password' | 'wallet';
+
+export type SignupParams = {
   account: string;
   password: string;
   nickname: string;
   email: string;
   principal: string;
 };
-export type signinParams = {
+
+export type SigninParams = {
   account: string;
   password?: string;
   principal?: string;
-  type: authType;
+  type: AuthType;
 };
 
 const STORAGE_KEY = 'emchub.user';
 
 export const useUserStore = defineStore('user', () => {
-  const defaultUser = (): user => ({
+  const defaultUser = (): User => ({
     id: '',
     nickname: '',
     avatar: '',
   });
-  const user = ref<user>(defaultUser());
+  const user = ref<User>(defaultUser());
   const http = Http.getInstance();
   return {
     user,
@@ -55,7 +57,7 @@ export const useUserStore = defineStore('user', () => {
         user.value = cache.user;
       }
     },
-    async signup(params: signupParams): Promise<{ _result: number; _desc?: string }> {
+    async signup(params: SignupParams): Promise<{ _result: number; _desc?: string }> {
       const { account = '', password = '', nickname = '', email = '', principal = '' } = params;
       const resp1 = await http.postJSON({
         url: '/mrchaiemc/applyRegister.do',
@@ -80,7 +82,7 @@ export const useUserStore = defineStore('user', () => {
       }
       return { _result: 0 };
     },
-    async signin(params: signinParams) {
+    async signin(params: SigninParams) {
       const _account = params.account;
       const _password = params.password || '';
       const _principal = params.principal || '';
