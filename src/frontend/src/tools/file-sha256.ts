@@ -1,7 +1,13 @@
+<<<<<<< HEAD
 import SparkMD5 from 'spark-md5';
 import { Sha256 } from '@aws-crypto/sha256-browser';
 import CryptoJS from 'crypto-js';
 
+=======
+/**
+ * JavaScript browser file to SHA-256 hash
+ */
+>>>>>>> 8b84a8c (~)
 export function arrayBufferToBuffer(ab: ArrayBuffer) {
   const buffer = Buffer.allocUnsafe(ab.byteLength);
   const view = new Uint8Array(ab);
@@ -19,13 +25,18 @@ export function hexString(buffer: Buffer | ArrayBuffer) {
   return '0x' + hexCodes.join('');
 }
 
+<<<<<<< HEAD
 export async function fileToArrayBuffer(file: File): Promise<ArrayBuffer | void> {
+=======
+export async function fileToArrayBuffer(file: File): Promise<ArrayBuffer> {
+>>>>>>> 8b84a8c (~)
   return new Promise(function (resolve, reject) {
     const reader = new FileReader();
     const readFile = function (event: any) {
       const buffer = reader.result as ArrayBuffer;
       resolve(buffer);
     };
+<<<<<<< HEAD
     const handleError = function (event: any) {
       console.info(`file reader error `, event);
       resolve();
@@ -37,11 +48,15 @@ export async function fileToArrayBuffer(file: File): Promise<ArrayBuffer | void>
     reader.addEventListener('load', readFile);
     reader.addEventListener('abort', handleAbort);
     reader.addEventListener('error', handleError);
+=======
+    reader.addEventListener('load', readFile);
+>>>>>>> 8b84a8c (~)
     reader.readAsArrayBuffer(file);
   });
 }
 
 export async function bufferToSha256(buffer: Buffer): Promise<ArrayBuffer> {
+<<<<<<< HEAD
   return window.crypto?.subtle?.digest('SHA-256', buffer);
 }
 
@@ -227,12 +242,21 @@ export async function fileToSha256HexLimit(file: File) {
     console.error(e);
     return '';
   }
+=======
+  return window.crypto.subtle.digest('SHA-256', buffer);
+>>>>>>> 8b84a8c (~)
 }
 
 export async function fileToSha256Hex(file: File) {
   try {
+<<<<<<< HEAD
     const hash = await handleFileToSHA256(file);
     return hash || '';
+=======
+    const buffer: ArrayBuffer = await fileToArrayBuffer(file);
+    const hash = await bufferToSha256(arrayBufferToBuffer(buffer));
+    return hexString(hash);
+>>>>>>> 8b84a8c (~)
   } catch (e) {
     console.error(e);
     return '';

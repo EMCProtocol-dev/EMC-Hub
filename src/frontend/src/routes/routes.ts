@@ -4,6 +4,11 @@ export const routes = [
     path: '/auth',
     component: () => import('@/pages/auth/index.vue'),
   },
+  // {
+  //   name: 'dev',
+  //   path: '/dev',
+  //   component: () => import('@/pages/dev/index.vue'),
+  // },
   {
     name: 'layout',
     path: '/',

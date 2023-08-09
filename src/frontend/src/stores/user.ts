@@ -11,7 +11,27 @@ interface User {
   nickname: string;
   avatar: string;
 }
+<<<<<<< HEAD
 export type AuthType = 'password' | 'wallet';
+=======
+
+export type AuthType = 'password' | 'wallet';
+
+export type SignupParams = {
+  account: string;
+  password: string;
+  nickname: string;
+  email: string;
+  principal: string;
+};
+
+export type SigninParams = {
+  account: string;
+  password?: string;
+  principal?: string;
+  type: AuthType;
+};
+>>>>>>> 8b84a8c (~)
 
 const STORAGE_KEY = 'emchub.user';
 
@@ -43,6 +63,7 @@ export const useUserStore = defineStore('user', () => {
         user.value = cache.user;
       }
     },
+<<<<<<< HEAD
     async signup(
       { account, password, nickname, email, principal } = {
         account: '',
@@ -52,6 +73,10 @@ export const useUserStore = defineStore('user', () => {
         principal: '',
       }
     ): Promise<{ _result: number; _desc?: string }> {
+=======
+    async signup(params: SignupParams): Promise<{ _result: number; _desc?: string }> {
+      const { account = '', password = '', nickname = '', email = '', principal = '' } = params;
+>>>>>>> 8b84a8c (~)
       const resp1 = await http.postJSON({
 <<<<<<< HEAD
         url: 'http://36.155.7.134:9080/mrchaiemc/applyRegister.do',
@@ -87,7 +112,11 @@ export const useUserStore = defineStore('user', () => {
       }
       return { _result: 0 };
     },
+<<<<<<< HEAD
     async signin(params: { account: string; password?: string; principal?: string; type: AuthType }) {
+=======
+    async signin(params: SigninParams) {
+>>>>>>> 8b84a8c (~)
       const _account = params.account;
       const _password = params.password || '';
       const _principal = params.principal || '';

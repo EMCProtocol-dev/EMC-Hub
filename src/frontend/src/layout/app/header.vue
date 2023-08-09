@@ -71,6 +71,7 @@ import type { Component } from 'vue';
 import { NButton, NSpin, NSpace, NCard, NA, NIcon, NDropdown, useMessage } from 'naive-ui';
 >>>>>>> 4a3626c (~)
 import { RouterLink } from 'vue-router';
+<<<<<<< HEAD
 import { useRouter, useRoute } from 'vue-router';
 =======
 import { NButton, NSpin, NSpace, NText, NCard, NA, NIcon, NDropdown, useMessage } from 'naive-ui';
@@ -84,6 +85,13 @@ import {
 } from '@vicons/ionicons5';
 import AppLink from '@/components/app-link.vue';
 
+=======
+import HeaderLogo from './header-logo.vue';
+import HeaderTabs from './header-tabs';
+import HeaderMenu from './header-menu.vue';
+import type { TabItem } from './header-tabs';
+import HeaderUser from './header-user.vue';
+>>>>>>> 8b84a8c (~)
 import { useIsMobile, useIsTablet, useIsSmallDesktop, useIsDesktop } from '@/composables/use-screen';
 
 type tabkey = number;
@@ -150,6 +158,7 @@ export default defineComponent({
 >>>>>>> 677e47b (~)
   },
   setup(props, context) {
+<<<<<<< HEAD
     const message = useMessage();
     const tabs = ref<TabItem[]>(tabConfigs);
     const currentTabKey = ref<tabkey>(initTabKey);
@@ -157,6 +166,14 @@ export default defineComponent({
     const route = useRoute();
     const userStore = useUserStore();
 
+=======
+    const tabs: TabItem[] = [
+      { id: 1, name: 'Home', path: '/home' },
+      { id: 2, name: 'Models', path: '/models' },
+      { id: 3, name: 'EMC Nodes', path: 'https://dashboard.edgematrix.pro' },
+      { id: 4, name: 'De-GPU Network', path: '/cloud' },
+    ];
+>>>>>>> 8b84a8c (~)
     const isMobile = useIsMobile();
     const isTablet = useIsTablet();
     const isSmallDesktop = useIsSmallDesktop();

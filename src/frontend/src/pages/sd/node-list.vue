@@ -1,5 +1,9 @@
 <template>
+<<<<<<< HEAD:src/frontend/src/pages/sd/node-list.vue
   <NScrollbar style="max-height: 40vh; padding: 0 20px; box-sizing: border-box">
+=======
+  <NScrollbar style="max-height: 80vh; padding: 0 20px; box-sizing: border-box">
+>>>>>>> 8b84a8c (~):src/frontend/src/pages/model-detail/node-list.vue
     <template v-if="error === -1">
       <div class="placeholder-view">
         <NSpin />
@@ -11,6 +15,7 @@
       </div>
     </template>
     <template v-else>
+<<<<<<< HEAD:src/frontend/src/pages/sd/node-list.vue
       <NSpace :wrap-item="false" :size="[8, 8]">
         <template v-for="item in list">
           <NSpace class="item" vertical :wrap-item="false" :size="[0, 8]" @click="onPressItem">
@@ -25,6 +30,29 @@
           </NSpace>
         </template>
       </NSpace>
+=======
+      <template v-for="item in list">
+        <div class="item" @click="onPressItem(item)">
+          <div class="item-body">
+            <div class="item-row">
+              <div class="item-name">{{ item.nodeId }}</div>
+            </div>
+            <div class="item-row">
+              <NTag>
+                <NSpace align="center" :wrap-item="false" :size="[8, 0]">
+                  <NIcon><IconCpu /></NIcon>
+                  <!-- <NText style="font-size: 12px">{{ item.cpuName }}</NText> -->
+                  <NText style="font-size: 12px">Computing Power : {{ item.avgPower }}E</NText>
+                </NSpace>
+              </NTag>
+            </div>
+          </div>
+          <NIcon>
+            <IconArrowRight />
+          </NIcon>
+        </div>
+      </template>
+>>>>>>> 8b84a8c (~):src/frontend/src/pages/model-detail/node-list.vue
     </template>
   </NScrollbar>
 </template>
@@ -37,7 +65,10 @@ import {
   EarthSharp as IconEarth,
   HardwareChipSharp as IconCpu,
   ChevronForwardSharp as IconArrowRight,
+<<<<<<< HEAD:src/frontend/src/pages/sd/node-list.vue
   ShareSocialSharp as IconNode,
+=======
+>>>>>>> 8b84a8c (~):src/frontend/src/pages/model-detail/node-list.vue
 } from '@vicons/ionicons5';
 import { Utils } from '@/tools/utils';
 import { NodeItem } from './node-item';
@@ -138,5 +169,31 @@ export default defineComponent({
 /* .item:hover {
   cursor: pointer;
   background-color: #f1f1f1;
+<<<<<<< HEAD:src/frontend/src/pages/sd/node-list.vue
 } */
+=======
+}
+
+.item-body {
+  flex: 1;
+  width: 0;
+}
+.item-row {
+  display: flex;
+  align-items: center;
+}
+
+.item-row:not(:last-child) {
+  margin-bottom: 8px;
+}
+
+.item-name {
+  font-size: 14px;
+  font-weight: 500;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+>>>>>>> 8b84a8c (~):src/frontend/src/pages/model-detail/node-list.vue
 </style>

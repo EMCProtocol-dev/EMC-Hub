@@ -5,6 +5,9 @@
     content-style="display:flex;align-items:center;justify-content:center;"
   >
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8b84a8c (~)
     <div class="content" :style="{ 'background-color': bgColor }">
       <NGrid cols="5" item-responsive>
         <NGridItem span="0 720:3">
@@ -17,6 +20,7 @@
                 <img class="bg-img-overlay" src="@/assets/login-img.png" key="signinimg" />
               </template>
             </transition>
+<<<<<<< HEAD
           </div>
         </NGridItem>
         <NGridItem span="5 720:2">
@@ -94,6 +98,44 @@
       </div>
     </NSpace>
 >>>>>>> 4a3626c (~)
+=======
+          </div>
+        </NGridItem>
+        <NGridItem span="5 720:2">
+          <div class="form" :bordered="false" size="huge" :style="{ height: formHeight }">
+            <template v-if="action === 'signin'">
+              <div class="sign-header">
+                <NSpace :wrap-item="false" justify="space-between" align="center">
+                  <div class="sign-title">Edge Matrix Hub</div>
+                  <NA class="sign-signup" @click="onPressSignUpToggle">Sign Up</NA>
+                </NSpace>
+                <div class="sign-subtitle">Welcome #AI</div>
+              </div>
+              <SignIn
+                ref="signinRef"
+                @signin="onSignInSuccess"
+                @signinbefore="signinLoading = true"
+                @signinafter="signinLoading = false"
+              />
+            </template>
+            <template v-else-if="action === 'signup'">
+              <div class="sign-header">
+                <NSpace :wrap-item="false" justify="space-between" align="center">
+                  <div class="sign-title">Edge Matrix Hub</div>
+                  <NA class="sign-signup" @click="onPressSignUpToggle">Sign In</NA>
+                </NSpace>
+              </div>
+              <SignUp
+                @signup="onSignUpSuccess"
+                @signupbefore="signupLoading = true"
+                @signupafter="signupLoading = false"
+              />
+            </template>
+          </div>
+        </NGridItem>
+      </NGrid>
+    </div>
+>>>>>>> 8b84a8c (~)
   </NLayout>
 </template>
 
@@ -101,6 +143,7 @@
 import { defineComponent, nextTick, onMounted, ref, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import type { RouteLocationRaw } from 'vue-router';
+<<<<<<< HEAD
 <<<<<<< HEAD
 import { NLayout, NLayoutContent, NCard, NH1, NH3, NA, NSpace, NGrid, NGridItem } from 'naive-ui';
 import SignUp from './signup.vue';
@@ -110,6 +153,9 @@ const bgImg1 = require('@/assets/login-img.png');
 const bgImg2 = require('@/assets/login-img1.png');
 =======
 import { NLayout, NLayoutContent, NCard, NH1, NH3, NA, NSpace, NTag, NSpin, NButton, NModal } from 'naive-ui';
+=======
+import { NLayout, NLayoutContent, NCard, NH1, NH3, NA, NSpace, NGrid, NGridItem } from 'naive-ui';
+>>>>>>> 8b84a8c (~)
 import SignIn from './signin.vue';
 import SignUp from './signup.vue';
 
@@ -128,11 +174,16 @@ export default defineComponent({
     NA,
     NSpace,
 <<<<<<< HEAD
+<<<<<<< HEAD
     NGrid,
     NGridItem,
     SignUp,
     SignIn,
 =======
+=======
+    NGrid,
+    NGridItem,
+>>>>>>> 8b84a8c (~)
     SignIn,
     SignUp,
 >>>>>>> 4a3626c (~)
@@ -222,20 +273,27 @@ export default defineComponent({
 <style scoped>
 .content {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8b84a8c (~)
   max-width: 1000px;
   width: 100%;
   padding: 32px;
   border-radius: 16px;
+<<<<<<< HEAD
 =======
   width: 1000px;
   padding: 40px 64px;
   border-radius: 40px;
 >>>>>>> 4a3626c (~)
+=======
+>>>>>>> 8b84a8c (~)
   transition: all 0.2s;
 }
 
 .bg {
   position: relative;
+<<<<<<< HEAD
 <<<<<<< HEAD
   overflow: hidden;
   width: 100%;
@@ -244,6 +302,11 @@ export default defineComponent({
 
   overflow: hidden;
 >>>>>>> 4a3626c (~)
+=======
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+>>>>>>> 8b84a8c (~)
 }
 
 .bg-img-overlay {
@@ -256,6 +319,7 @@ export default defineComponent({
   transition: all 0.2s;
 }
 .form {
+<<<<<<< HEAD
 <<<<<<< HEAD
   width: 100%;
   border-radius: 16px;
@@ -270,6 +334,13 @@ export default defineComponent({
   transition: all 0.2s;
   flex: 1;
 >>>>>>> 4a3626c (~)
+=======
+  width: 100%;
+  border-radius: 16px;
+  padding: 32px;
+  background-color: #ffffff;
+  transition: all 0.2s;
+>>>>>>> 8b84a8c (~)
   box-sizing: border-box;
 }
 

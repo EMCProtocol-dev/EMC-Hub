@@ -3,6 +3,7 @@
 <template>
   <div class="page">
     <NCard :bordered="false" content-style="padding:0">
+<<<<<<< HEAD
       <NSpace class="layout" :wrap-item="false" :size="[0, 0]">
         <template v-if="error === -1">
           <NSpace class="layout-loading" align="center" justify="center">
@@ -41,54 +42,93 @@
                     {{ tag }}
                   </NTag>
                 </template>
+=======
+      <!-- <NSpace class="layout" :wrap-item="false" :size="[0, 0]"></NSpace> -->
+      <template v-if="error === -1">
+        <NSpace class="layout-loading" align="center" justify="center">
+          <NSpin />
+        </NSpace>
+      </template>
+      <template v-else-if="error > 0">
+        <NSpace class="layout-loading" align="center" justify="center">
+          <span>{{ errorText }}</span>
+        </NSpace>
+      </template>
+      <template v-else>
+        <NGrid cols="2" item-responsive>
+          <NGridItem span="2 880:1">
+            <div class="layout-left">
+              <div class="carousel-wrap">
+                <NCarousel class="carousel" :autoplay="true">
+                  <template v-for="cover in covers">
+                    <img class="cover" :src="cover" />
+                  </template>
+                </NCarousel>
+>>>>>>> 8b84a8c (~)
               </div>
             </div>
-            <div class="body">
-              <div class="with">
-                <div class="with-label">Version</div>
-                <div class="with-value">v{{ version }}</div>
+          </NGridItem>
+          <NGridItem span="2 880:1">
+            <div class="layout-right" style="padding: 24px">
+              <div class="header">
+                <div class="header-row">
+                  <div class="name">{{ name }}</div>
+                </div>
+                <NSpace class="tags" :wrap-item="false" :size="[8, 8]">
+                  <template v-for="tag in tags">
+                    <NTag round size="small" :bordered="false" :color="{ color: '#8f7df8', textColor: '#f1f1f1' }">
+                      {{ tag }}
+                    </NTag>
+                  </template>
+                </NSpace>
               </div>
-              <div class="with">
-                <div class="with-label">Hash Code</div>
-                <div class="with-value">{{ modelHashCode || '-' }}</div>
+              <div class="body">
+                <div class="with">
+                  <div class="with-label">Version</div>
+                  <div class="with-value">v{{ version }}</div>
+                </div>
+                <div class="with">
+                  <div class="with-label">Hash Code</div>
+                  <div class="with-value">{{ modelHashCode || '-' }}</div>
+                </div>
+                <div class="with">
+                  <div class="with-label">Base Model</div>
+                  <div class="with-value">{{ baseModel || '-' }}</div>
+                </div>
+                <div class="with">
+                  <div class="with-label">Model Size</div>
+                  <div class="with-value">{{ modelSize || '-' }}</div>
+                </div>
+                <div class="with">
+                  <div class="with-label">Floating Point</div>
+                  <div class="with-value">{{ floatingPoint || '-' }}</div>
+                </div>
+                <div class="with with__column">
+                  <div class="with-label">Description</div>
+                  <div class="with-value with-value__area">{{ description }}</div>
+                </div>
               </div>
-              <div class="with">
-                <div class="with-label">Base Model</div>
-                <div class="with-value">{{ baseModel || '-' }}</div>
-              </div>
-              <div class="with">
-                <div class="with-label">Model Size</div>
-                <div class="with-value">{{ modelSize || '-' }}</div>
-              </div>
-              <div class="with">
-                <div class="with-label">Floating Point</div>
-                <div class="with-value">{{ floatingPoint || '-' }}</div>
-              </div>
-              <div class="with with__column">
-                <div class="with-label">Description</div>
-                <div class="with-value with-value__area">{{ description }}</div>
-              </div>
+              <NSpace align="center" :size="[24, 24]" style="margin-top: 12px">
+                <NButton type="warning" size="large" strong @click="onPressRun">
+                  <template #icon>
+                    <NIcon><IconRun /></NIcon>
+                  </template>
+                  Run model
+                </NButton>
+                <NButton type="primary" size="large" strong @click="onPressArchive">
+                  <template #icon>
+                    <NIcon><IconDownload /></NIcon>
+                  </template>
+                  Download model package
+                </NButton>
+              </NSpace>
             </div>
-            <NSpace align="center" :size="[24, 0]" style="margin-top: 12px">
-              <NButton type="warning" size="large" strong @click="onPressRun">
-                <template #icon>
-                  <NIcon><IconRun /></NIcon>
-                </template>
-                Run model
-              </NButton>
-              <NButton type="primary" size="large" strong @click="onPressArchive">
-                <template #icon>
-                  <NIcon><IconDownload /></NIcon>
-                </template>
-                Download model package
-              </NButton>
-            </NSpace>
-          </div>
-        </template>
-      </NSpace>
+          </NGridItem>
+        </NGrid>
+      </template>
     </NCard>
     <NModal v-model:show="nodeVisible" :mask-closable="false">
-      <NCard :bordered="false" style="width: 640px" content-style="">
+      <NCard :bordered="false" style="width: 88vw; max-width: 640px" content-style="padding-left:0;padding-right:0;">
         <template #header>
           <NH3 style="margin-bottom: 0">Nodes for run</NH3>
         </template>
@@ -122,6 +162,11 @@ import {
   NButton,
   NIcon,
   NModal,
+<<<<<<< HEAD
+=======
+  NGrid,
+  NGridItem,
+>>>>>>> 8b84a8c (~)
   useMessage,
 } from 'naive-ui';
 import { useUserStore } from '@/stores/user';
@@ -147,6 +192,8 @@ export default defineComponent({
     NButton,
     NIcon,
     NModal,
+    NGrid,
+    NGridItem,
     IconDownload,
     IconRun,
     IconClose,
@@ -275,7 +322,6 @@ export default defineComponent({
 
 .layout-left,
 .layout-right {
-  width: 50%;
   box-sizing: border-box;
 }
 .carousel-wrap {
@@ -306,9 +352,6 @@ export default defineComponent({
 }
 .header-row:not(:last-child) {
   margin-bottom: 8px;
-}
-.tags-item:not(:last-child) {
-  margin-right: 4px;
 }
 .name {
   font-size: 26px;

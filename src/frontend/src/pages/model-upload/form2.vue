@@ -8,7 +8,7 @@
           action="https://api.emchub.ai/mrchaiemc/fileUpload.do"
           :max="6"
           list-type="image-card"
-          @finish="(options:any) => handleUploadFinish(options, 'images')"
+          :custom-request="handleUploadImage"
           @remove="(options:any) => handleUploadRemove(options, 'images')"
         >
           <NUploadDragger style="max-width: 320px">
@@ -21,6 +21,7 @@
           </NUploadDragger>
         </NUpload>
       </NFormItem>
+      <!--    @finish="(options:any) => handleUploadFinish(options, 'archive')" -->
       <NFormItem path="archive" label="Model Package">
         <NUpload
           multiple
@@ -28,7 +29,7 @@
           action="https://api.emchub.ai/mrchaiemc/fileUpload.do"
           :max="1"
           style="max-width: 320px"
-          @finish="(options:any) => handleUploadFinish(options, 'archive')"
+          :custom-request="handleUploadArchive"
           @remove="(options:any) => handleUploadRemove(options, 'archive')"
         >
           <NUploadDragger style="max-width: 320px">
@@ -129,6 +130,7 @@ import {
   useMessage,
   NUpload,
   NUploadDragger,
+  UploadCustomRequestOptions,
   NIcon,
   NText,
   NP,
@@ -137,10 +139,28 @@ import type { UploadFileInfo } from 'naive-ui';
 import { Http } from '@/tools/http';
 import { ArchiveOutline as ArchiveIcon } from '@vicons/ionicons5';
 import { Utils } from '@/tools/utils';
+<<<<<<< HEAD
+=======
+import { useUserStore } from '@/stores/user';
+import { fileToSha256Hex } from '@/tools/file-sha256';
+import { useMinio } from '@/composables/use-minio';
+import { parametersWith } from '@/tools/exif';
+import { sign } from '@/tools/open-api';
+
+type ImageItem = {
+  url: string;
+  parameters: string;
+};
+
+type ArchiveItem = {
+  url: string;
+  sn: string;
+};
+>>>>>>> 8b84a8c (~)
 
 type FormData = {
-  images: string[];
-  archive: string[];
+  images: ImageItem[];
+  archive: ArchiveItem[];
   version: string;
   modelHashCode: string;
   guideLink: string;
@@ -171,6 +191,15 @@ function defaultFormData() {
     seed: '-1',
   };
 }
+
+type PresignOptions = {
+  fileName: string;
+  fileType: string;
+  fileHash: string;
+  fileSize: number;
+  signType: number;
+  userId: string | number;
+};
 type UploadFinishOptions = { file: UploadFileInfo; event?: ProgressEvent };
 type UploadRemoveOptions = { file: UploadFileInfo; fileList: Array<UploadFileInfo> };
 type UploadProperties = 'images' | 'archive';
@@ -211,13 +240,121 @@ export default defineComponent({
     };
     const formSubmitting = ref(false);
     const message = useMessage();
+    const { upload } = useMinio();
 
-    const handleUploadFinish = ({ file, event }: UploadFinishOptions, property: UploadProperties) => {
-      const resp = Utils.parseJSON((event?.target as XMLHttpRequest).response) || {};
-      const url = resp?.bussData?.file_link as string;
-      file.url = url;
-      formData.value[property].push(url);
-      return file;
+    // const handleUploadFinish = ({ file, event }: UploadFinishOptions, property: UploadProperties) => {
+    //   const resp = Utils.parseJSON((event?.target as XMLHttpRequest).response) || {};
+    //   const url = resp?.bussData?.file_link as string;
+    //   file.url = url;
+    //   formData.value[property].push({url});
+    //   return file;
+    // };
+
+    const handlePresignUpload = async (params: PresignOptions) => {
+      const appid = 'emc-hub-a63123cf';
+      const secret = '9c4283f0-3509-11ee-8d81-06c27dd31a5a';
+      const nonce = new Date().getTime();
+      const action = 'sign';
+      const { fileName, fileType, fileHash, fileSize, signType, userId } = params;
+      const body = {
+        fileName: fileName,
+        userId: userId,
+        fileContentType: fileType,
+        fileHash: fileHash,
+        size: fileSize,
+        type: signType,
+      };
+      const signParams: any = { appid, nonce, action, requestBody: JSON.stringify(body) };
+      signParams.sign = sign(signParams, secret);
+      const { _result, data } = await http.postJSON({
+        url: `https://upload.emchub.ai/emc/api/client/userUpload/${action}`,
+        data: signParams,
+      });
+      if (_result !== 0) {
+        return null;
+      }
+      return {
+        postURL: data.postURL,
+        postFormData: data.postFormData,
+        doneURL: data.doneURL,
+        doneBody: data.doneBody,
+      };
+    };
+
+    const handleUploadImage = async (params: UploadCustomRequestOptions) => {
+      const { file, headers, withCredentials, onFinish, onError, onProgress } = params;
+      const fileHash = await fileToSha256Hex(file.file as File);
+      if (!fileHash) {
+        onError();
+        message.error('file hash error');
+        return;
+      }
+      //media=0
+      const policyData = await handlePresignUpload({
+        fileName: file.name,
+        fileType: file.type || '',
+        fileHash,
+        fileSize: file.file?.size || 0,
+        signType: 0,
+        userId: userStore.user.id,
+      });
+      if (!policyData) {
+        onError();
+        message.error('presign error');
+        return;
+      }
+      const resp = await upload({
+        file,
+        policyData,
+        onProgress: ({ progress }) => onProgress({ percent: (progress || 0) * 100 }),
+      });
+      if (resp._result !== 0) {
+        onError();
+        message.error(resp._desc || '');
+        return;
+      }
+      onFinish();
+      const url = resp.url || '';
+      const parameters: string = await parametersWith(file.file as File);
+      formData.value.images.push({ url, parameters });
+    };
+
+    const handleUploadArchive = async (params: UploadCustomRequestOptions) => {
+      const { file, headers, withCredentials, onFinish, onError, onProgress } = params;
+      const fileHash = await fileToSha256Hex(file.file as File);
+      if (!fileHash) {
+        onError();
+        message.error('file hash error');
+        return;
+      }
+      //archive=1
+      const policyData = await handlePresignUpload({
+        fileName: file.name,
+        fileType: file.type || '',
+        fileHash,
+        fileSize: file.file?.size || 0,
+        signType: 1,
+        userId: userStore.user.id,
+      });
+      if (!policyData) {
+        onError();
+        message.error('presign error');
+        return;
+      }
+      const resp = await upload({
+        file,
+        policyData,
+        onProgress: ({ progress }) => onProgress({ percent: (progress || 0) * 100 }),
+      });
+      if (resp._result !== 0) {
+        onError();
+        message.error(resp._desc || '');
+        return;
+      }
+      onFinish();
+      const url = resp.url || '';
+      const sn = resp.sn || '';
+      formData.value.archive.push({ url, sn });
     };
 
     const handleUploadRemove = ({ file, fileList }: UploadRemoveOptions, property: UploadProperties) => {
@@ -233,6 +370,7 @@ export default defineComponent({
       let modelId = props.modelId;
 
       let modelHashCode = formData.value.modelHashCode;
+<<<<<<< HEAD
       let guideLink = formData.value.guideLink;
       let paramsGuideLink = formData.value.paramsGuideLink;
       let sampleCodeLink = formData.value.sampleCodeLink;
@@ -248,6 +386,12 @@ export default defineComponent({
       let modelFileLinks = formData.value.archive.join(',');
       let sampleImgFileLinks = formData.value.images.join(',');
 
+=======
+      let modelFileLinks = formData.value.archive.map((item: ArchiveItem) => item.url).join(',');
+      let sampleImgFileLinks = formData.value.images.map((item: ImageItem) => item.url).join(',');
+      let images = JSON.stringify(formData.value.images);
+      let archive = formData.value.archive.length > 0 ? JSON.stringify(formData.value.archive[0]) : '';
+>>>>>>> 8b84a8c (~)
       let url = '/mrchaiemc/modModelDetailInfo.do';
       let params = {
         custId: '1690226134332',
@@ -266,6 +410,8 @@ export default defineComponent({
           version,
           modelFileLinks,
           sampleImgFileLinks,
+          images,
+          archive,
         },
       };
 
@@ -276,6 +422,18 @@ export default defineComponent({
         message.warning('Failure');
         return;
       }
+      // temp
+      formSubmitting.value = true;
+      const resp2 = await http.postJSON({
+        url: '/mrchaiemc/submitModel.do',
+        data: { custId: userStore.user.id, bussData: { modelId } },
+      });
+      formSubmitting.value = false;
+      if (resp2.resultCode !== 'SUCCESS') {
+        message.warning('Failure');
+        return;
+      }
+
       ctx.emit('submit', params);
     };
 
@@ -304,7 +462,8 @@ export default defineComponent({
       formData,
       formRule,
       formSubmitting,
-      handleUploadFinish,
+      handleUploadImage,
+      handleUploadArchive,
       handleUploadRemove,
       onPressReset() {
         formData.value = defaultFormData();

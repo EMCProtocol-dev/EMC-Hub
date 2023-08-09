@@ -1,13 +1,19 @@
 <template>
   <NForm ref="formRef" :model="formData" :rules="formRule">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8b84a8c (~)
     <NFormItem path="account">
       <template #label>
         <NText strong>Account</NText>
       </template>
+<<<<<<< HEAD
 =======
     <NFormItem path="account" label="Account" label-style="font-size:12px;">
 >>>>>>> 4a3626c (~)
+=======
+>>>>>>> 8b84a8c (~)
       <NInput v-model:value="formData.account" placeholder="" @keydown.enter.prevent />
     </NFormItem>
   </NForm>
@@ -20,20 +26,28 @@
       :loading="submitting"
       @click.stop.prevent="onPressSubmit"
 <<<<<<< HEAD
+<<<<<<< HEAD
       >Connect Wallet</NButton
 =======
       >Linked Wallet</NButton
 >>>>>>> 4a3626c (~)
+=======
+      >Connect Wallet</NButton
+>>>>>>> 8b84a8c (~)
     >
   </NSpace>
 </template>
 <script lang="ts">
 import { ref, defineComponent, nextTick } from 'vue';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { NForm, NFormItem, NButton, NInput, NDivider, NSpace, NText, FormInst, FormRules, useMessage } from 'naive-ui';
 =======
 import { NForm, NFormItem, NButton, NInput, NDivider, NSpace, FormInst, FormRules, useMessage } from 'naive-ui';
 >>>>>>> 4a3626c (~)
+=======
+import { NForm, NFormItem, NButton, NInput, NDivider, NSpace, NText, FormInst, FormRules, useMessage } from 'naive-ui';
+>>>>>>> 8b84a8c (~)
 import { useUserStore } from '@/stores/user';
 import { AuthType } from '@/stores/user';
 import { Utils } from '@/tools/utils';
@@ -45,10 +59,14 @@ type SignIn = {
 
 export default defineComponent({
 <<<<<<< HEAD
+<<<<<<< HEAD
   components: { NForm, NFormItem, NButton, NInput, NDivider, NSpace, NText },
 =======
   components: { NForm, NFormItem, NButton, NInput, NDivider, NSpace },
 >>>>>>> 4a3626c (~)
+=======
+  components: { NForm, NFormItem, NButton, NInput, NDivider, NSpace, NText },
+>>>>>>> 8b84a8c (~)
   emits: ['cancel', 'signin', 'signinbefore', 'signinafter'],
   setup(props, ctx) {
     const formRef = ref<FormInst | null>(null);

@@ -1,13 +1,26 @@
+<<<<<<< HEAD
 import { Client as MinioClient } from 'minio';
 import { Axios, AxiosProgressEvent, isCancel } from 'axios';
 import { sign } from '@/tools/open-api';
 import { Http } from '@/tools/http';
+=======
+import { ref } from 'vue';
+import { UploadCustomRequestOptions } from 'naive-ui';
+import { Client as MinioClient } from 'minio';
+import { Http } from '@/tools/http';
+import { Axios, AxiosProgressEvent } from 'axios';
+
+>>>>>>> 8b84a8c (~)
 const HOST = '36.155.7.145';
 const PORT = 9000;
 const SSL = false;
 const ACCESS_KEY = 'vozdBpAulYbtpZDTvSeD';
 const SECRET_KEY = 'thD4BZO84k1vUJVt1a5332ZWNeYqZ3tNFlcr4vcO';
+<<<<<<< HEAD
 const BUCKET_NAME = 'hub-archive';
+=======
+const BUCKET_NAME = 'hub-media';
+>>>>>>> 8b84a8c (~)
 
 interface FileInfo {
   id: string;
@@ -39,7 +52,10 @@ interface UploadOptions {
   data?: any;
   headers?: any;
   policyData?: PolicyResult | null;
+<<<<<<< HEAD
   abortSignal?: AbortSignal;
+=======
+>>>>>>> 8b84a8c (~)
   onProgress?: (e: AxiosProgressEvent) => void;
 }
 
@@ -47,6 +63,7 @@ function wait(t: number) {
   return new Promise((resolve) => setTimeout(resolve, t));
 }
 
+<<<<<<< HEAD
 type PresignHttpOptions = {
   fileName: string;
   fileType: string;
@@ -56,6 +73,8 @@ type PresignHttpOptions = {
   userId: string | number;
 };
 
+=======
+>>>>>>> 8b84a8c (~)
 export function useMinio() {
   let minioClient: MinioClient;
   const getContext = () => {
@@ -70,6 +89,7 @@ export function useMinio() {
     }
     return minioClient;
   };
+<<<<<<< HEAD
 
   const presignedHttp = async (params: PresignHttpOptions) => {
     const appid = 'emc-hub-a63123cf';
@@ -100,6 +120,11 @@ export function useMinio() {
       doneURL: data.doneURL,
       doneBody: data.doneBody,
     };
+=======
+  const presigned = (fileName: string) => {
+    const ctx = getContext();
+    return ctx.presignedPutObject(BUCKET_NAME, `${fileName}`, 2);
+>>>>>>> 8b84a8c (~)
   };
 
   const presignedPolicy = async (file: FileInfo): Promise<PolicyResult> => {
@@ -107,6 +132,7 @@ export function useMinio() {
     const policyRaw = ctx.newPostPolicy();
     policyRaw.setBucket(BUCKET_NAME);
     policyRaw.setKey(file.name);
+<<<<<<< HEAD
     policyRaw.setContentLengthRange(1024, 1024 * 1024 * 1024 * 10); // Min upload length is 1KB Max upload size is 10GB
 
     const expires = new Date();
@@ -115,6 +141,16 @@ export function useMinio() {
 
     const policyData = await ctx.presignedPostPolicy(policyRaw);
     console.info(`presigned policy --->`, policyData);
+=======
+    policyRaw.setContentLengthRange(1024, 1024 * 102400); // Min upload length is 1KB Max upload size is 100MB
+
+    const expires = new Date();
+    expires.setSeconds(600); // 10 minutes
+    policyRaw.setExpires(expires);
+
+    const policyData = await ctx.presignedPostPolicy(policyRaw);
+
+>>>>>>> 8b84a8c (~)
     return {
       postURL: policyData.postURL,
       postFormData: policyData.formData,
@@ -122,7 +158,11 @@ export function useMinio() {
   };
 
   const upload = async (params: UploadOptions): Promise<Resp365> => {
+<<<<<<< HEAD
     let { file, headers, url, policyData: _policyData, onProgress, abortSignal } = params;
+=======
+    let { file, headers, url, policyData: _policyData, onProgress } = params;
+>>>>>>> 8b84a8c (~)
 
     const policyData = _policyData ? _policyData : await presignedPolicy(file);
 
@@ -135,13 +175,21 @@ export function useMinio() {
       formData.append(k, policyData.postFormData[k]);
     });
     formData.append('file', file.file as File);
+<<<<<<< HEAD
     const axios: Axios = new Axios({ timeout: 60 * 60 * 1000 });
 
+=======
+
+    const axios: Axios = Http.getInstance().client;
+>>>>>>> 8b84a8c (~)
     const onUploadProgress = (event: AxiosProgressEvent) => typeof onProgress === 'function' && onProgress(event);
     try {
       const resp = await axios.post(`${policyData.postURL}`, formData, {
         onUploadProgress,
+<<<<<<< HEAD
         signal: abortSignal,
+=======
+>>>>>>> 8b84a8c (~)
       });
       if (resp.status === 200 || resp.status === 204) {
         if (!policyData.doneURL) {
@@ -165,6 +213,7 @@ export function useMinio() {
         return { _result: 1, _desc: `upload error ${resp.status}` };
       }
     } catch (e: any) {
+<<<<<<< HEAD
       if (isCancel(e)) {
         return { _result: -1, _desc: e.toString() };
       } else {
@@ -185,5 +234,14 @@ export function useMinio() {
     presignedHttp,
     upload,
     getArchiveUrl,
+=======
+      return { _result: 1, _desc: e.toString() };
+    }
+  };
+
+  return {
+    presigned,
+    upload,
+>>>>>>> 8b84a8c (~)
   };
 }
