@@ -10,6 +10,7 @@ declare module 'copy-to-clipboard';
 
 declare module '*.png';
 declare module '*.svg';
+declare module '*.jpg';
 
 //webpack define plugin
 declare var __PUBLIC_PATH__: string;
