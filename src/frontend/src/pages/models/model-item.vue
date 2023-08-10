@@ -3,7 +3,14 @@
     <div class="item-carousel-wrap">
       <NCarousel class="item-carousel" :autoplay="true">
         <template v-for="cover in item.covers">
-          <img class="item-cover" :src="cover" />
+          <AppImage
+            class="item-cover"
+            :src="cover"
+            object-fit="cover"
+            :preview-disabled="true"
+            :imgProps="{ style: 'width:100%;height:100%;' }"
+          />
+          <!-- <img class="item-cover" :src="cover" /> -->
         </template>
       </NCarousel>
     </div>
@@ -28,10 +35,11 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import { NSpace, NCarousel, NTag, NH4 } from 'naive-ui';
+import AppImage from '@/components/app-image.vue';
 
 export default defineComponent({
   name: 'model-item',
-  components: { NSpace, NCarousel, NTag, NH4 },
+  components: { NSpace, NCarousel, NTag, NH4, AppImage },
   props: { item: { type: Object, default: () => ({}) } },
   emits: ['press'],
   setup(props, ctx) {
@@ -69,10 +77,10 @@ export default defineComponent({
 .item-cover {
   width: 100%;
   height: 100%;
-  object-fit: cover;
   transform: scale(1);
   transition: all 0.2s;
 }
+
 .item-cover:hover {
   transform: scale(1.2);
 }
