@@ -35,6 +35,7 @@ export default defineComponent({
       { id: 1, name: 'Home', path: '/home' },
       { id: 2, name: 'Models', path: '/models' },
       { id: 3, name: 'EMC Nodes', path: 'https://dashboard.edgematrix.pro' },
+      { id: 4, name: 'De-GPU Network', path: '/cloud' },
     ];
     const isMobile = useIsMobile();
     const isTablet = useIsTablet();

@@ -43,6 +43,11 @@ export const routes = [
           keepAlive: true,
         },
       },
+      {
+        name: 'cloud',
+        path: 'cloud',
+        component: () => import('@/pages/cloud/index.vue'),
+      },
     ],
   },
 ];

@@ -16,16 +16,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import {
-  NLoadingBarProvider,
-  NMessageProvider,
-  NNotificationProvider,
-  NDialogProvider,
-  NGlobalStyle,
-  NThemeEditor,
-  darkTheme,
-  NConfigProvider,
-} from 'naive-ui';
+import { NLoadingBarProvider, NMessageProvider, NNotificationProvider, NDialogProvider, NGlobalStyle, NThemeEditor, darkTheme, NConfigProvider } from 'naive-ui';
 
 // import { useRouter, useRoute } from 'vue-router';
 // import { initRouter, siteSetup } from './store'
@@ -46,31 +37,30 @@ export default defineComponent({
     //const theme = ref(window.matchMedia('(prefers-color-scheme: dark)').matches ? darkTheme : null);
     const theme = null;
     const lightThemeOverrides = {
+      Input: {
+        borderFocus: '1px solid #9747ff',
+        borderHover: '1px solid #9747ff',
+        caretColor: '',
+        boxShadowFocus: '0 0 0 2px rgba(225, 93, 239, 0.2)',
+        borderRadius: '10px',
+        border: '1px solid #e2e6ee',
+        placeholderColor: '#9EA8BD',
+        // fontSize: '12px',
+        // height: '40px',
+      },
+
       common: {
         // primaryColor: '#000000',
       },
     };
 
     const darkThemeOverrides = {
-      common: {
-        // primaryColor: '#FFFF00',
-      },
-      Pagination: {
-        itemBorder: 'none',
-        itemColor: '#1C2025',
-        itemTextColor: '#fff',
-        itemBorderHover: 'none',
-        itemColorHover: '#ABA9FF',
-        itemTextColorHover: '#5C1AE5',
-        itemBorderActive: 'none',
-        itemColorActive: '#5C1AE5',
-        itemTextColorActive: '#fff',
-        itemColorActiveHover: '#5C1AE5',
-      },
-
+      common: {},
+      Pagination: {},
     };
 
-    const themeOverrides = ref(window.matchMedia('(prefers-color-scheme: dark)').matches ? darkThemeOverrides : null);
+    const themeOverrides = ref(window.matchMedia('(prefers-color-scheme: dark)').matches ? darkThemeOverrides : lightThemeOverrides);
+    console.log(themeOverrides.value);
 
     return { theme, themeOverrides, lightThemeOverrides, darkThemeOverrides };
   },

@@ -147,6 +147,9 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.page {
+  position: relative;
+}
 .section {
   margin-top: 88px;
 }
