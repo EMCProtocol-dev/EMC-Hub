@@ -24,7 +24,6 @@ export function sign(params: any, secret: string) {
     signArray.push(`${k}=${v}`);
   });
   signArray.push(`secret=${secret}`);
-  console.info(`open-api signed array`, signArray);
   const signStr = signArray.join('&');
   return crypto.createHash('sha1').update(signStr).digest('hex');
 }
