@@ -5,6 +5,11 @@ export const routes = [
     component: () => import('@/pages/auth/index.vue'),
   },
   {
+    name: 'dev',
+    path: '/dev',
+    component: () => import('@/pages/dev/index.vue'),
+  },
+  {
     name: 'layout',
     path: '/',
     component: () => import('@/layout/app/index.vue'),

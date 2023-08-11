@@ -14,7 +14,8 @@
     "noImplicitAny": false,
     "paths": {
       "@/*": ["./src/frontend/src/*"]
-    }
+    },
+    "typeRoots": ["node_modules/@types", "./src/frontend/src/types"]
   },
   "include": [
     "./src/frontend/src/**/*.ts",

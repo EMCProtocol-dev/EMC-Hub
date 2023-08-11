@@ -1,15 +1,15 @@
 <template>
   <NForm ref="formRef" :model="formData" :rules="formRule" :disabled="!ready || disabled">
     <NSpace vertical :wrap-item="false">
+      <!-- @finish="(options:any) => handleUploadFinish(options, 'images')" -->
       <NFormItem path="images" label="Model Images">
         <NUpload
           multiple
           directory-dnd
-          action="https://api.emchub.ai/mrchaiemc/fileUpload.do"
           :max="6"
           list-type="image-card"
-          :custom-request="handleUploadImage"
-          @remove="(options:any) => handleUploadRemove(options, 'images')"
+          :custom-request="(options: UploadCustomRequestOptions)=>handleUpload(options,'images')"
+          @remove="(options:UploadRemoveOptions) => handleUploadRemove(options, 'images')"
         >
           <NUploadDragger style="max-width: 320px">
             <NSpace vertical :wrap-item="false" align="center" justify="center">
@@ -21,16 +21,14 @@
           </NUploadDragger>
         </NUpload>
       </NFormItem>
-      <!--    @finish="(options:any) => handleUploadFinish(options, 'archive')" -->
       <NFormItem path="archive" label="Model Package">
         <NUpload
           multiple
           directory-dnd
-          action="https://api.emchub.ai/mrchaiemc/fileUpload.do"
           :max="1"
           style="max-width: 320px"
-          :custom-request="handleUploadArchive"
-          @remove="(options:any) => handleUploadRemove(options, 'archive')"
+          :custom-request="(options: UploadCustomRequestOptions)=>handleUpload(options,'archive')"
+          @remove="(options:UploadRemoveOptions) => handleUploadRemove(options, 'archive')"
         >
           <NUploadDragger style="max-width: 320px">
             <NSpace vertical :wrap-item="false" align="center" justify="center">
@@ -90,7 +88,7 @@
   </NForm>
 </template>
 <script lang="ts">
-import { ref, defineComponent, onMounted, watch } from 'vue';
+import { ref, defineComponent, onMounted, watch, nextTick } from 'vue';
 import {
   NForm,
   NFormItem,
@@ -118,24 +116,12 @@ import { Http } from '@/tools/http';
 import { ArchiveOutline as ArchiveIcon } from '@vicons/ionicons5';
 import { Utils } from '@/tools/utils';
 import { useUserStore } from '@/stores/user';
-import { fileToSha256Hex } from '@/tools/file-sha256';
 import { useMinio } from '@/composables/use-minio';
 import { parametersWith } from '@/tools/exif';
-import { sign } from '@/tools/open-api';
-
-type ImageItem = {
-  url: string;
-  parameters: string;
-};
-
-type ArchiveItem = {
-  url: string;
-  sn: string;
-};
 
 type FormData = {
-  images: ImageItem[];
-  archive: ArchiveItem[];
+  images: string[];
+  archive: string[];
   version: string;
   modelHashCode: string;
   baseModel: string;
@@ -156,18 +142,9 @@ function defaultFormData() {
     description: '',
   };
 }
-
-type PresignOptions = {
-  fileName: string;
-  fileType: string;
-  fileHash: string;
-  fileSize: number;
-  signType: number;
-  userId: string | number;
-};
-type UploadFinishOptions = { file: UploadFileInfo; event?: ProgressEvent };
 type UploadRemoveOptions = { file: UploadFileInfo; fileList: Array<UploadFileInfo> };
 type UploadProperties = 'images' | 'archive';
+
 export default defineComponent({
   components: {
     NForm,
@@ -198,6 +175,7 @@ export default defineComponent({
     const formItemPassword1Ref = ref<FormItemInst | null>(null);
     const formData = ref<FormData>(defaultFormData());
     const userStore = useUserStore();
+    const imgUrl = ref('');
     const formRule: FormRules = {
       images: [{ required: true, type: 'array', message: 'Can not be empty', trigger: ['input', 'blur'] }],
       archive: [{ required: true, type: 'array', message: 'Can not be empty', trigger: ['input', 'blur'] }],
@@ -207,110 +185,10 @@ export default defineComponent({
     const message = useMessage();
     const { upload } = useMinio();
 
-    // const handleUploadFinish = ({ file, event }: UploadFinishOptions, property: UploadProperties) => {
-    //   const resp = Utils.parseJSON((event?.target as XMLHttpRequest).response) || {};
-    //   const url = resp?.bussData?.file_link as string;
-    //   file.url = url;
-    //   formData.value[property].push({url});
-    //   return file;
-    // };
-
-    const handlePresignUpload = async (params: PresignOptions) => {
-      const appid = 'emc-hub-a63123cf';
-      const secret = '9c4283f0-3509-11ee-8d81-06c27dd31a5a';
-      const nonce = new Date().getTime();
-      const action = 'sign';
-      const { fileName, fileType, fileHash, fileSize, signType, userId } = params;
-      const body = {
-        fileName: fileName,
-        userId: userId,
-        fileContentType: fileType,
-        fileHash: fileHash,
-        size: fileSize,
-        type: signType,
-      };
-      const signParams: any = { appid, nonce, action, requestBody: JSON.stringify(body) };
-      signParams.sign = sign(signParams, secret);
-      const { _result, data } = await http.postJSON({
-        url: `https://upload.emchub.ai/emc/api/client/userUpload/${action}`,
-        data: signParams,
-      });
-      if (_result !== 0) {
-        return null;
-      }
-      return {
-        postURL: data.postURL,
-        postFormData: data.postFormData,
-        doneURL: data.doneURL,
-        doneBody: data.doneBody,
-      };
-    };
-
-    const handleUploadImage = async (params: UploadCustomRequestOptions) => {
-      const { file, headers, withCredentials, onFinish, onError, onProgress } = params;
-      const fileHash = await fileToSha256Hex(file.file as File);
-      if (!fileHash) {
-        onError();
-        message.error('file hash error');
-        return;
-      }
-      //media=0
-      const policyData = await handlePresignUpload({
-        fileName: file.name,
-        fileType: file.type || '',
-        fileHash,
-        fileSize: file.file?.size || 0,
-        signType: 0,
-        userId: userStore.user.id,
-      });
-      if (!policyData) {
-        onError();
-        message.error('presign error');
-        return;
-      }
-      const resp = await upload({
-        file,
-        policyData,
-        onProgress: ({ progress }) => onProgress({ percent: (progress || 0) * 100 }),
-      });
-      if (resp._result !== 0) {
-        onError();
-        message.error(resp._desc || '');
-        return;
-      }
-      onFinish();
-      const url = resp.url || '';
+    const handleUpload = async (params: UploadCustomRequestOptions, property: UploadProperties) => {
+      const { file, data, headers, withCredentials, action, onFinish, onError, onProgress } = params;
       const parameters: string = await parametersWith(file.file as File);
-      formData.value.images.push({ url, parameters });
-    };
-
-    const handleUploadArchive = async (params: UploadCustomRequestOptions) => {
-      const { file, headers, withCredentials, onFinish, onError, onProgress } = params;
-      const fileHash = await fileToSha256Hex(file.file as File);
-      if (!fileHash) {
-        onError();
-        message.error('file hash error');
-        return;
-      }
-      //archive=1
-      const policyData = await handlePresignUpload({
-        fileName: file.name,
-        fileType: file.type || '',
-        fileHash,
-        fileSize: file.file?.size || 0,
-        signType: 1,
-        userId: userStore.user.id,
-      });
-      if (!policyData) {
-        onError();
-        message.error('presign error');
-        return;
-      }
-      const resp = await upload({
-        file,
-        policyData,
-        onProgress: ({ progress }) => onProgress({ percent: (progress || 0) * 100 }),
-      });
+      const resp = await upload({ file, onProgress: ({ progress }) => onProgress({ percent: (progress || 0) * 100 }) });
       if (resp._result !== 0) {
         onError();
         message.error(resp._desc || '');
@@ -318,8 +196,7 @@ export default defineComponent({
       }
       onFinish();
       const url = resp.url || '';
-      const sn = resp.sn || '';
-      formData.value.archive.push({ url, sn });
+      formData.value[property].push(url);
     };
 
     const handleUploadRemove = ({ file, fileList }: UploadRemoveOptions, property: UploadProperties) => {
@@ -332,7 +209,7 @@ export default defineComponent({
     };
 
     const handleSubmit = async () => {
-      if (!userStore.user.id) {
+      if (!userStore.user?.id) {
         message.error('Please sign in first');
         return;
       }
@@ -345,10 +222,9 @@ export default defineComponent({
 
       let version = formData.value.version;
       let modelHashCode = formData.value.modelHashCode;
-      let modelFileLinks = formData.value.archive.map((item: ArchiveItem) => item.url).join(',');
-      let sampleImgFileLinks = formData.value.images.map((item: ImageItem) => item.url).join(',');
-      let images = JSON.stringify(formData.value.images);
-      let archive = formData.value.archive.length > 0 ? JSON.stringify(formData.value.archive[0]) : '';
+      let modelFileLinks = formData.value.archive.join(',');
+      let sampleImgFileLinks = formData.value.images.join(',');
+
       let url = '/mrchaiemc/modModelDetailInfo.do';
       let params = {
         custId: userStore.user.id,
@@ -362,8 +238,6 @@ export default defineComponent({
           version,
           modelFileLinks,
           sampleImgFileLinks,
-          images,
-          archive,
         },
       };
 
@@ -374,18 +248,6 @@ export default defineComponent({
         message.warning('Failure');
         return;
       }
-      // temp
-      formSubmitting.value = true;
-      const resp2 = await http.postJSON({
-        url: '/mrchaiemc/submitModel.do',
-        data: { custId: userStore.user.id, bussData: { modelId } },
-      });
-      formSubmitting.value = false;
-      if (resp2.resultCode !== 'SUCCESS') {
-        message.warning('Failure');
-        return;
-      }
-
       ctx.emit('submit', params);
     };
 
@@ -409,13 +271,13 @@ export default defineComponent({
 
     return {
       ready,
+      imgUrl,
       formRef,
       formItemPassword1Ref,
       formData,
       formRule,
       formSubmitting,
-      handleUploadImage,
-      handleUploadArchive,
+      handleUpload,
       handleUploadRemove,
       onPressReset() {
         formData.value = defaultFormData();

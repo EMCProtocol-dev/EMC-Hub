@@ -22,16 +22,16 @@ import { defineComponent } from 'vue';
 import { NSpace } from 'naive-ui';
 import { RouterLink } from 'vue-router';
 import HeaderLogo from './header-logo.vue';
-import HeaderTabs from './header-tabs.vue';
+import HeaderTabs from './header-tabs';
 import HeaderMenu from './header-menu.vue';
-import type { tabItem } from './header-tabs.vue';
+import type { TabItem } from './header-tabs';
 import HeaderUser from './header-user.vue';
 import { useIsMobile, useIsTablet, useIsSmallDesktop, useIsDesktop } from '@/composables/use-screen';
 
 export default defineComponent({
   components: { RouterLink, NSpace, HeaderLogo, HeaderTabs, HeaderMenu, HeaderUser },
   setup(props, context) {
-    const tabs: tabItem[] = [
+    const tabs: TabItem[] = [
       { id: 1, name: 'Home', path: '/home' },
       { id: 2, name: 'Models', path: '/models' },
       { id: 3, name: 'EMC Nodes', path: 'https://dashboard.edgematrix.pro' },

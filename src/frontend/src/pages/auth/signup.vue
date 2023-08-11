@@ -2,10 +2,16 @@
   <NForm ref="formRef" :model="formData" :rules="formRule">
     <input name="account" style="position: fixed; z-index: -9999" />
     <input type="password" name="password" style="position: fixed; z-index: -9999" />
-    <NFormItem path="account" label="Account" label-style="font-size:12px;">
+    <NFormItem path="account">
+      <template #label>
+        <NText strong>Account</NText>
+      </template>
       <NInput v-model:value="formData.account" placeholder="" @keydown.enter.prevent />
     </NFormItem>
-    <NFormItem path="password" label="Password" label-style="font-size:12px;">
+    <NFormItem path="password">
+      <template #label>
+        <NText strong>Password</NText>
+      </template>
       <NInput
         v-model:value="formData.password"
         type="password"
@@ -14,13 +20,22 @@
         @keydown.enter.prevent
       />
     </NFormItem>
-    <NFormItem path="nickname" label="Nickname" label-style="font-size:12px;">
+    <NFormItem path="nickname">
+      <template #label>
+        <NText strong>Nickname</NText>
+      </template>
       <NInput v-model:value="formData.nickname" placeholder="" @keydown.enter.prevent />
     </NFormItem>
-    <NFormItem path="email" label="Email" label-style="font-size:12px;">
+    <NFormItem path="email">
+      <template #label>
+        <NText strong>Email</NText>
+      </template>
       <NInput v-model:value="formData.email" placeholder="" @keydown.enter.prevent />
     </NFormItem>
-    <NFormItem path="principal" label="ICP-Principal" label-style="font-size:12px;">
+    <NFormItem path="principal">
+      <template #label>
+        <NText strong>ICP-Principal</NText>
+      </template>
       <NInput v-model:value="formData.principal" :disabled="true" placeholder="" @keydown.enter.prevent>
         <template #suffix>
           <NButton
@@ -49,7 +64,7 @@
 </template>
 <script lang="ts">
 import { ref, defineComponent } from 'vue';
-import { NForm, NFormItem, NButton, NInput, NDivider, NSpace, FormInst, FormRules, useMessage } from 'naive-ui';
+import { NForm, NFormItem, NButton, NInput, NDivider, NSpace, NText, FormInst, FormRules, useMessage } from 'naive-ui';
 import { useUserStore } from '@/stores/user';
 import { Utils } from '@/tools/utils';
 
@@ -62,7 +77,7 @@ type SignIn = {
 };
 
 export default defineComponent({
-  components: { NForm, NFormItem, NButton, NInput, NDivider, NSpace },
+  components: { NForm, NFormItem, NButton, NInput, NDivider, NSpace, NText },
   emits: ['cancel', 'signup', 'signupbefore', 'signupafter'],
   setup(props, ctx) {
     const formRef = ref<FormInst | null>(null);

@@ -8,10 +8,17 @@ declare module 'copy-to-clipboard';
 
 declare module '*.png';
 declare module '*.svg';
+declare module '*.jpg';
 
 //webpack define plugin
 declare var __PUBLIC_PATH__: string;
 
 interface Window {
   ic: any;
+}
+
+interface Resp365 {
+  _result: number;
+  _desc?: string;
+  [k: string]: any;
 }

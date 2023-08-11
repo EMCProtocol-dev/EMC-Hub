@@ -1,16 +1,27 @@
 <template>
   <NForm ref="formRef" :model="formData" :rules="formRule">
-    <NFormItem path="account" label="Account" label-style="font-size:12px;">
+    <NFormItem path="account">
+      <template #label>
+        <NText strong>Account</NText>
+      </template>
       <NInput v-model:value="formData.account" placeholder="" @keydown.enter.prevent />
     </NFormItem>
   </NForm>
   <NSpace vertical align="center" :wrap-item="false">
-    <NButton class="signin-btn" type="primary" strong size="large" :loading="submitting" @click.stop.prevent="onPressSubmit">Connect Wallet</NButton>
+    <NButton
+      class="signin-btn"
+      type="primary"
+      strong
+      size="large"
+      :loading="submitting"
+      @click.stop.prevent="onPressSubmit"
+      >Connect Wallet</NButton
+    >
   </NSpace>
 </template>
 <script lang="ts">
 import { ref, defineComponent, nextTick } from 'vue';
-import { NForm, NFormItem, NButton, NInput, NDivider, NSpace, FormInst, FormRules, useMessage } from 'naive-ui';
+import { NForm, NFormItem, NButton, NInput, NDivider, NSpace, NText, FormInst, FormRules, useMessage } from 'naive-ui';
 import { useUserStore } from '@/stores/user';
 import { AuthType } from '@/stores/user';
 import { Utils } from '@/tools/utils';
@@ -21,7 +32,7 @@ type SignIn = {
 };
 
 export default defineComponent({
-  components: { NForm, NFormItem, NButton, NInput, NDivider, NSpace },
+  components: { NForm, NFormItem, NButton, NInput, NDivider, NSpace, NText },
   emits: ['cancel', 'signin', 'signinbefore', 'signinafter'],
   setup(props, ctx) {
     const formRef = ref<FormInst | null>(null);

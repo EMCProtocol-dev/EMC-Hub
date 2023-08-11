@@ -2,10 +2,16 @@
   <NForm ref="formRef" :model="formData" :rules="formRule">
     <!-- <input name="account" style="position: fixed; z-index: -9999" /> -->
     <input type="password" name="password" style="position: fixed; left: -9999px; top: -9999px; z-index: -9999" />
-    <NFormItem path="account" label="Account" label-style="font-size:12px;">
+    <NFormItem path="account">
+      <template #label>
+        <NText strong>Account</NText>
+      </template>
       <NInput v-model:value="formData.account" placeholder="" @keydown.enter.prevent />
     </NFormItem>
-    <NFormItem path="password" label="Password" label-style="font-size:12px;">
+    <NFormItem path="password">
+      <template #label>
+        <NText strong>Password</NText>
+      </template>
       <NInput v-model:value="formData.password" type="password" placeholder="" @keydown.enter.prevent />
     </NFormItem>
   </NForm>
@@ -23,7 +29,7 @@
 </template>
 <script lang="ts">
 import { ref, defineComponent, nextTick } from 'vue';
-import { NForm, NFormItem, NButton, NInput, NDivider, NSpace, FormInst, FormRules, useMessage } from 'naive-ui';
+import { NForm, NFormItem, NButton, NInput, NDivider, NSpace, NText, FormInst, FormRules, useMessage } from 'naive-ui';
 import { useUserStore } from '@/stores/user';
 import type { AuthType } from '@/stores/user';
 import { Utils } from '@/tools/utils';
@@ -34,7 +40,7 @@ type SignIn = {
 };
 
 export default defineComponent({
-  components: { NForm, NFormItem, NButton, NInput, NDivider, NSpace },
+  components: { NForm, NFormItem, NButton, NInput, NDivider, NSpace, NText },
   emits: ['cancel', 'signin', 'signinbefore', 'signinafter'],
   setup(props, ctx) {
     const formRef = ref<FormInst | null>(null);
