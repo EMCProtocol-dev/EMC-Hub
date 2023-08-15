@@ -132,7 +132,7 @@ import {
   CloseSharp as IconClose,
 } from '@vicons/ionicons5';
 import NodeList from './node-list.vue';
-import type { NodeItem } from './node-list.vue';
+import type { NodeItem } from './node-item';
 import { parametersWith } from '@/tools/exif';
 
 export default defineComponent({
@@ -276,7 +276,7 @@ export default defineComponent({
             console.error(e);
           }
         }
-        
+
         if (parameters) {
           const handleMessage = (event: MessageEvent) => {
             const request: any = event.data as any;

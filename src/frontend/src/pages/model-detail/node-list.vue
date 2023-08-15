@@ -48,13 +48,7 @@ import {
   ChevronForwardSharp as IconArrowRight,
 } from '@vicons/ionicons5';
 import { Utils } from '@/tools/utils';
-
-export type NodeItem = {
-  nodeId: string;
-  cpuName: string;
-  avgPower: string;
-  countryName: string;
-};
+import { NodeItem } from './node-item';
 
 export default defineComponent({
   components: {
@@ -77,15 +71,11 @@ export default defineComponent({
   },
   emits: ['pressitem'],
   setup(props, ctx) {
-    const router = useRouter();
-    const route = useRoute();
-    const message = useMessage();
     const error = ref(-1);
     const errorText = ref('');
     const list = ref<NodeItem[]>([]);
 
     const http = Http.getInstance();
-    const useStore = useUserStore();
 
     const init = async () => {
       if (!props.hash) {
