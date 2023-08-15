@@ -19,7 +19,7 @@
               <div class="carousel-wrap">
                 <NCarousel class="carousel" :autoplay="true">
                   <template v-for="cover in covers">
-                    <img class="cover" :src="cover" />
+                    <img class="cover" :src="cover.url" />
                   </template>
                 </NCarousel>
               </div>
@@ -98,7 +98,7 @@
             </template>
           </NButton>
         </template>
-        <NodeList :hash="nodeHashCode" @pressitem="onNodeClose" />
+        <NodeList :hash="nodeHashCode" @pressitem="onNodePressItem" />
       </NCard>
     </NModal>
   </div>
@@ -125,12 +125,15 @@ import {
 } from 'naive-ui';
 import { useUserStore } from '@/stores/user';
 import { Http } from '@/tools/http';
+import { Utils } from '@/tools/utils';
 import {
   DownloadSharp as IconDownload,
   CaretForwardCircleOutline as IconRun,
   CloseSharp as IconClose,
 } from '@vicons/ionicons5';
 import NodeList from './node-list.vue';
+import type { NodeItem } from './node-list.vue';
+import { parametersWith } from '@/tools/exif';
 
 export default defineComponent({
   name: 'node-detail',
@@ -154,7 +157,6 @@ export default defineComponent({
     NodeList,
   },
   setup() {
-    const router = useRouter();
     const route = useRoute();
     const message = useMessage();
     const modelId = ref(route.params.id);
@@ -165,7 +167,7 @@ export default defineComponent({
     const nodeHashCode = ref('');
 
     const name = ref('');
-    const covers = ref<string[]>([]);
+    const covers = ref<Array<{ url: string; parameters: string }>>([]);
     const archive = ref('');
     const version = ref('');
     const tags = ref<string[]>([]);
@@ -208,7 +210,14 @@ export default defineComponent({
           _tags = _tags.concat(vals);
         }
       });
-      let _covers: string[] = data.sampleImgFileLinks.split(',');
+
+      let _covers: Array<{ url: string; parameters: string }> = [];
+      if (data.covers) {
+        _covers = Utils.parseJSON(data.covers) || [];
+      } else if (data.sampleImgFileLinks) {
+        _covers = data.sampleImgFileLinks.split(',').map((url: string) => ({ url, parameters: '' }));
+      }
+
       name.value = data.modelName;
       covers.value = _covers;
       version.value = data.version || '1';
@@ -253,6 +262,43 @@ export default defineComponent({
       },
       onNodeClose() {
         nodeVisible.value = false;
+      },
+      async onNodePressItem(item: NodeItem) {
+        let sdWindow: WindowProxy | null;
+        let parameters = '';
+
+        if (covers.value[0].parameters) {
+          parameters = covers.value[0].parameters;
+        } else {
+          try {
+            parameters = await parametersWith(covers.value[0].url);
+          } catch (e) {
+            console.error(e);
+          }
+        }
+        
+        if (parameters) {
+          const handleMessage = (event: MessageEvent) => {
+            const request: any = event.data as any;
+            if (request.type === 'emcsd-txt2img-ready') {
+              sdWindow?.postMessage({ type: 'emcsd-txt2img-parameters', data: parameters }, '*');
+            }
+            window.removeEventListener('message', handleMessage);
+          };
+          window.addEventListener('message', handleMessage);
+        } else {
+          console.warn(`${covers.value[0].url} can not parse parameters`);
+        }
+
+        nodeVisible.value = false;
+        sdWindow = window.open(
+          `https://sd.edgematrix.pro/#/txt2img?nodeid=${item.nodeId}`,
+          `sd-window-${new Date().getTime()}`
+        );
+        //  sdWindow = window.open(
+        //   `http://localhost:8080/#/txt2img?nodeid=${item.nodeId}`,
+        //   `sd-window-${new Date().getTime()}`
+        // );
       },
       onPressArchive() {
         if (!archive.value) {

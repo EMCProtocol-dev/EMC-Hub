@@ -1,6 +1,6 @@
 import ExifReader from 'exifreader';
 
-export async function parametersWith(file: File) {
+export async function parametersWith(file: File | string) {
   let tags = await ExifReader.load(file);
   let parameters = '';
 

@@ -49,7 +49,7 @@ import {
 } from '@vicons/ionicons5';
 import { Utils } from '@/tools/utils';
 
-type NodeItem = {
+export type NodeItem = {
   nodeId: string;
   cpuName: string;
   avgPower: string;
@@ -125,7 +125,6 @@ export default defineComponent({
       list,
       onPressItem(item: NodeItem) {
         ctx.emit('pressitem', item);
-        window.open(`https://sd.edgematrix.pro/#/txt2img?nodeid=${item.nodeId}`);
       },
     };
   },
