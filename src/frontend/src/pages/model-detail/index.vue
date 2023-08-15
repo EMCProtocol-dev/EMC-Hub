@@ -276,7 +276,7 @@ export default defineComponent({
             console.error(e);
           }
         }
-
+        console.info('image parameters :\n', parameters);
         if (parameters) {
           const handleMessage = (event: MessageEvent) => {
             const request: any = event.data as any;
@@ -295,7 +295,7 @@ export default defineComponent({
           `https://sd.edgematrix.pro/#/txt2img?nodeid=${item.nodeId}`,
           `sd-window-${new Date().getTime()}`
         );
-        //  sdWindow = window.open(
+        // sdWindow = window.open(
         //   `http://localhost:8080/#/txt2img?nodeid=${item.nodeId}`,
         //   `sd-window-${new Date().getTime()}`
         // );
