@@ -6,7 +6,7 @@ const PORT = 9000;
 const SSL = false;
 const ACCESS_KEY = 'vozdBpAulYbtpZDTvSeD';
 const SECRET_KEY = 'thD4BZO84k1vUJVt1a5332ZWNeYqZ3tNFlcr4vcO';
-const BUCKET_NAME = 'hub-media';
+const BUCKET_NAME = 'hub-archive';
 
 interface FileInfo {
   id: string;
@@ -72,11 +72,11 @@ export function useMinio() {
     policyRaw.setContentLengthRange(1024, 1024 * 1024 * 1024 * 10); // Min upload length is 1KB Max upload size is 10GB
 
     const expires = new Date();
-    expires.setSeconds(600); // 10 minutes
+    expires.setSeconds(6000); // 100 minutes
     policyRaw.setExpires(expires);
 
     const policyData = await ctx.presignedPostPolicy(policyRaw);
-
+    console.info(`presigned policy --->`, policyData);
     return {
       postURL: policyData.postURL,
       postFormData: policyData.formData,

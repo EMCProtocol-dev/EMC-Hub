@@ -299,7 +299,7 @@ export default defineComponent({
         return false;
       }
       uploadLoadingArchive.value = true;
-      //const fileHash = '123';
+      // const fileHash = '123';
       const fileHash = await fileToSha256Hex(file.file as File);
       uploadLoadingArchive.value = false;
       console.info('handle before upload ', fileHash);
