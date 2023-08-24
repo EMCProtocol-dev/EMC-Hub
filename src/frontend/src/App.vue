@@ -13,9 +13,9 @@ export default defineComponent({
   name: 'app',
   components: { NSpin },
   setup() {
-    const ready = ref(false);
     const loadingBar = useLoadingBar();
     const message = useMessage();
+<<<<<<< HEAD
 
     const cacheRoutes = ref<string[]>([]);
     const routes = router?.options?.routes || [];
@@ -30,12 +30,19 @@ export default defineComponent({
       window.$message = message;
       window.$loadingBar = loadingBar;
       ready.value = true;
+=======
+    const userStore = useUserStore();
+    onMounted(() => {
+      window.$message = message;
+      window.$loadingBar = loadingBar;
+      userStore.initLocalData();
+      if (userStore.user.id) {
+        //init user info
+      }
+>>>>>>> e768052 (～)
     });
 
-    return {
-      ready,
-      cacheRoutes,
-    };
+    return {};
   },
 });
 </script>

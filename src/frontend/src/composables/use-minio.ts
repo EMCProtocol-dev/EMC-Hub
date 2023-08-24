@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { Client as MinioClient } from 'minio';
 import { Axios, AxiosProgressEvent, isCancel } from 'axios';
 import { sign } from '@/tools/open-api';
@@ -6,8 +7,9 @@ import { Http } from '@/tools/http';
 =======
 import { ref } from 'vue';
 import { UploadCustomRequestOptions } from 'naive-ui';
+=======
+>>>>>>> e768052 (～)
 import { Client as MinioClient } from 'minio';
-import { Http } from '@/tools/http';
 import { Axios, AxiosProgressEvent } from 'axios';
 
 >>>>>>> 8b84a8c (~)
@@ -133,6 +135,7 @@ export function useMinio() {
     policyRaw.setBucket(BUCKET_NAME);
     policyRaw.setKey(file.name);
 <<<<<<< HEAD
+<<<<<<< HEAD
     policyRaw.setContentLengthRange(1024, 1024 * 1024 * 1024 * 10); // Min upload length is 1KB Max upload size is 10GB
 
     const expires = new Date();
@@ -143,6 +146,9 @@ export function useMinio() {
     console.info(`presigned policy --->`, policyData);
 =======
     policyRaw.setContentLengthRange(1024, 1024 * 102400); // Min upload length is 1KB Max upload size is 100MB
+=======
+    policyRaw.setContentLengthRange(1024, 1024 * 1024 * 1024 * 10); // Min upload length is 1KB Max upload size is 10GB
+>>>>>>> e768052 (～)
 
     const expires = new Date();
     expires.setSeconds(600); // 10 minutes
@@ -180,8 +186,12 @@ export function useMinio() {
 
 =======
 
+<<<<<<< HEAD
     const axios: Axios = Http.getInstance().client;
 >>>>>>> 8b84a8c (~)
+=======
+    const axios: Axios = new Axios({ timeout: 60 * 60 * 1000 });
+>>>>>>> e768052 (～)
     const onUploadProgress = (event: AxiosProgressEvent) => typeof onProgress === 'function' && onProgress(event);
     try {
       const resp = await axios.post(`${policyData.postURL}`, formData, {

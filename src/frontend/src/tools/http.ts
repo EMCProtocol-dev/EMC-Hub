@@ -11,8 +11,8 @@ const HTTP_METHOD = {
 };
 
 interface HttpConfig {
-  baseURL: string;
-  timeout: number;
+  baseURL?: string;
+  timeout?: number;
 }
 
 const _defaultHttpConfig = {
