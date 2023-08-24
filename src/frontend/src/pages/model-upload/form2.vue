@@ -29,6 +29,7 @@
           action="https://api.emchub.ai/mrchaiemc/fileUpload.do"
           :max="1"
           style="max-width: 320px"
+          @before-upload="handleUploadBeforeArchive"
           :custom-request="handleUploadArchive"
           @remove="(options:any) => handleUploadRemove(options, 'archive')"
         >
@@ -41,6 +42,11 @@
             </NSpace>
           </NUploadDragger>
         </NUpload>
+        <template v-if="uploadLoadingArchive">
+          <NSpace class="upload-loading" vertical :wrap-item="false" align="center" justify="center">
+            <NSpin size="large" />
+          </NSpace>
+        </template>
       </NFormItem>
 
       <NFormItem path="version" label="Model Version">
@@ -104,7 +110,7 @@ import {
   FormInst,
   FormItemInst,
   FormRules,
-  FormItemRule,
+  NSpin,
   useMessage,
   NUpload,
   NUploadDragger,
@@ -168,6 +174,8 @@ type PresignOptions = {
 type UploadFinishOptions = { file: UploadFileInfo; event?: ProgressEvent };
 type UploadRemoveOptions = { file: UploadFileInfo; fileList: Array<UploadFileInfo> };
 type UploadProperties = 'images' | 'archive';
+type UploadFileInfoArchive = UploadFileInfo & { hash?: string };
+type UploadBeforeOptionsArchive = { file: UploadFileInfoArchive; fileList: UploadFileInfo[] };
 export default defineComponent({
   components: {
     NForm,
@@ -177,6 +185,7 @@ export default defineComponent({
     NSpace,
     NRadioGroup,
     NRadio,
+    NSpin,
     NCheckboxGroup,
     NCheckbox,
     NUpload,
@@ -205,6 +214,7 @@ export default defineComponent({
     };
     const formSubmitting = ref(false);
     const message = useMessage();
+    const uploadLoadingArchive = ref(false);
     const { upload } = useMinio();
 
     // const handleUploadFinish = ({ file, event }: UploadFinishOptions, property: UploadProperties) => {
@@ -284,19 +294,37 @@ export default defineComponent({
       formData.value.images.push({ url, parameters });
     };
 
-    const handleUploadArchive = async (params: UploadCustomRequestOptions) => {
-      const { file, headers, withCredentials, onFinish, onError, onProgress } = params;
+    const handleUploadBeforeArchive = async ({ file }: UploadBeforeOptionsArchive) => {
+      if (uploadLoadingArchive.value) {
+        return false;
+      }
+      uploadLoadingArchive.value = true;
+      //const fileHash = '123';
       const fileHash = await fileToSha256Hex(file.file as File);
+      uploadLoadingArchive.value = false;
+      console.info('handle before upload ', fileHash);
+      if (!fileHash) {
+        message.error('file hash error');
+        return false;
+      }
+      file.id = `${file.id}-${fileHash}`;
+      return true;
+    };
+
+    const handleUploadArchive = async (params: UploadCustomRequestOptions) => {
+      const { headers, withCredentials, onFinish, onError, onProgress } = params;
+      const file = params.file as UploadFileInfoArchive;
+      const fileHash = file.id.split('-')[1];
+      console.info('handle upload ', fileHash);
       if (!fileHash) {
         onError();
-        message.error('file hash error');
+        message.error('hash is empty');
         return;
       }
-      //archive=1
       const policyData = await handlePresignUpload({
         fileName: file.name,
         fileType: file.type || '',
-        fileHash,
+        fileHash: fileHash || '',
         fileSize: file.file?.size || 0,
         signType: 1,
         userId: userStore.user.id,
@@ -313,6 +341,7 @@ export default defineComponent({
       });
       if (resp._result !== 0) {
         onError();
+        console.error(resp._desc || '');
         message.error(resp._desc || '');
         return;
       }
@@ -414,7 +443,9 @@ export default defineComponent({
       formData,
       formRule,
       formSubmitting,
+      uploadLoadingArchive,
       handleUploadImage,
+      handleUploadBeforeArchive,
       handleUploadArchive,
       handleUploadRemove,
       onPressReset() {
@@ -432,4 +463,13 @@ export default defineComponent({
   },
 });
 </script>
-<style scoped></style>
+<style scoped>
+.upload-loading {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 320px;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+</style>

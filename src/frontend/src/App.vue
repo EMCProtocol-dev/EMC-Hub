@@ -14,19 +14,9 @@ export default defineComponent({
   name: 'app',
   components: { NSpin },
   setup() {
-    const ready = ref(false);
     const loadingBar = useLoadingBar();
     const message = useMessage();
     const userStore = useUserStore();
-    const cacheRoutes = ref<string[]>([]);
-    const routes = router?.options?.routes || [];
-
-    routes.forEach((i: any) => {
-      if (i?.meta?.keepAlive && typeof i?.name === 'string') cacheRoutes.value.push(i.name);
-    });
-
-    console.info(`cache routes: ${cacheRoutes.value.join(', ')}`);
-
     onMounted(() => {
       window.$message = message;
       window.$loadingBar = loadingBar;
@@ -34,13 +24,9 @@ export default defineComponent({
       if (userStore.user.id) {
         //init user info
       }
-      ready.value = true;
     });
 
-    return {
-      ready,
-      cacheRoutes,
-    };
+    return {};
   },
 });
 </script>

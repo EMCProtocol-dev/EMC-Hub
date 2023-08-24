@@ -1,7 +1,4 @@
-import { ref } from 'vue';
-import { UploadCustomRequestOptions } from 'naive-ui';
 import { Client as MinioClient } from 'minio';
-import { Http } from '@/tools/http';
 import { Axios, AxiosProgressEvent } from 'axios';
 
 const HOST = '36.155.7.145';
@@ -72,7 +69,7 @@ export function useMinio() {
     const policyRaw = ctx.newPostPolicy();
     policyRaw.setBucket(BUCKET_NAME);
     policyRaw.setKey(file.name);
-    policyRaw.setContentLengthRange(1024, 1024 * 102400); // Min upload length is 1KB Max upload size is 100MB
+    policyRaw.setContentLengthRange(1024, 1024 * 1024 * 1024 * 10); // Min upload length is 1KB Max upload size is 10GB
 
     const expires = new Date();
     expires.setSeconds(600); // 10 minutes
@@ -101,7 +98,7 @@ export function useMinio() {
     });
     formData.append('file', file.file as File);
 
-    const axios: Axios = Http.getInstance().client;
+    const axios: Axios = new Axios({ timeout: 60 * 60 * 1000 });
     const onUploadProgress = (event: AxiosProgressEvent) => typeof onProgress === 'function' && onProgress(event);
     try {
       const resp = await axios.post(`${policyData.postURL}`, formData, {
