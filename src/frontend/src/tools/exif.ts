@@ -1,5 +1,10 @@
 import ExifReader from 'exifreader';
 
+/**
+ *
+ * @param file {File|string} File or Http-Url
+ * @returns
+ */
 export async function parametersWith(file: File | string) {
   let tags = await ExifReader.load(file);
   let parameters = '';

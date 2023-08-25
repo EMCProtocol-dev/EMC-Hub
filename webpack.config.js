@@ -86,6 +86,7 @@ module.exports = {
       },
       { test: /\.css$/, use: ['vue-style-loader', 'css-loader'] },
       { test: /\.vue$/, use: ['vue-loader'] },
+      { test: /\.worker\.ts$/, use: ['worker-loader', 'ts-loader'] },
     ],
   },
   plugins: [

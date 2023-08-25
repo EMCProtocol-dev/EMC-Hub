@@ -272,10 +272,25 @@ export default defineComponent({
         } else {
           try {
             parameters = await parametersWith(covers.value[0].url);
+            //parameters = 'Prompt\nNavite Promp\nStep:1;Seed:1;';
+            //import {format as parameterFormat} from '@/tools/parameters';
+            //const pf = parameterFormat(parameters);
+            // {
+            //   prompt: '',
+            //   negativePrompt: '',
+            //   steps: 0,
+            //   sampler: '',
+            //   width: 0,
+            //   height: 0,
+            //   cfgScale: 0,
+            //   seed: '',
+            //   clipSkip: 0,
+            // }
           } catch (e) {
             console.error(e);
           }
         }
+        
         console.info('image parameters :\n', parameters);
         if (parameters) {
           const handleMessage = (event: MessageEvent) => {
