@@ -124,7 +124,7 @@ import { Http } from '@/tools/http';
 import { ArchiveOutline as ArchiveIcon } from '@vicons/ionicons5';
 import { Utils } from '@/tools/utils';
 import { useUserStore } from '@/stores/user';
-import { fileToMD5, fileToSha256Hex } from '@/tools/file-sha256';
+import { fileToSha256Hex } from '@/tools/file-sha256';
 import { useMinio } from '@/composables/use-minio';
 import { parametersWith } from '@/tools/exif';
 import { sign } from '@/tools/open-api';
@@ -258,7 +258,7 @@ export default defineComponent({
 
     const handleUploadImage = async (params: UploadCustomRequestOptions) => {
       const { file, headers, withCredentials, onFinish, onError, onProgress } = params;
-      const fileHash = await fileToMD5(file.file as File);
+      const fileHash = await fileToSha256Hex(file.file as File);
       if (!fileHash) {
         onError();
         message.error('file hash error');
