@@ -9,7 +9,6 @@ import { ref, onMounted, defineComponent } from 'vue';
 import { useLoadingBar, useMessage, NSpin } from 'naive-ui';
 import { router } from '@/routes/index';
 import { useUserStore } from '@/stores/user';
-import Worker from './file-hash.worker';
 
 export default defineComponent({
   name: 'app',
@@ -21,8 +20,6 @@ export default defineComponent({
     onMounted(() => {
       window.$message = message;
       window.$loadingBar = loadingBar;
-      const worker = new Worker();
-      worker.postMessage({ a: 1 });
       userStore.initLocalData();
       if (userStore.user.id) {
         //init user info
