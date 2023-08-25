@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import SparkMD5 from 'spark-md5';
 import { Sha256 } from '@aws-crypto/sha256-browser';
 import CryptoJS from 'crypto-js';
@@ -8,6 +9,11 @@ import CryptoJS from 'crypto-js';
  * JavaScript browser file to SHA-256 hash
  */
 >>>>>>> 8b84a8c (~)
+=======
+import SparkMD5 from 'spark-md5';
+import { Sha256 } from '@aws-crypto/sha256-browser';
+
+>>>>>>> 6eef811 (~)
 export function arrayBufferToBuffer(ab: ArrayBuffer) {
   const buffer = Buffer.allocUnsafe(ab.byteLength);
   const view = new Uint8Array(ab);
@@ -105,6 +111,7 @@ export async function handleFileToMD5(file: File): Promise<string> {
   });
 }
 
+<<<<<<< HEAD
 function arrayBufferToWordArray(ab: ArrayBuffer) {
   let i8a = new Uint8Array(ab);
   let a: number[] = [];
@@ -115,6 +122,9 @@ function arrayBufferToWordArray(ab: ArrayBuffer) {
 }
 
 export async function handleFileToSHA256DDD(file: File): Promise<string> {
+=======
+export async function handleFileToSHA256(file: File): Promise<string> {
+>>>>>>> 6eef811 (~)
   return new Promise((resolve) => {
     const chunkSize = 2097152; // Read in chunks of 2MB
     const chunks = Math.ceil(file.size / chunkSize);
@@ -163,6 +173,7 @@ export async function handleFileToSHA256DDD(file: File): Promise<string> {
   });
 }
 
+<<<<<<< HEAD
 export async function handleFileToSHA256(file: File): Promise<string> {
   return new Promise((resolve) => {
     const chunkSize = 2097152; // Read in chunks of 2MB
@@ -208,6 +219,8 @@ export async function handleFileToSHA256(file: File): Promise<string> {
   });
 }
 
+=======
+>>>>>>> 6eef811 (~)
 /**
  * Base on spark-md5
  * @param file
@@ -257,6 +270,16 @@ export async function fileToSha256Hex(file: File) {
     const hash = await bufferToSha256(arrayBufferToBuffer(buffer));
     return hexString(hash);
 >>>>>>> 8b84a8c (~)
+  } catch (e) {
+    console.error(e);
+    return '';
+  }
+}
+
+export async function fileToSha256Hex(file: File) {
+  try {
+    const hash = await handleFileToSHA256(file);
+    return hash || '';
   } catch (e) {
     console.error(e);
     return '';

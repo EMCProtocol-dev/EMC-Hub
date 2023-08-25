@@ -8,6 +8,10 @@
 import { ref, onMounted, defineComponent } from 'vue';
 import { useLoadingBar, useMessage, NSpin } from 'naive-ui';
 import { router } from '@/routes/index';
+<<<<<<< HEAD
+=======
+import { useUserStore } from '@/stores/user';
+>>>>>>> 6eef811 (~)
 
 export default defineComponent({
   name: 'app',
