@@ -124,7 +124,7 @@ import { Http } from '@/tools/http';
 import { ArchiveOutline as ArchiveIcon } from '@vicons/ionicons5';
 import { Utils } from '@/tools/utils';
 import { useUserStore } from '@/stores/user';
-import { fileToMD5, fileToSha256Hex, fileToSha256Hex2 } from '@/tools/file-sha256';
+import { fileToMD5, fileToSha256Hex } from '@/tools/file-sha256';
 import { useMinio } from '@/composables/use-minio';
 import { parametersWith } from '@/tools/exif';
 import { sign } from '@/tools/open-api';
