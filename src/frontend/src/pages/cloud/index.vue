@@ -91,6 +91,13 @@ import { Http } from '@/tools/http';
 import CardItem from './cloud-card-item.vue';
 import PopupForm from './cloud-popup-form.vue';
 
+type bannerItem = {
+  background: string;
+  button: string;
+  subtitle: string;
+  title: string;
+};
+
 export default defineComponent({
   name: 'cloud',
   components: {
@@ -114,11 +121,16 @@ export default defineComponent({
 
     const message = useMessage();
     const showModal = ref(false);
-    const banner = ref({});
+    const banner = ref<bannerItem>({
+      background: '',
+      button: '',
+      subtitle: '',
+      title: '',
+    });
     const cards = ref([]);
-    const cases = ref({});
-    const table = ref({});
-    const footer = ref({});
+    const cases = ref({ content: [{ title: '', desc: '' }], cover: '', title: '' });
+    const table = ref({ content: [], data: [], thead: [], title: '' });
+    const footer = ref({ background: '', backgroundFly: '', button: '', title: '', desc: '' });
 
     onMounted(() => {
       nextTick(async () => {
@@ -140,10 +152,10 @@ export default defineComponent({
       cancel() {
         showModal.value = false;
       },
-      async getInfo(value) {
+      async getInfo(value: any) {
         const { name, project, website, email, twitter, telegram, otherContact, requirement } = value?.model || {};
         const resp = await http.postJSON({
-          url: 'http://36.155.7.130:9092/emchub/api/client/contactInfo/saveOne',
+          url: 'https://client.emchub.ai/emchub/api/client/contactInfo/saveOne',
           data: {
             name: name,
             project: project,
@@ -163,8 +175,6 @@ export default defineComponent({
 });
 </script>
 <style scoped>
-.cloud {
-}
 .cloud-h1 {
   font-size: 56px;
   line-height: 60px;
