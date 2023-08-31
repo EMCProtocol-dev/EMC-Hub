@@ -11,6 +11,8 @@ import { UploadCustomRequestOptions } from 'naive-ui';
 >>>>>>> e768052 (～)
 import { Client as MinioClient } from 'minio';
 import { Axios, AxiosProgressEvent } from 'axios';
+import { sign } from '@/tools/open-api';
+import { Http } from '@/tools/http';
 
 >>>>>>> 8b84a8c (~)
 const HOST = '36.155.7.145';
@@ -66,6 +68,9 @@ function wait(t: number) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 13fe58d (~)
 type PresignHttpOptions = {
   fileName: string;
   fileType: string;
@@ -75,8 +80,11 @@ type PresignHttpOptions = {
   userId: string | number;
 };
 
+<<<<<<< HEAD
 =======
 >>>>>>> 8b84a8c (~)
+=======
+>>>>>>> 13fe58d (~)
 export function useMinio() {
   let minioClient: MinioClient;
   const getContext = () => {
@@ -92,7 +100,11 @@ export function useMinio() {
     return minioClient;
   };
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> 13fe58d (~)
   const presignedHttp = async (params: PresignHttpOptions) => {
     const appid = 'emc-hub-a63123cf';
     const secret = '9c4283f0-3509-11ee-8d81-06c27dd31a5a';
@@ -122,11 +134,14 @@ export function useMinio() {
       doneURL: data.doneURL,
       doneBody: data.doneBody,
     };
+<<<<<<< HEAD
 =======
   const presigned = (fileName: string) => {
     const ctx = getContext();
     return ctx.presignedPutObject(BUCKET_NAME, `${fileName}`, 2);
 >>>>>>> 8b84a8c (~)
+=======
+>>>>>>> 13fe58d (~)
   };
 
   const presignedPolicy = async (file: FileInfo): Promise<PolicyResult> => {
@@ -250,7 +265,7 @@ export function useMinio() {
   };
 
   return {
-    presigned,
+    presignedHttp,
     upload,
 >>>>>>> 8b84a8c (~)
   };

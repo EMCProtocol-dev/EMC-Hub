@@ -55,6 +55,7 @@
       </template>
       <NInput v-model:value="formData.email" placeholder="" @keydown.enter.prevent />
     </NFormItem>
+<<<<<<< HEAD
     <NFormItem path="principal">
       <template #label>
         <NText strong>ICP-Principal</NText>
@@ -73,6 +74,8 @@
       </NInput>
     </NFormItem>
 >>>>>>> 4a3626c (~)
+=======
+>>>>>>> 13fe58d (~)
   </NForm>
   <NSpace vertical align="center" :wrap-item="false">
     <NButton
@@ -106,6 +109,9 @@ type SignIn = {
   nickname: string;
   email: string;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 13fe58d (~)
 };
 
 export default defineComponent({
@@ -130,6 +136,7 @@ export default defineComponent({
       nickname: '',
       email: '',
 <<<<<<< HEAD
+<<<<<<< HEAD
     });
     const formRule: FormRules = {
       account: [{ required: true, trigger: ['input', 'blur'], validator: Utils.validatorNotEmpty }],
@@ -140,17 +147,21 @@ export default defineComponent({
     const submitting = ref(false);
 =======
       principal: '',
+=======
+>>>>>>> 13fe58d (~)
     });
     const formRule: FormRules = {
-      account: [{ trigger: ['input', 'blur'], validator: Utils.validatorNotEmpty }],
-      password: [{ trigger: ['input', 'blur'], validator: Utils.validatorNotEmpty }],
-      nickname: [{ trigger: ['input', 'blur'], validator: Utils.validatorNotEmpty }],
-      email: [{ trigger: ['input', 'blur'], validator: Utils.validatorNotEmpty }],
-      principal: [{ trigger: ['input', 'blur'], validator: Utils.validatorNotEmpty }],
+      account: [{ required: true, trigger: ['input', 'blur'], validator: Utils.validatorNotEmpty }],
+      password: [{ required: true, trigger: ['input', 'blur'], validator: Utils.validatorNotEmpty }],
+      nickname: [{ required: true, trigger: ['input', 'blur'], validator: Utils.validatorNotEmpty }],
+      email: [{ required: true, trigger: ['input', 'blur'], validator: Utils.validatorNotEmpty }],
     };
     const submitting = ref(false);
+<<<<<<< HEAD
     const principalLoading = ref(false);
 >>>>>>> 4a3626c (~)
+=======
+>>>>>>> 13fe58d (~)
     const message = useMessage();
     const userStore = useUserStore();
     const handleSubmit = async () => {
@@ -159,11 +170,15 @@ export default defineComponent({
       let email = formData.value.email;
       let nickname = formData.value.nickname;
 <<<<<<< HEAD
+<<<<<<< HEAD
       const params = { account, password, nickname, email };
 =======
       let principal = formData.value.principal;
       const params = { account, password, nickname, email, principal };
 >>>>>>> 4a3626c (~)
+=======
+      const params = { account, password, nickname, email };
+>>>>>>> 13fe58d (~)
       submitting.value = true;
       const resp = await userStore.signup(params);
       submitting.value = false;
@@ -179,6 +194,7 @@ export default defineComponent({
       formData,
       formRule,
       submitting,
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
       principalLoading,
@@ -197,6 +213,8 @@ export default defineComponent({
         formData.value.principal = resp.data.principal as string;
       },
 >>>>>>> 4a3626c (~)
+=======
+>>>>>>> 13fe58d (~)
       async onPressSubmit() {
         try {
           await formRef.value?.validate();

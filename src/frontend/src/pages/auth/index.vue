@@ -111,7 +111,7 @@
                 </NSpace>
                 <div class="sign-subtitle">Welcome #AI</div>
               </div>
-              <SignIn
+              <SignInAccount
                 ref="signinRef"
                 @signin="onSignInSuccess"
                 @signinbefore="signinLoading = true"
@@ -147,7 +147,11 @@ import type { RouteLocationRaw } from 'vue-router';
 <<<<<<< HEAD
 import { NLayout, NLayoutContent, NCard, NH1, NH3, NA, NSpace, NGrid, NGridItem } from 'naive-ui';
 import SignUp from './signup.vue';
+<<<<<<< HEAD
 import SignIn from './signin.vue';
+=======
+import SignInAccount from './signin-account.vue';
+>>>>>>> 13fe58d (~)
 
 const bgImg1 = require('@/assets/login-img.png');
 const bgImg2 = require('@/assets/login-img1.png');
@@ -177,6 +181,7 @@ export default defineComponent({
 <<<<<<< HEAD
     NGrid,
     NGridItem,
+<<<<<<< HEAD
     SignUp,
     SignIn,
 =======
@@ -187,12 +192,16 @@ export default defineComponent({
     SignIn,
     SignUp,
 >>>>>>> 4a3626c (~)
+=======
+    SignUp,
+    SignInAccount,
+>>>>>>> 13fe58d (~)
   },
   setup() {
     const router = useRouter();
     const route = useRoute();
     const action = ref('signin');
-    const signinRef = ref<InstanceType<typeof SignIn>>();
+    const signinRef = ref<InstanceType<typeof SignInAccount>>();
     const signinLoading = ref(false);
     const signupLoading = ref(false);
 
@@ -245,6 +254,7 @@ export default defineComponent({
         }
       },
 <<<<<<< HEAD
+<<<<<<< HEAD
       async onSignUpSuccess({ account, password }: { account: string; password: string }) {
         action.value = 'signin';
         await nextTick();
@@ -259,9 +269,12 @@ export default defineComponent({
         password: string;
         principal: string;
       }) {
+=======
+      async onSignUpSuccess({ account, password }: { account: string; password: string }) {
+>>>>>>> 13fe58d (~)
         action.value = 'signin';
         await nextTick();
-        signinRef.value?.postLogin({ account, password, principal });
+        signinRef.value?.postLogin({ account, password });
         console.info('sss');
 >>>>>>> 4a3626c (~)
       },

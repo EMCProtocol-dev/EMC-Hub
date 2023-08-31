@@ -45,7 +45,11 @@
           <NInput
             type="textarea"
             v-model:value="formData.description"
+<<<<<<< HEAD
             maxlength="1000"
+=======
+            maxlength="200"
+>>>>>>> 13fe58d (~)
             show-count
             placeholder="About model"
             @keydown.enter.prevent
@@ -67,14 +71,23 @@
               >
             </template>
             <template v-else>
+<<<<<<< HEAD
               <!-- <NButton
+=======
+              <NButton
+>>>>>>> 13fe58d (~)
                 type="primary"
                 strong
                 :disabled="!ready || formSubmitting"
                 :loading="formSubmitting"
                 @click.stop.prevent="onPressSubmit"
+<<<<<<< HEAD
                 >Save & Done</NButton
               > -->
+=======
+                >Save</NButton
+              >
+>>>>>>> 13fe58d (~)
               <NButton
                 type="primary"
                 strong
@@ -224,7 +237,11 @@ export default defineComponent({
       type: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
       category: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
       tags: [{ required: true, type: 'array', message: 'Can not be empty', trigger: ['input', 'blur'] }],
+<<<<<<< HEAD
       description: [{ required: true, validator: Utils.validatorStrLength(0, 1000), trigger: ['input', 'blur'] }],
+=======
+      description: [{ required: true, validator: Utils.validatorStrLength(0, 200), trigger: ['input', 'blur'] }],
+>>>>>>> 13fe58d (~)
     };
     const formSubmitting = ref(false);
     const message = useMessage();

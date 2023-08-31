@@ -25,11 +25,14 @@
             </NSelect>
           </NFormItemGi>
         </template>
+<<<<<<< HEAD
         <template v-else-if="formData.modelType === 'LORA'">
           <NFormItemGi :span="24" path="alias" label="Alias">
             <NInput v-model:value="formData.alias" @keydown.enter.prevent />
           </NFormItemGi>
         </template>
+=======
+>>>>>>> 13fe58d (~)
         <NFormItemGi :span="24" path="archive" label="Model Package">
           <NUpload
             v-model:file-list="formData.archive"
@@ -72,6 +75,7 @@
             @click.stop.prevent="onPressPrev"
             >Prev</NButton
           >
+<<<<<<< HEAD
           <!-- <NButton
             type="primary"
             strong
@@ -80,13 +84,20 @@
             @click.stop.prevent="onPressSubmit"
             >Save & Done</NButton
           > -->
+=======
+>>>>>>> 13fe58d (~)
           <NButton
             type="primary"
             strong
             :disabled="!ready || formSubmitting || uploadLoadingArchive"
             :loading="formSubmitting"
+<<<<<<< HEAD
             @click.stop.prevent="onPressSubmitAndReview"
             >Save & Review</NButton
+=======
+            @click.stop.prevent="onPressSubmit"
+            >Next</NButton
+>>>>>>> 13fe58d (~)
           >
         </NSpace>
       </template>
@@ -94,7 +105,11 @@
   </NSpace>
 </template>
 <script lang="ts">
+<<<<<<< HEAD
 import { ref, defineComponent, onMounted, onUnmounted, watch } from 'vue';
+=======
+import { ref, defineComponent, onMounted, watch } from 'vue';
+>>>>>>> 13fe58d (~)
 import {
   NForm,
   NSpin,
@@ -130,7 +145,10 @@ type BasicOptionItem = {
 type FormData = {
   modelType: string;
   archive: UploadFileInfo[];
+<<<<<<< HEAD
   alias: string;
+=======
+>>>>>>> 13fe58d (~)
   hashCode: string;
   fileSize: string;
   modelSize: string;
@@ -141,7 +159,10 @@ function defaultFormData() {
   return {
     modelType: '',
     archive: [],
+<<<<<<< HEAD
     alias: '',
+=======
+>>>>>>> 13fe58d (~)
     hashCode: '',
     fileSize: '',
     modelSize: '',
@@ -170,12 +191,19 @@ export default defineComponent({
     ArchiveIcon,
   },
   props: {
+<<<<<<< HEAD
     mode: { type: String, default: '' },
+=======
+>>>>>>> 13fe58d (~)
     disabled: { type: Boolean, default: false },
     modelSn: { type: String, default: '' },
     versionSn: { type: String, default: '' },
   },
+<<<<<<< HEAD
   emits: ['prev', 'submit', 'submitandreview'],
+=======
+  emits: ['prev', 'submit'],
+>>>>>>> 13fe58d (~)
   setup(props, ctx) {
     const ready = ref(false);
     const http = Http.getInstance();
@@ -185,6 +213,7 @@ export default defineComponent({
     const formData = ref<FormData>(defaultFormData());
     const userStore = useUserStore();
 
+<<<<<<< HEAD
     let uploadArchiveAbort: AbortController | null = null;
 
     const notBeEmptyValidatorWithModelType = (rule: FormItemRule, value: string) => {
@@ -192,6 +221,11 @@ export default defineComponent({
         return new Error('Can not be empty');
       } else if (formData.value.modelType === 'LORA' && !value) {
         return new Error('Can not be empty');
+=======
+    const checkpointValidator = (rule: FormItemRule, value: string) => {
+      if (formData.value.modelType === 'CHECKPOINT' && !value) {
+        return new Error('Can not be empty');
+>>>>>>> 13fe58d (~)
       }
       return true;
     };
@@ -200,6 +234,7 @@ export default defineComponent({
       if (!value || !value.length) {
         return new Error('Can not be empty');
       } else {
+<<<<<<< HEAD
         const errors: number[] = [];
         value.forEach((item, index) => {
           if (!item.url) {
@@ -208,18 +243,30 @@ export default defineComponent({
         });
         if (errors.length > 0) {
           return new Error(`Waiting to upload (${errors.join(',')})...`);
+=======
+        const errors = value.filter((item) => !item.url);
+        if (errors.length > 0) {
+          return new Error('Please wait upload done');
+>>>>>>> 13fe58d (~)
         }
       }
       return true;
     };
 
     const formRule: FormRules = {
+<<<<<<< HEAD
       modelType: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
       archive: [{ required: true, type: 'array', validator: uploadValidator, trigger: ['input', 'blur'] }],
       alias: [{ required: true, validator: notBeEmptyValidatorWithModelType, trigger: ['input', 'blur'] }],
       hashCode: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
       modelSize: [{ required: true, validator: notBeEmptyValidatorWithModelType, trigger: ['input', 'blur'] }],
       floatingPoint: [{ required: true, validator: notBeEmptyValidatorWithModelType, trigger: ['input', 'blur'] }],
+=======
+      archive: [{ required: true, type: 'array', validator: uploadValidator, trigger: ['input', 'blur'] }],
+      floatingPoint: [{ required: true, validator: checkpointValidator, trigger: ['input', 'blur'] }],
+      modelSize: [{ required: true, validator: checkpointValidator, trigger: ['input', 'blur'] }],
+      hashCode: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
+>>>>>>> 13fe58d (~)
       fileSize: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
     };
     const formSubmitting = ref(false);
@@ -234,7 +281,11 @@ export default defineComponent({
       uploadLoadingArchive.value = true;
       formData.value.hashCode = '';
       formData.value.fileSize = '';
+<<<<<<< HEAD
       const fileHash = await fileToSha256Hex(file.file as File);
+=======
+      const fileHash = await fileToMD5(file.file as File);
+>>>>>>> 13fe58d (~)
       uploadLoadingArchive.value = false;
       console.info('file hash ', fileHash);
       if (!fileHash) {
@@ -267,15 +318,19 @@ export default defineComponent({
         message.error('presign error');
         return;
       }
+<<<<<<< HEAD
       if (uploadArchiveAbort) {
         uploadArchiveAbort.abort();
         uploadArchiveAbort = null;
       }
       uploadArchiveAbort = new AbortController();
+=======
+>>>>>>> 13fe58d (~)
       const resp = await upload({
         file,
         policyData,
         onProgress: ({ progress }) => onProgress({ percent: (progress || 0) * 100 }),
+<<<<<<< HEAD
         abortSignal: uploadArchiveAbort.signal,
       });
       if (uploadArchiveAbort) {
@@ -293,6 +348,17 @@ export default defineComponent({
         }
         onError();
       }
+=======
+      });
+      if (resp._result !== 0) {
+        onError();
+        console.error(resp._desc || '');
+        message.error(resp._desc || '');
+        return;
+      }
+      file.url = resp.sn;
+      onFinish();
+>>>>>>> 13fe58d (~)
     };
 
     const handleUploadRemove = ({ file, fileList }: UploadRemoveOptions) => {
@@ -302,6 +368,7 @@ export default defineComponent({
         list.push(item.url);
       });
       formData.value.archive = list;
+<<<<<<< HEAD
       formData.value.hashCode = '';
       formData.value.fileSize = '';
       if (uploadArchiveAbort) {
@@ -312,6 +379,18 @@ export default defineComponent({
     const handleSubmit = async () => {
       let versionSn = props.versionSn;
       let alias = formData.value.alias;
+=======
+    };
+
+    const handleSubmit = async () => {
+      if (!userStore.user.id) {
+        message.error('Please sign in first');
+        return;
+      }
+
+      let modelSn = props.modelSn;
+      let versionSn = props.versionSn;
+>>>>>>> 13fe58d (~)
       let modelSize = formData.value.modelSize;
       let floatingPoint = formData.value.floatingPoint;
       let hashCode = formData.value.hashCode;
@@ -321,7 +400,10 @@ export default defineComponent({
       let url = '/emchub/api/client/modelVersion/updateOne';
       let params = {
         versionSn,
+<<<<<<< HEAD
         alias,
+=======
+>>>>>>> 13fe58d (~)
         modelSize,
         floatingPoint,
         hashCodeSha256: hashCode,
@@ -331,6 +413,7 @@ export default defineComponent({
       formSubmitting.value = true;
       const resp = await http.postJSON({ url: url, data: params });
       formSubmitting.value = false;
+<<<<<<< HEAD
       return resp;
     };
 
@@ -359,6 +442,13 @@ export default defineComponent({
           data: { versionSn: props.versionSn },
         });
       }
+=======
+      if (resp._result !== 0) {
+        message.warning(resp._desc);
+        return;
+      }
+      ctx.emit('submit', params);
+>>>>>>> 13fe58d (~)
     };
 
     const initItems = (() => {
@@ -405,7 +495,10 @@ export default defineComponent({
       }
       const {
         floatingPoint = '',
+<<<<<<< HEAD
         alias = '',
+=======
+>>>>>>> 13fe58d (~)
         fileSize = 0,
         hashCodeSha256 = '',
         modelFileUrl = '{}',
@@ -416,7 +509,10 @@ export default defineComponent({
 
       formData.value = {
         modelType: formData.value.modelType,
+<<<<<<< HEAD
         alias: alias,
+=======
+>>>>>>> 13fe58d (~)
         hashCode: hashCodeSha256,
         fileSize: !fileSize ? '' : String(fileSize),
         modelSize: modelSize,
@@ -424,7 +520,10 @@ export default defineComponent({
         archive: archive ? [archive] : [],
       };
     };
+<<<<<<< HEAD
 
+=======
+>>>>>>> 13fe58d (~)
     const init = async (modelSn: string, versionSn: string) => {
       ready.value = false;
       await initItems();
@@ -441,6 +540,7 @@ export default defineComponent({
       { immediate: true }
     );
 
+<<<<<<< HEAD
     onUnmounted(() => {
       if (uploadArchiveAbort) {
         uploadArchiveAbort.abort();
@@ -448,6 +548,8 @@ export default defineComponent({
       }
     });
 
+=======
+>>>>>>> 13fe58d (~)
     return {
       ready,
       formRef,
@@ -463,6 +565,7 @@ export default defineComponent({
       onPressPrev() {
         ctx.emit('prev');
       },
+<<<<<<< HEAD
       async onPressSubmitAndReview() {
         if (!userStore.user.id) {
           message.error('Please sign in first');
@@ -509,6 +612,12 @@ export default defineComponent({
             return;
           }
           ctx.emit('submit');
+=======
+      async onPressSubmit() {
+        try {
+          await formRef.value?.validate();
+          handleSubmit();
+>>>>>>> 13fe58d (~)
         } catch (errors) {
           console.info(errors);
         }

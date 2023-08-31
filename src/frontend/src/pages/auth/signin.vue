@@ -1,5 +1,6 @@
 <template>
 <<<<<<< HEAD
+<<<<<<< HEAD
   <div>
     <!-- <SignInGoogle />
     <NDivider>or</NDivider> -->
@@ -75,36 +76,39 @@ export default defineComponent({
       >
     </NTabPane>
   </NTabs>
+=======
+  <SignInAccount
+    ref="signInAccountRef"
+    @signin="onSignin"
+    @signinbefore="onSigninBefore"
+    @signinafter="onSigninAfter"
+  />
+>>>>>>> 13fe58d (~)
 </template>
 <script lang="ts">
 import { ref, defineComponent, nextTick } from 'vue';
-import { NSpace, NTabs, NTabPane, NButton } from 'naive-ui';
-import SignInWallet from './signin-wallet.vue';
+import { NSpace, NButton } from 'naive-ui';
 import SignInAccount from './signin-account.vue';
-type TabName = 'signin-wallet' | 'signin-account';
 export default defineComponent({
-  components: { NSpace, NTabs, NTabPane, NButton, SignInWallet, SignInAccount },
+  components: { NSpace, NButton, SignInAccount },
   emits: ['signin', 'signinbefore', 'signinafter'],
   setup(props, ctx) {
-    const current = ref<TabName>('signin-wallet');
     const business = ref(false);
-    const signInWalletRef = ref<InstanceType<typeof SignInWallet>>();
     const signInAccountRef = ref<InstanceType<typeof SignInAccount>>();
     return {
-      current,
       business,
-      signInWalletRef,
       signInAccountRef,
-      onChangeTab(tab: TabName) {
-        current.value = tab;
-      },
       postLogin(data: { account: string; password: string; principal: string }) {
+<<<<<<< HEAD
         if (current.value === 'signin-wallet') {
           signInWalletRef.value?.postLogin(data);
         } else if (current.value === 'signin-account') {
           signInAccountRef.value?.postLogin(data);
         }
 >>>>>>> 4a3626c (~)
+=======
+        signInAccountRef.value?.postLogin(data);
+>>>>>>> 13fe58d (~)
       },
       onSignin(data: any) {
         ctx.emit('signin', data);

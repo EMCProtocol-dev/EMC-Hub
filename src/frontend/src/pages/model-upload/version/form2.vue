@@ -36,14 +36,22 @@
           </NSelect>
         </NFormItemGi>
         <NFormItemGi :span="24" path="description" label="Version Description">
+<<<<<<< HEAD
           <NInput type="textarea" v-model:value="formData.description" show-count maxlength="1000" />
+=======
+          <NInput type="textarea" v-model:value="formData.description" show-count maxlength="200" />
+>>>>>>> 13fe58d (~)
         </NFormItemGi>
         <NFormItemGi :span="24" path="images" label="Preview Images">
           <NUpload
             v-model:file-list="formData.images"
             multiple
             directory-dnd
+<<<<<<< HEAD
             action=""
+=======
+            action="https://api.emchub.ai/mrchaiemc/fileUpload.do"
+>>>>>>> 13fe58d (~)
             :max="6"
             list-type="image-card"
             :custom-request="handleUploadImage"
@@ -65,6 +73,7 @@
           <NButton type="default" strong :disabled="!ready || formSubmitting" @click.stop.prevent="onPressPrev"
             >Prev</NButton
           >
+<<<<<<< HEAD
           <template v-if="mode === 'add'">
             <NButton
               type="primary"
@@ -93,6 +102,16 @@
               >Save & Review</NButton
             >
           </template>
+=======
+          <NButton
+            type="primary"
+            strong
+            :disabled="!ready || formSubmitting"
+            :loading="formSubmitting"
+            @click.stop.prevent="onPressSubmit"
+            >Next</NButton
+          >
+>>>>>>> 13fe58d (~)
         </NSpace>
       </template>
     </NForm>
@@ -123,9 +142,15 @@ import type { UploadFileInfo } from 'naive-ui';
 import { Http } from '@/tools/http';
 import { ArchiveOutline as ArchiveIcon } from '@vicons/ionicons5';
 import { useUserStore } from '@/stores/user';
+<<<<<<< HEAD
 import { fileToSha256Hex } from '@/tools/file-sha256';
 import { useMinio } from '@/composables/use-minio';
 import * as StableDiffusionMetadata from 'stable-diffusion-image-metadata';
+=======
+import { fileToMD5, fileToSha256Hex } from '@/tools/file-sha256';
+import { useMinio } from '@/composables/use-minio';
+import { parametersWith } from '@/tools/exif';
+>>>>>>> 13fe58d (~)
 import { Utils } from '@/tools/utils';
 
 type BasicOptionItem = {
@@ -180,12 +205,19 @@ export default defineComponent({
     ArchiveIcon,
   },
   props: {
+<<<<<<< HEAD
     mode: { type: String, default: '' },
+=======
+>>>>>>> 13fe58d (~)
     disabled: { type: Boolean, default: false },
     versionSn: { type: String, default: '-1' },
     modelSn: { type: String, default: '' },
   },
+<<<<<<< HEAD
   emits: ['prev', 'submit', 'submitandreview'],
+=======
+  emits: ['prev', 'submit'],
+>>>>>>> 13fe58d (~)
   setup(props, ctx) {
     const ready = ref(false);
     const http = Http.getInstance();
@@ -198,6 +230,7 @@ export default defineComponent({
       if (!value || !value.length) {
         return new Error('Can not be empty');
       } else {
+<<<<<<< HEAD
         const errors: number[] = [];
         value.forEach((item, index) => {
           if (!item.url) {
@@ -206,6 +239,11 @@ export default defineComponent({
         });
         if (errors.length > 0) {
           return new Error(`Waiting to upload (${errors.join(',')})...`);
+=======
+        const errors = value.filter((item) => !item.url);
+        if (errors.length > 0) {
+          return new Error('Please wait upload done');
+>>>>>>> 13fe58d (~)
         }
       }
       return true;
@@ -214,8 +252,13 @@ export default defineComponent({
       version: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
       baseModel: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
       baseModelType: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
+<<<<<<< HEAD
       triggerWords: [{ required: false, type: 'array', message: 'Can not be empty', trigger: ['input', 'blur'] }],
       description: [{ required: false, validator: Utils.validatorStrLength(0, 1000), trigger: ['input', 'blur'] }],
+=======
+      triggerWords: [{ required: true, type: 'array', message: 'Can not be empty', trigger: ['input', 'blur'] }],
+      description: [{ required: true, validator: Utils.validatorStrLength(0, 200), trigger: ['input', 'blur'] }],
+>>>>>>> 13fe58d (~)
       images: [{ required: true, type: 'array', validator: uploadValidator, trigger: ['input', 'blur'] }],
     };
     const formSubmitting = ref(false);
@@ -224,7 +267,11 @@ export default defineComponent({
 
     const handleUploadImage = async (params: UploadCustomRequestOptions) => {
       const { file, headers, withCredentials, onFinish, onError, onProgress } = params;
+<<<<<<< HEAD
       const fileHash = await fileToSha256Hex(file.file as File);
+=======
+      const fileHash = await fileToMD5(file.file as File);
+>>>>>>> 13fe58d (~)
       if (!fileHash) {
         onError();
         message.error('file hash error');
@@ -256,7 +303,11 @@ export default defineComponent({
       }
       const url = resp.url || '';
       file.url = url;
+<<<<<<< HEAD
       const [parameters, isParameters] = await StableDiffusionMetadata.extract(file.file as File);
+=======
+      const parameters: string = await parametersWith(file.file as File);
+>>>>>>> 13fe58d (~)
       formData.value.imagesParameters.push({ id: file.id, raw: parameters });
       onFinish();
     };
@@ -271,6 +322,14 @@ export default defineComponent({
     };
 
     const handleSubmit = async () => {
+<<<<<<< HEAD
+=======
+      if (!userStore.user.id) {
+        message.error('Please sign in first');
+        return;
+      }
+
+>>>>>>> 13fe58d (~)
       let modelSn = props.modelSn;
       let versionSn = props.versionSn;
       let version = formData.value.version;
@@ -303,6 +362,7 @@ export default defineComponent({
       formSubmitting.value = true;
       const resp = await http.postJSON({ url: url, data: params });
       formSubmitting.value = false;
+<<<<<<< HEAD
       return resp;
     };
 
@@ -311,6 +371,17 @@ export default defineComponent({
         url: '/emchub/api/client/modelVersion/submitAudit',
         data: { versionSn: versionSn },
       });
+=======
+      if (resp._result !== 0) {
+        message.warning(resp._desc);
+        return;
+      }
+      if (!resp.data?.versionSn) {
+        message.warning('Response data error');
+        return;
+      }
+      ctx.emit('submit', { versionSn: resp.data.versionSn as string });
+>>>>>>> 13fe58d (~)
     };
 
     const initItems = (() => {
@@ -421,6 +492,7 @@ export default defineComponent({
       onPressPrev() {
         ctx.emit('prev');
       },
+<<<<<<< HEAD
       async onPressSubmitAndReview() {
         if (!userStore.user.id) {
           message.error('Please sign in first');
@@ -476,6 +548,12 @@ export default defineComponent({
             return;
           }
           ctx.emit('submit', { versionSn: versionSn as string });
+=======
+      async onPressSubmit() {
+        try {
+          await formRef.value?.validate();
+          handleSubmit();
+>>>>>>> 13fe58d (~)
         } catch (errors) {
           console.info(errors);
         }
