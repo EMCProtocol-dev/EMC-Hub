@@ -15,8 +15,8 @@
         <Form1
           :mode="mode"
           :model-sn="modelSn"
-          @submit="onFormSubmit1"
           @prev="onFormPrev1"
+          @submit="onFormSubmit1"
           @submitandreview="onFormReview1"
         />
       </template>
@@ -25,9 +25,9 @@
           :mode="mode"
           :model-sn="modelSn"
           :version-sn="versionSn"
-          @submit="onFormSubmit2"
           @prev="onFormPrev2"
-          @review="onFormReview2"
+          @submit="onFormSubmit2"
+          @submitandreview="onFormReview2"
         />
       </template>
       <template v-if="current === 3">
@@ -35,9 +35,9 @@
           :mode="mode"
           :model-sn="modelSn"
           :version-sn="versionSn"
-          @submit="onFormSubmit3"
           @prev="onFormPrev3"
-          @review="onFormReview3"
+          @submit="onFormSubmit3"
+          @submitandreview="onFormReview3"
         />
       </template>
       <template v-if="current === 4">
@@ -117,8 +117,8 @@ export default defineComponent({
     const hideSteps = ref(false);
     const completeVisible = ref(false);
     const completeTitle = ref('');
-
     const http = Http.getInstance();
+
     onMounted(() => {
       const queryModelSn = (route.params.modelSn as string) || '-1';
       const queryVersionSn = (route.params.versionSn as string) || '-1';
@@ -143,6 +143,11 @@ export default defineComponent({
       hideSteps,
       completeVisible,
       completeTitle,
+      //Form1 Events
+      onFormPrev1() {
+        console.info(`window.opener?.postMessage({ type: 'emchub-upload-cancel' }, '*')`);
+        window.opener?.postMessage({ type: 'emchub-upload-cancel' }, '*');
+      },
       onFormSubmit1({ modelSn: _modelSn }: { modelSn: string }) {
         modelSn.value = _modelSn;
         if (mode.value === 'add') {
@@ -151,55 +156,29 @@ export default defineComponent({
           current.value = 4;
         }
       },
-      async onFormReview1({ modelSn: _modelSn }: { modelSn: string }) {
+      onFormReview1({ modelSn: _modelSn }: { modelSn: string }) {
         current.value = 4;
       },
+      //Form2 Events
+      onFormPrev2() {
+        current.value = 1;
+      },
       onFormSubmit2({ versionSn: _versionSn }: { versionSn: string }) {
-        console.info(_versionSn);
         versionSn.value = _versionSn;
         current.value = 3;
       },
-      async onFormReview2({ modelSn: _modelSn }: { modelSn: string }) {
+      onFormReview2({ modelSn: _modelSn }: { modelSn: string }) {
         current.value = 4;
+      },
+      //Form3 Events
+      onFormPrev3() {
+        current.value = 2;
       },
       onFormSubmit3() {
         current.value = 4;
       },
-      onFormReview3(){
-
-      },
-      onFormPrev1() {
-        console.info(`window.opener?.postMessage({ type: 'emchub-upload-cancel' }, '*')`);
-        window.opener?.postMessage({ type: 'emchub-upload-cancel' }, '*');
-      },
-      onFormPrev2() {
-        current.value = 1;
-      },
-      onFormPrev3() {
-        current.value = 2;
-      },
-      async onPressReview() {
-        if (mode.value === 'add') {
-          const [resp1, resp2] = await Promise.all([
-            http.post({
-              url: '/emchub/api/client/modelInfo/submitAudit',
-              data: { modelSn: modelSn.value },
-            }),
-            http.post({
-              url: '/emchub/api/client/modelVersion/submitAudit',
-              data: { versionSn: versionSn.value },
-            }),
-          ]);
-          if (resp1._result !== 0) {
-            message.error(resp1._desc);
-            return;
-          }
-          if (resp2._result !== 0) {
-            message.error(resp2._desc);
-            return;
-          }
-        }
-        current.value = 5;
+      onFormReview3() {
+        current.value = 4;
       },
       onPressDone() {
         console.info(`window.opener?.postMessage({ type: 'emchub-upload-done' }, '*')`);

@@ -65,14 +65,34 @@
           <NButton type="default" strong :disabled="!ready || formSubmitting" @click.stop.prevent="onPressPrev"
             >Prev</NButton
           >
-          <NButton
-            type="primary"
-            strong
-            :disabled="!ready || formSubmitting"
-            :loading="formSubmitting"
-            @click.stop.prevent="onPressSubmit"
-            >Next</NButton
-          >
+          <template v-if="mode === 'add'">
+            <NButton
+              type="primary"
+              strong
+              :disabled="!ready || formSubmitting"
+              :loading="formSubmitting"
+              @click.stop.prevent="onPressSubmit"
+              >Next</NButton
+            >
+          </template>
+          <template v-else>
+            <NButton
+              type="primary"
+              strong
+              :disabled="!ready || formSubmitting"
+              :loading="formSubmitting"
+              @click.stop.prevent="onPressSubmit"
+              >Save</NButton
+            >
+            <NButton
+              type="primary"
+              strong
+              :disabled="!ready || formSubmitting"
+              :loading="formSubmitting"
+              @click.stop.prevent="onPressSubmitAndReview"
+              >Save & Review</NButton
+            >
+          </template>
         </NSpace>
       </template>
     </NForm>
@@ -103,7 +123,7 @@ import type { UploadFileInfo } from 'naive-ui';
 import { Http } from '@/tools/http';
 import { ArchiveOutline as ArchiveIcon } from '@vicons/ionicons5';
 import { useUserStore } from '@/stores/user';
-import { fileToMD5, fileToSha256Hex } from '@/tools/file-sha256';
+import { fileToSha256Hex } from '@/tools/file-sha256';
 import { useMinio } from '@/composables/use-minio';
 import { parametersWith } from '@/tools/exif';
 import { Utils } from '@/tools/utils';
@@ -160,11 +180,12 @@ export default defineComponent({
     ArchiveIcon,
   },
   props: {
+    mode: { type: String, default: '' },
     disabled: { type: Boolean, default: false },
     versionSn: { type: String, default: '-1' },
     modelSn: { type: String, default: '' },
   },
-  emits: ['prev', 'submit'],
+  emits: ['prev', 'submit', 'submitandreview'],
   setup(props, ctx) {
     const ready = ref(false);
     const http = Http.getInstance();
@@ -198,7 +219,7 @@ export default defineComponent({
 
     const handleUploadImage = async (params: UploadCustomRequestOptions) => {
       const { file, headers, withCredentials, onFinish, onError, onProgress } = params;
-      const fileHash = await fileToMD5(file.file as File);
+      const fileHash = await fileToSha256Hex(file.file as File);
       if (!fileHash) {
         onError();
         message.error('file hash error');
@@ -245,11 +266,6 @@ export default defineComponent({
     };
 
     const handleSubmit = async () => {
-      if (!userStore.user.id) {
-        message.error('Please sign in first');
-        return;
-      }
-
       let modelSn = props.modelSn;
       let versionSn = props.versionSn;
       let version = formData.value.version;
@@ -282,15 +298,14 @@ export default defineComponent({
       formSubmitting.value = true;
       const resp = await http.postJSON({ url: url, data: params });
       formSubmitting.value = false;
-      if (resp._result !== 0) {
-        message.warning(resp._desc);
-        return;
-      }
-      if (!resp.data?.versionSn) {
-        message.warning('Response data error');
-        return;
-      }
-      ctx.emit('submit', { versionSn: resp.data.versionSn as string });
+      return resp;
+    };
+
+    const handleReview = (versionSn: string) => {
+      return http.post({
+        url: '/emchub/api/client/modelVersion/submitAudit',
+        data: { versionSn: versionSn },
+      });
     };
 
     const initItems = (() => {
@@ -401,10 +416,61 @@ export default defineComponent({
       onPressPrev() {
         ctx.emit('prev');
       },
-      async onPressSubmit() {
+      async onPressSubmitAndReview() {
+        if (!userStore.user.id) {
+          message.error('Please sign in first');
+          return;
+        }
         try {
           await formRef.value?.validate();
-          handleSubmit();
+          formSubmitting.value = true;
+          const resp = await handleSubmit();
+          formSubmitting.value = false;
+          const versionSn = resp.data?.versionSn;
+          if (resp._result !== 0) {
+            message.error(resp._desc);
+            return;
+          }
+          if (!versionSn) {
+            message.error('Not found version sn');
+            return;
+          }
+          formSubmitting.value = true;
+          const resp2 = await handleReview(versionSn);
+          formSubmitting.value = false;
+          if (resp2._result !== 0) {
+            message.error(resp2._desc);
+            return;
+          }
+          ctx.emit('submitandreview');
+        } catch (errors) {
+          console.info(errors);
+        }
+      },
+      async onPressSubmit() {
+        if (!userStore.user.id) {
+          message.error('Please sign in first');
+          return;
+        }
+        try {
+          await formRef.value?.validate();
+          formSubmitting.value = true;
+          const resp = await handleSubmit();
+          formSubmitting.value = false;
+          const versionSn = resp.data?.versionSn;
+          if (resp._result !== 0) {
+            message.error(resp._desc);
+            return;
+          }
+          if (resp._result !== 0) {
+            message.warning(resp._desc);
+            return;
+          }
+          if (!versionSn) {
+            message.warning('Not found version sn');
+            return;
+          }
+          ctx.emit('submit', { versionSn: versionSn as string });
         } catch (errors) {
           console.info(errors);
         }

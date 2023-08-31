@@ -73,7 +73,15 @@
             :disabled="!ready || formSubmitting || uploadLoadingArchive"
             :loading="formSubmitting"
             @click.stop.prevent="onPressSubmit"
-            >Next</NButton
+            >Save</NButton
+          >
+          <NButton
+            type="primary"
+            strong
+            :disabled="!ready || formSubmitting || uploadLoadingArchive"
+            :loading="formSubmitting"
+            @click.stop.prevent="onPressSubmitAndReview"
+            >Save & Review</NButton
           >
         </NSpace>
       </template>
@@ -155,11 +163,12 @@ export default defineComponent({
     ArchiveIcon,
   },
   props: {
+    mode: { type: String, default: '' },
     disabled: { type: Boolean, default: false },
     modelSn: { type: String, default: '' },
     versionSn: { type: String, default: '' },
   },
-  emits: ['prev', 'submit'],
+  emits: ['prev', 'submit', 'submitandreview'],
   setup(props, ctx) {
     const ready = ref(false);
     const http = Http.getInstance();
@@ -265,12 +274,6 @@ export default defineComponent({
     };
 
     const handleSubmit = async () => {
-      if (!userStore.user.id) {
-        message.error('Please sign in first');
-        return;
-      }
-
-      let modelSn = props.modelSn;
       let versionSn = props.versionSn;
       let modelSize = formData.value.modelSize;
       let floatingPoint = formData.value.floatingPoint;
@@ -290,11 +293,34 @@ export default defineComponent({
       formSubmitting.value = true;
       const resp = await http.postJSON({ url: url, data: params });
       formSubmitting.value = false;
-      if (resp._result !== 0) {
-        message.warning(resp._desc);
-        return;
+      return resp;
+    };
+
+    const handleReview = async () => {
+      if (props.mode === 'add') {
+        const [resp1, resp2] = await Promise.all([
+          http.post({
+            url: '/emchub/api/client/modelInfo/submitAudit',
+            data: { modelSn: props.modelSn },
+          }),
+          http.post({
+            url: '/emchub/api/client/modelVersion/submitAudit',
+            data: { versionSn: props.versionSn },
+          }),
+        ]);
+        if (resp1._result !== 0) {
+          return resp1;
+        }
+        if (resp2._result !== 0) {
+          return resp2;
+        }
+        return resp2;
+      } else {
+        return http.post({
+          url: '/emchub/api/client/modelVersion/submitAudit',
+          data: { versionSn: props.versionSn },
+        });
       }
-      ctx.emit('submit', params);
     };
 
     const initItems = (() => {
@@ -389,10 +415,52 @@ export default defineComponent({
       onPressPrev() {
         ctx.emit('prev');
       },
-      async onPressSubmit() {
+      async onPressSubmitAndReview() {
+        if (!userStore.user.id) {
+          message.error('Please sign in first');
+          return;
+        }
         try {
           await formRef.value?.validate();
-          handleSubmit();
+          formSubmitting.value = true;
+          const resp = await handleSubmit();
+          formSubmitting.value = false;
+          const modelSn = resp.data?.modelSn;
+          if (resp._result !== 0) {
+            message.error(resp._desc);
+            return;
+          }
+          if (!modelSn) {
+            message.error('Not found model sn');
+            return;
+          }
+          formSubmitting.value = true;
+          const resp2 = await handleReview();
+          formSubmitting.value = false;
+          if (resp2._result !== 0) {
+            message.error(resp2._desc);
+            return;
+          }
+          ctx.emit('submitandreview');
+        } catch (errors) {
+          console.info(errors);
+        }
+      },
+      async onPressSubmit() {
+        if (!userStore.user.id) {
+          message.error('Please sign in first');
+          return;
+        }
+        try {
+          await formRef.value?.validate();
+          formSubmitting.value = true;
+          const resp = await handleSubmit();
+          formSubmitting.value = false;
+          if (resp._result !== 0) {
+            message.error(resp._desc);
+            return;
+          }
+          ctx.emit('submit');
         } catch (errors) {
           console.info(errors);
         }
