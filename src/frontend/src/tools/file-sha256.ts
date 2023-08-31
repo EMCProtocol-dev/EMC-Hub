@@ -1,5 +1,6 @@
 import SparkMD5 from 'spark-md5';
 import { Sha256 } from '@aws-crypto/sha256-browser';
+import CryptoJS from 'crypto-js';
 
 export function arrayBufferToBuffer(ab: ArrayBuffer) {
   const buffer = Buffer.allocUnsafe(ab.byteLength);
@@ -89,7 +90,16 @@ export async function handleFileToMD5(file: File): Promise<string> {
   });
 }
 
-export async function handleFileToSHA256(file: File): Promise<string> {
+function arrayBufferToWordArray(ab: ArrayBuffer) {
+  let i8a = new Uint8Array(ab);
+  let a: number[] = [];
+  for (let i = 0; i < i8a.length; i += 4) {
+    a.push((i8a[i] << 24) | (i8a[i + 1] << 16) | (i8a[i + 2] << 8) | i8a[i + 3]);
+  }
+  return CryptoJS.lib.WordArray.create(a, i8a.length);
+}
+
+export async function handleFileToSHA256DDD(file: File): Promise<string> {
   return new Promise((resolve) => {
     const chunkSize = 2097152; // Read in chunks of 2MB
     const chunks = Math.ceil(file.size / chunkSize);
@@ -112,6 +122,51 @@ export async function handleFileToSHA256(file: File): Promise<string> {
           return value.toString(16).padStart(2, '0');
         });
         const hash = '0x' + hexCodes.join('');
+        console.info('computed hash', hash); // Compute hash
+        resolve(hash);
+      }
+    };
+
+    fileReader.onabort = function (e) {
+      console.warn('oops, file reader abort', e);
+      resolve('');
+    };
+
+    fileReader.onerror = function (e) {
+      console.warn('oops, file reader error', e);
+      resolve('');
+    };
+
+    function loadNext() {
+      const start = currentChunk * chunkSize;
+      const _end = start + chunkSize;
+      const end = _end >= file.size ? file.size : _end;
+      fileReader.readAsArrayBuffer(file.slice(start, end));
+    }
+
+    loadNext();
+  });
+}
+
+export async function handleFileToSHA256(file: File): Promise<string> {
+  return new Promise((resolve) => {
+    const chunkSize = 2097152; // Read in chunks of 2MB
+    const chunks = Math.ceil(file.size / chunkSize);
+    const hashData = CryptoJS.algo.SHA256.create();
+    const fileReader = new FileReader();
+
+    let currentChunk = 0;
+
+    fileReader.onload = async function (e) {
+      console.info('read chunk nr', currentChunk + 1, 'of', chunks);
+      const wordArray = arrayBufferToWordArray(e.target?.result as ArrayBuffer);
+      hashData.update(wordArray);
+      currentChunk++;
+      if (currentChunk < chunks) {
+        loadNext();
+      } else {
+        console.info('finished loading');
+        const hash = hashData.finalize().toString();
         console.info('computed hash', hash); // Compute hash
         resolve(hash);
       }

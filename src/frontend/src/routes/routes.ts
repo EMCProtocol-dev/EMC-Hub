@@ -37,7 +37,7 @@ export const routes = [
       },
       {
         name: 'model-detail',
-        path: 'models/:id',
+        path: 'models/:modelSn',
         component: () => import('@/pages/model-detail/index.vue'),
       },
 

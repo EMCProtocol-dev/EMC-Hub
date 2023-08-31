@@ -30,9 +30,8 @@
           </div>
         </template>
         <template #header-extra>
-          <template v-if="nickname === '顺子'">
-            <NButton type="primary" ghost strong @click="onPressUpload">Click to upload</NButton>
-          </template>
+          <!-- <template v-if="nickname === '顺子'"></template> -->
+          <NButton type="primary" ghost strong @click="onPressUpload">Click to upload</NButton>
         </template>
         <NSpace :wrap-item="false" :size="[24, 0]" :wrap="true">
           <template v-if="loading">
@@ -60,6 +59,7 @@ import { defineComponent, ref, computed, onActivated } from 'vue';
 import { NA, NPagination, NSpace, NButton, NGrid, NGridItem, NSpin, NCard, NCarousel, useMessage } from 'naive-ui';
 import { useRouter } from 'vue-router';
 import { Http } from '@/tools/http';
+import { Utils } from '@/tools/utils';
 import { useUserStore } from '@/stores/user';
 
 import NFTItem from './nft-item.vue';
@@ -67,7 +67,7 @@ import type { Item as NftItemDef } from './nft-item';
 
 import ModelItem from './model-item.vue';
 
-type bannerItem = {
+type BannerItem = {
   cover: string;
   link: string;
 };
@@ -104,7 +104,7 @@ export default defineComponent({
     const message = useMessage();
     const router = useRouter();
 
-    const bannerList = ref<bannerItem[]>([]);
+    const bannerList = ref<BannerItem[]>([]);
     const nftList = ref<NftItemDef[]>([]);
 
     const list = ref<any[]>([]);
@@ -118,33 +118,31 @@ export default defineComponent({
 
     const updateList = async () => {
       loading.value = true;
-      const resp = await http.postJSON({
-        url: '/mrchaiemc/queryModelInfoForMainView.do',
-        data: { custId: userStore.user.id, bussData: { pageIndex: pageNo.value - 1, pageSize: pageSize.value } },
+      const resp = await http.get({
+        url: '/emchub/api/client/modelInfo/queryList',
+        data: { pageNo: pageNo.value, pageSize: pageSize.value },
       });
       loading.value = false;
 
-      const newList: any[] = resp.modelInfoList || [];
+      const newList: any[] = resp.pageInfo?.list || [];
       const total = resp.totalNum || 0;
-      //'modelSubName',
-      const tagsProps = ['cateGory1', 'cateGory2', 'cateGory3'];
       list.value = [];
       newList.forEach((item) => {
-        let status = item.modelStat;
-        // if (status === 'HIDDEN') return;
-        let tags: any[] = [];
-        tagsProps.forEach((p) => {
-          const vals = item[p] ? item[p].split(',') : [];
-          if (vals.length > 0) {
-            tags = tags.concat(vals);
-          }
-        });
+        const tags: any[] = item.tags ? item.tags.split(',') : [];
+        const covers: string[] = [];
+        if (item.modelVersions && item.modelVersions[0] && item.modelVersions[0].previewPicturesUrl) {
+          const lastestVersionImages = Utils.parseJSON(item.modelVersions[0].previewPicturesUrl);
+          lastestVersionImages.forEach((item: any) => {
+            covers.push(item.url);
+          });
+        }
         list.value.push({
           id: item.modelId,
-          covers: item.sampleImgFileLinks ? item.sampleImgFileLinks.split(',') : [],
-          name: item.modelName,
+          sn: item.modelSn,
           tags: tags,
-          status: status,
+          name: item.modelName,
+          status: item.status,
+          covers: covers,
         });
       });
       itemCount.value = total;
@@ -191,10 +189,11 @@ export default defineComponent({
           message.error('Please sign in first');
           return;
         }
-        router.push({ name: 'model-upload' });
+        window.open('http://localhost:8080/#/model-upload', `emchub-upload-${new Date().getTime()}`);
+        // router.push({ name: 'model-upload' });
       },
       onPressItem(item: any) {
-        router.push({ name: 'model-detail', params: { id: item.id } });
+        router.push({ name: 'model-detail', params: { modelSn: item.sn } });
       },
     };
   },

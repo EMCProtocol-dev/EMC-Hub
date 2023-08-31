@@ -43,7 +43,7 @@
             v-model:file-list="formData.images"
             multiple
             directory-dnd
-            action="https://api.emchub.ai/mrchaiemc/fileUpload.do"
+            action=""
             :max="6"
             list-type="image-card"
             :custom-request="handleUploadImage"

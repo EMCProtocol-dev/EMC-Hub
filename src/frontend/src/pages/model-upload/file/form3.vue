@@ -207,7 +207,7 @@ export default defineComponent({
       uploadLoadingArchive.value = true;
       formData.value.hashCode = '';
       formData.value.fileSize = '';
-      const fileHash = await fileToMD5(file.file as File);
+      const fileHash = await fileToSha256Hex(file.file as File);
       uploadLoadingArchive.value = false;
       console.info('file hash ', fileHash);
       if (!fileHash) {

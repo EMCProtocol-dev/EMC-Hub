@@ -10,6 +10,11 @@ import { useLoadingBar, useMessage, NSpin } from 'naive-ui';
 import { router } from '@/routes/index';
 import { useUserStore } from '@/stores/user';
 
+type Message = {
+  type: string;
+  data?: any;
+};
+
 export default defineComponent({
   name: 'app',
   components: { NSpin },
@@ -24,6 +29,23 @@ export default defineComponent({
       if (userStore.user.id) {
         //init user info
       }
+      //emchub upload
+      window.addEventListener('message', (event: any) => {
+        const message = event.data as Message;
+        const window = event.source as Window;
+        switch (message.type) {
+          case 'emchub-upload-cancel': {
+            window.close();
+            break;
+          }
+          case 'emchub-upload-done':
+            window.close();
+            break;
+          default:
+            console.info(`unknow message type '${message.type}'`);
+            break;
+        }
+      });
     });
 
     return {};

@@ -84,7 +84,7 @@
         </NGrid>
       </template>
     </NCard>
-    <ModelGallery :modelId="modelId" :modelHashCode="modelHashCode" :modelName="name" />
+    <ModelGallery :modelSn="modelSn" :modelHashCode="modelHashCode" :modelName="name" />
     <NModal v-model:show="nodeVisible" :mask-closable="false">
       <NCard :bordered="false" style="width: 88vw; max-width: 640px" content-style="padding-left:0;padding-right:0;">
         <template #header>
@@ -109,11 +109,32 @@
 import { ref, defineComponent, onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
-import { NCard, NH2, NH3, NSpace, NSpin, NTag, NCarousel, NDescriptions, NDescriptionsItem, NButton, NIcon, NModal, NGrid, NGridItem, useMessage, NPopselect } from 'naive-ui';
+import {
+  NCard,
+  NH2,
+  NH3,
+  NSpace,
+  NSpin,
+  NTag,
+  NCarousel,
+  NDescriptions,
+  NDescriptionsItem,
+  NButton,
+  NIcon,
+  NModal,
+  NGrid,
+  NGridItem,
+  useMessage,
+  NPopselect,
+} from 'naive-ui';
 import { useUserStore } from '@/stores/user';
 import { Http } from '@/tools/http';
 import { Utils } from '@/tools/utils';
-import { DownloadSharp as IconDownload, CaretForwardCircleOutline as IconRun, CloseSharp as IconClose } from '@vicons/ionicons5';
+import {
+  DownloadSharp as IconDownload,
+  CaretForwardCircleOutline as IconRun,
+  CloseSharp as IconClose,
+} from '@vicons/ionicons5';
 import NodeList from './node-list.vue';
 import type { NodeItem } from './node-item';
 import { parametersWith } from '@/tools/exif';
@@ -147,7 +168,7 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const message = useMessage();
-    const modelId = ref(route.params.id as string);
+    const modelSn = ref(route.params.modelSn as string);
     const error = ref(-1);
     const errorText = ref('');
     //modal property
@@ -165,23 +186,21 @@ export default defineComponent({
     const floatingPoint = ref('');
     const modelSize = ref('');
     const description = ref('');
-
     const http = Http.getInstance();
-    const useStore = useUserStore();
+
     const init = async () => {
       error.value = -1;
       errorText.value = '';
-      const resp = await http.postJSON({
-        url: '/mrchaiemc/queryModelDetailInfo.do',
-        data: { custId: useStore.user.id, bussData: { modelId: modelId.value } },
+      const resp = await http.get({
+        url: '/emchub/api/client/modelInfo/queryOne',
+        data: { modelSn: modelSn.value },
       });
-      const data = resp.bussData || {};
-      if (!data.modelId) {
+      if (resp._result !== 0) {
         error.value = 1;
         errorText.value = 'Not found model';
         return;
       }
-
+      const data: any = resp.data || {};
       if (typeof data.sampleImgFileLinks !== 'string') {
         data.sampleImgFileLinks = '';
       }
@@ -227,7 +246,7 @@ export default defineComponent({
     return {
       error,
       errorText,
-      modelId,
+      modelSn,
       nodeVisible,
       nodeHashCode,
       name,
@@ -294,7 +313,10 @@ export default defineComponent({
         }
 
         nodeVisible.value = false;
-        sdWindow = window.open(`https://sd.edgematrix.pro/#/txt2img?nodeid=${item.nodeId}`, `sd-window-${new Date().getTime()}`);
+        sdWindow = window.open(
+          `https://sd.edgematrix.pro/#/txt2img?nodeid=${item.nodeId}`,
+          `sd-window-${new Date().getTime()}`
+        );
         // sdWindow = window.open(
         //   `http://localhost:8080/#/txt2img?nodeid=${item.nodeId}`,
         //   `sd-window-${new Date().getTime()}`
