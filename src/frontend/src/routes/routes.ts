@@ -32,7 +32,7 @@ export const routes = [
       },
       {
         name: 'model-upload',
-        path: 'model-upload',
+        path: 'model-upload/:modelSn?/:versionSn?',
         component: () => import('@/pages/model-upload/index.vue'),
       },
       {

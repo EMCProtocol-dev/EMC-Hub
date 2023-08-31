@@ -32,23 +32,6 @@
       </template>
       <NInput v-model:value="formData.email" placeholder="" @keydown.enter.prevent />
     </NFormItem>
-    <NFormItem path="principal">
-      <template #label>
-        <NText strong>ICP-Principal</NText>
-      </template>
-      <NInput v-model:value="formData.principal" :disabled="true" placeholder="" @keydown.enter.prevent>
-        <template #suffix>
-          <NButton
-            type="warning"
-            strong
-            :loading="principalLoading"
-            @click="onPressGetPrincipal"
-            style="margin-right: -12px"
-            >Get Principal</NButton
-          >
-        </template>
-      </NInput>
-    </NFormItem>
   </NForm>
   <NSpace vertical align="center" :wrap-item="false">
     <NButton
@@ -73,7 +56,6 @@ type SignIn = {
   password: string;
   nickname: string;
   email: string;
-  principal: string;
 };
 
 export default defineComponent({
@@ -86,17 +68,14 @@ export default defineComponent({
       password: '',
       nickname: '',
       email: '',
-      principal: '',
     });
     const formRule: FormRules = {
-      account: [{ trigger: ['input', 'blur'], validator: Utils.validatorNotEmpty }],
-      password: [{ trigger: ['input', 'blur'], validator: Utils.validatorNotEmpty }],
-      nickname: [{ trigger: ['input', 'blur'], validator: Utils.validatorNotEmpty }],
-      email: [{ trigger: ['input', 'blur'], validator: Utils.validatorNotEmpty }],
-      principal: [{ trigger: ['input', 'blur'], validator: Utils.validatorNotEmpty }],
+      account: [{ required: true, trigger: ['input', 'blur'], validator: Utils.validatorNotEmpty }],
+      password: [{ required: true, trigger: ['input', 'blur'], validator: Utils.validatorNotEmpty }],
+      nickname: [{ required: true, trigger: ['input', 'blur'], validator: Utils.validatorNotEmpty }],
+      email: [{ required: true, trigger: ['input', 'blur'], validator: Utils.validatorNotEmpty }],
     };
     const submitting = ref(false);
-    const principalLoading = ref(false);
     const message = useMessage();
     const userStore = useUserStore();
     const handleSubmit = async () => {
@@ -104,8 +83,7 @@ export default defineComponent({
       let password = formData.value.password;
       let email = formData.value.email;
       let nickname = formData.value.nickname;
-      let principal = formData.value.principal;
-      const params = { account, password, nickname, email, principal };
+      const params = { account, password, nickname, email };
       submitting.value = true;
       const resp = await userStore.signup(params);
       submitting.value = false;
@@ -121,21 +99,6 @@ export default defineComponent({
       formData,
       formRule,
       submitting,
-      principalLoading,
-      async onPressGetPrincipal() {
-        principalLoading.value = true;
-        const resp = await Utils.emcLogin();
-        principalLoading.value = false;
-        if (resp._result !== 0) {
-          message.error(resp._desc as string);
-          return;
-        }
-        if (!resp.data?.principal) {
-          message.error('Response data error');
-          return;
-        }
-        formData.value.principal = resp.data.principal as string;
-      },
       async onPressSubmit() {
         try {
           await formRef.value?.validate();

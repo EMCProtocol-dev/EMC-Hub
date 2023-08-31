@@ -16,7 +16,7 @@ interface HttpConfig {
 }
 
 const _defaultHttpConfig = {
-  baseURL: 'https://api.emchub.ai', //'http://36.155.7.134:9080', //
+  baseURL: 'https://client.emchub.ai', //'http://36.155.7.130:9092', , //'https://api.emchub.ai', //'http://36.155.7.134:9080', //
 };
 
 type Session = {
@@ -119,14 +119,8 @@ class Http {
     if (this.session) {
       const and = options.url.includes('?') ? '&' : '?';
       const session = this.session as Session;
-      const sessions: string[] = [];
-      Object.assign(session).forEach((k: string) => {
-        if (!session[k]) return;
-        sessions.push(`${k}=${session[k]}`);
-      });
-      if (sessions.length > 0) {
-        options.url = `${options.url}${and}${sessions.join('&')}`;
-      }
+      const sessionStr = `sid=${session.token}`;
+      options.url = `${options.url}${and}${sessionStr}`;
     }
     return options;
   }

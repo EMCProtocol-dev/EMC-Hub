@@ -108,6 +108,17 @@ const emcLogin = (): Promise<{ _result: number; _desc?: string; data?: { princip
 const validatorNotEmpty = (rule: FormItemRule, value: string) => {
   return !value ? new Error('Can not be empty') : true;
 };
+const validatorStrLength =
+  (min: number = 0, max: number = 200) =>
+  (rule: FormItemRule, value: string) => {
+    if (value.length < min) {
+      return new Error('Minimum exceeded');
+    }
+    if (value.length > max) {
+      return new Error('Maximum exceeded');
+    }
+    return true;
+  };
 
 export const Utils = {
   getLocalStorage,
@@ -122,4 +133,5 @@ export const Utils = {
   formatAddress,
   emcLogin,
   validatorNotEmpty,
+  validatorStrLength,
 };
