@@ -46,7 +46,7 @@
                 </div>
                 <div class="with">
                   <div class="with-label">Hash Code</div>
-                  <div class="with-value">{{ modelHashCode || '-' }}</div>
+                  <div class="with-value">{{ hashCode || '-' }}</div>
                 </div>
                 <div class="with">
                   <div class="with-label">Base Model</div>
@@ -84,7 +84,7 @@
         </NGrid>
       </template>
     </NCard>
-    <ModelGallery :modelSn="modelSn" :modelHashCode="modelHashCode" :modelName="name" />
+    <ModelGallery :modelSn="modelSn" :modelHashCode="hashCode" :modelName="name" />
     <NModal v-model:show="nodeVisible" :mask-closable="false">
       <NCard :bordered="false" style="width: 88vw; max-width: 640px" content-style="padding-left:0;padding-right:0;">
         <template #header>
@@ -182,7 +182,7 @@ export default defineComponent({
     const version = ref('');
     const tags = ref<string[]>([]);
     const baseModel = ref('');
-    const modelHashCode = ref('');
+    const hashCode = ref('');
     const floatingPoint = ref('');
     const modelSize = ref('');
     const description = ref('');
@@ -201,41 +201,32 @@ export default defineComponent({
         return;
       }
       const data: any = resp.data || {};
-      if (typeof data.sampleImgFileLinks !== 'string') {
-        data.sampleImgFileLinks = '';
-      }
 
-      if (typeof data.modelFileLinks !== 'string') {
-        data.modelFileLinks = '';
-      }
-
-      let tagsProps = ['modelSubName', 'cateGory1', 'cateGory2', 'cateGory3'];
-      let _tags: string[] = [];
-      tagsProps.forEach((p) => {
-        const v = data[p] as string;
-        const vals = v ? v.split(',') : [];
-        if (vals.length > 0) {
-          _tags = _tags.concat(vals);
-        }
-      });
+      let _tags: string[] = data.tags.split(',');
 
       let _covers: Array<{ url: string; parameters: string }> = [];
-      if (data.covers) {
-        _covers = Utils.parseJSON(data.covers) || [];
-      } else if (data.sampleImgFileLinks) {
-        _covers = data.sampleImgFileLinks.split(',').map((url: string) => ({ url, parameters: '' }));
+      let _parameters: Array<{ id: string; raw: string }> = [];
+      let _modelFile: { id?: string; name?: string; url?: string } = {};
+      const lastestVersion = data.modelVersions && data.modelVersions[0] ? data.modelVersions[0] : {};
+      if (lastestVersion.versionId) {
+        _parameters = Utils.parseJSON(lastestVersion.previewPicturesGenParams);
+        _covers = Utils.parseJSON(lastestVersion.previewPicturesUrl) || [];
+        _modelFile = Utils.parseJSON(lastestVersion.modelFileUrl);
+        _covers.forEach((item, index) => {
+          item.parameters = _parameters[index].raw;
+        });
       }
 
       name.value = data.modelName;
-      covers.value = _covers;
-      version.value = data.version || '1';
       tags.value = _tags;
-      archive.value = data.modelFileLinks;
-      baseModel.value = data.baseModel;
-      modelHashCode.value = data.modelHashCode;
-      floatingPoint.value = data.floatingPoint;
-      modelSize.value = data.modelSize;
+      covers.value = _covers;
       description.value = data.description;
+      version.value = lastestVersion.modelVersion || '-';
+      hashCode.value = lastestVersion.hashCodeSha256;
+      baseModel.value = lastestVersion.baseModel;
+      floatingPoint.value = lastestVersion.floatingPoint;
+      modelSize.value = lastestVersion.modelSize;
+      archive.value = _modelFile.url || '';
       error.value = 0;
     };
 
@@ -255,17 +246,17 @@ export default defineComponent({
       tags,
       archive,
       baseModel,
-      modelHashCode,
+      hashCode,
       floatingPoint,
       modelSize,
       description,
       onPressRun() {
-        if (!modelHashCode.value) {
+        if (!hashCode.value) {
           message.error("Sorry, This model without 'Hash Code'");
           return;
         }
         nodeVisible.value = true;
-        nodeHashCode.value = modelHashCode.value;
+        nodeHashCode.value = hashCode.value;
       },
       onNodeClose() {
         nodeVisible.value = false;
