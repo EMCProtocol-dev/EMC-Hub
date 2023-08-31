@@ -1,5 +1,7 @@
 import { Client as MinioClient } from 'minio';
 import { Axios, AxiosProgressEvent } from 'axios';
+import { sign } from '@/tools/open-api';
+import { Http } from '@/tools/http';
 
 const HOST = '36.155.7.145';
 const PORT = 9000;
@@ -45,6 +47,15 @@ function wait(t: number) {
   return new Promise((resolve) => setTimeout(resolve, t));
 }
 
+type PresignHttpOptions = {
+  fileName: string;
+  fileType: string;
+  fileHash: string;
+  fileSize: number;
+  signType: number;
+  userId: string | number;
+};
+
 export function useMinio() {
   let minioClient: MinioClient;
   const getContext = () => {
@@ -59,9 +70,36 @@ export function useMinio() {
     }
     return minioClient;
   };
-  const presigned = (fileName: string) => {
-    const ctx = getContext();
-    return ctx.presignedPutObject(BUCKET_NAME, `${fileName}`, 2);
+  
+  const presignedHttp = async (params: PresignHttpOptions) => {
+    const appid = 'emc-hub-a63123cf';
+    const secret = '9c4283f0-3509-11ee-8d81-06c27dd31a5a';
+    const nonce = new Date().getTime();
+    const action = 'sign';
+    const { fileName, fileType, fileHash, fileSize, signType, userId } = params;
+    const body = {
+      userId: userId,
+      fileName: fileName,
+      fileContentType: fileType,
+      fileHash: fileHash,
+      size: fileSize,
+      type: signType,
+    };
+    const signParams: any = { appid, nonce, action, requestBody: JSON.stringify(body) };
+    signParams.sign = sign(signParams, secret);
+    const { _result, data } = await Http.getInstance().postJSON({
+      url: `https://upload.emchub.ai/emc/api/client/userUpload/${action}`,
+      data: signParams,
+    });
+    if (_result !== 0) {
+      return null;
+    }
+    return {
+      postURL: data.postURL,
+      postFormData: data.postFormData,
+      doneURL: data.doneURL,
+      doneBody: data.doneBody,
+    };
   };
 
   const presignedPolicy = async (file: FileInfo): Promise<PolicyResult> => {
@@ -131,7 +169,7 @@ export function useMinio() {
   };
 
   return {
-    presigned,
+    presignedHttp,
     upload,
   };
 }

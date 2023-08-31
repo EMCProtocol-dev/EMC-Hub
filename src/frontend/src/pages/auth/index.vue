@@ -28,7 +28,7 @@
                 </NSpace>
                 <div class="sign-subtitle">Welcome #AI</div>
               </div>
-              <SignIn
+              <SignInAccount
                 ref="signinRef"
                 @signin="onSignInSuccess"
                 @signinbefore="signinLoading = true"
@@ -60,8 +60,8 @@ import { defineComponent, nextTick, onMounted, ref, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import type { RouteLocationRaw } from 'vue-router';
 import { NLayout, NLayoutContent, NCard, NH1, NH3, NA, NSpace, NGrid, NGridItem } from 'naive-ui';
-import SignIn from './signin.vue';
 import SignUp from './signup.vue';
+import SignInAccount from './signin-account.vue';
 
 const bgImg1 = require('@/assets/login-img.png');
 const bgImg2 = require('@/assets/login-img1.png');
@@ -78,14 +78,14 @@ export default defineComponent({
     NSpace,
     NGrid,
     NGridItem,
-    SignIn,
     SignUp,
+    SignInAccount,
   },
   setup() {
     const router = useRouter();
     const route = useRoute();
     const action = ref('signin');
-    const signinRef = ref<InstanceType<typeof SignIn>>();
+    const signinRef = ref<InstanceType<typeof SignInAccount>>();
     const signinLoading = ref(false);
     const signupLoading = ref(false);
 
@@ -127,18 +127,10 @@ export default defineComponent({
           router.replace({ name: 'home' });
         }
       },
-      async onSignUpSuccess({
-        account,
-        password,
-        principal,
-      }: {
-        account: string;
-        password: string;
-        principal: string;
-      }) {
+      async onSignUpSuccess({ account, password }: { account: string; password: string }) {
         action.value = 'signin';
         await nextTick();
-        signinRef.value?.postLogin({ account, password, principal });
+        signinRef.value?.postLogin({ account, password });
         console.info('sss');
       },
     };

@@ -17,7 +17,6 @@ export type SignupParams = {
   password: string;
   nickname: string;
   email: string;
-  principal: string;
 };
 
 export type SigninParams = {
@@ -58,71 +57,56 @@ export const useUserStore = defineStore('user', () => {
       }
     },
     async signup(params: SignupParams): Promise<{ _result: number; _desc?: string }> {
-      const { account = '', password = '', nickname = '', email = '', principal = '' } = params;
+      const { account = '', password = '', nickname = '', email = '' } = params;
       const resp1 = await http.postJSON({
-        url: '/mrchaiemc/applyRegister.do',
-        data: { bussData: { loginId: account, nickName: nickname, email: email } },
+        url: '/emchub/api/client/user/reg',
+        data: { userCode: account, password: password, username: nickname, email },
       });
-      const userId = resp1?.bussData?.custId;
-      if (!userId) {
-        return { _result: 1, _desc: 'Failure' };
-      }
-      const [resp2, resp3] = await Promise.all([
-        http.postJSON({
-          url: '/mrchaiemc/setAutoration.do',
-          data: { custId: userId, bussData: { identityType: 'PASSWD', authToken: password } },
-        }),
-        http.postJSON({
-          url: '/mrchaiemc/setAutoration.do',
-          data: { custId: userId, bussData: { identityType: 'PRINCIPAL', authToken: principal } },
-        }),
-      ]);
-      if (resp2.resultCode !== 'SUCCESS' || resp3.resultCode !== 'SUCCESS') {
-        return { _result: 2, _desc: 'Auth Failure' };
+      if (resp1._result !== 0) {
+        return { _result: 1, _desc: resp1._desc };
       }
       return { _result: 0 };
     },
     async signin(params: SigninParams) {
       const _account = params.account;
       const _password = params.password || '';
-      const _principal = params.principal || '';
+      // const _principal = params.principal || '';
       const _type = params.type;
       const result = { _result: 0, _desc: '', user: defaultUser() };
       const http = Http.getInstance();
-      const authData = { identityType: '', authToken: '' };
+      const loginParams: any = {};
       if (_type === 'password') {
-        authData.identityType = 'PASSWD';
-        authData.authToken = _password as string;
-      } else if (_type === 'wallet') {
-        authData.identityType = 'PRINCIPAL';
-        authData.authToken = _principal as string;
+        loginParams.userCode = _account;
+        loginParams.password = _password as string;
       }
-      const resp = await http.postJSON({
-        url: '/mrchaiemc/userLogin.do',
-        data: { loginId: _account, bussData: authData },
+      http.clearSession();
+      const resp = await http.post({
+        url: '/emchub/api/client/user/login',
+        data: loginParams,
       });
-      if (resp?.resultCode === 'SUCCESS') {
+      if (resp?._result === 0) {
         result._result = 0;
         result._desc = '';
-      } else if (resp?.resultCode === 'NEEDREGISTER') {
-        result._result = 1;
-        result._desc = 'Account does not exist';
       } else {
         result._result = 1;
-        result._desc = 'Failure';
+        result._desc = resp?._desc || '';
       }
-      if (result._result === 0) {
-        const session = { token: '' };
-        const nickname: string = resp?.bussData?.nickName as string;
+      if (resp?._result === 0) {
+        const session = { token: resp._sid || '' };
+        const respUser = resp.user;
+        //query user info
+        const nickname: string = respUser.username || '';
+        const userId: number = respUser.userId || 0;
+        const avatar: string = respUser.userImage || '';
         result.user = {
-          id: resp?.bussData?.custId,
+          id: userId,
           nickname: nickname || 'EMCHub',
-          avatar: '',
+          avatar: avatar,
         };
         const cache = {
           account: _account,
           password: window.btoa(_password),
-          principal: window.btoa(_principal),
+          // principal: window.btoa(_principal),
           type: _type,
           user: result.user,
         };
