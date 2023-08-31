@@ -12,6 +12,7 @@ export const format = (parameters: string) => {
     cfgScale: 0,
     seed: '',
     clipSkip: 0,
+    modelHash: '',
   };
   const parametersArray = parameters.split('\n');
   let promptIndex = 0;
@@ -51,6 +52,7 @@ export const format = (parameters: string) => {
     data.cfgScale = parseFloat(options['CFG scale'] || options['cfg_scale'] || options['cfg scale']) || 0;
     data.seed = parseInt(options.Seed || options.seed) || -1;
     data.clipSkip = parseInt(options['Clip skip'] || options['clip_skip'] || options['clip skip']) || 0;
+    data.modelHash = options['Model hash'] || options['model_hash'] || options['model hash'] || '';
   }
   Object.entries(data).forEach(([k, v]) => {
     if (!v) {

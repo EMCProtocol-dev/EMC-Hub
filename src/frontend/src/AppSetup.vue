@@ -48,9 +48,11 @@ export default defineComponent({
         // fontSize: '12px',
         // height: '40px',
       },
-
       common: {
         // primaryColor: '#000000',
+      },
+      Upload: {
+        draggerBorderHover: '1px dashed #9747FF',
       },
     };
 

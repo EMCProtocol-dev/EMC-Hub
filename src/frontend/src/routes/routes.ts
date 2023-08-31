@@ -40,6 +40,7 @@ export const routes = [
         path: 'models/:id',
         component: () => import('@/pages/model-detail/index.vue'),
       },
+
       {
         name: 'nodes',
         path: 'nodes',
@@ -54,5 +55,10 @@ export const routes = [
         component: () => import('@/pages/cloud/index.vue'),
       },
     ],
+  },
+  {
+    name: 'model-images',
+    path: '/images/:id',
+    component: () => import('@/pages/model-image/index.vue'),
   },
 ];
