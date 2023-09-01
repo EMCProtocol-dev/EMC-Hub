@@ -41,7 +41,6 @@ export default defineComponent({
   setup(props, context) {
     const isMobile = useIsMobile();
     const isTablet = useIsTablet();
-    console.log(isMobile.value || isTablet.value);
 
     const titleStyle = computed<titleType>(() => {
       if (isMobile.value || isTablet.value) {

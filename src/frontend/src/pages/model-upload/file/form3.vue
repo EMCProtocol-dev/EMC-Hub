@@ -25,6 +25,11 @@
             </NSelect>
           </NFormItemGi>
         </template>
+        <template v-else-if="formData.modelType === 'LORA'">
+          <NFormItemGi :span="24" path="alias" label="Alias">
+            <NInput v-model:value="formData.alias" @keydown.enter.prevent />
+          </NFormItemGi>
+        </template>
         <NFormItemGi :span="24" path="archive" label="Model Package">
           <NUpload
             v-model:file-list="formData.archive"
@@ -73,7 +78,7 @@
             :disabled="!ready || formSubmitting || uploadLoadingArchive"
             :loading="formSubmitting"
             @click.stop.prevent="onPressSubmit"
-            >Save</NButton
+            >Save & Done</NButton
           >
           <NButton
             type="primary"
@@ -89,7 +94,7 @@
   </NSpace>
 </template>
 <script lang="ts">
-import { ref, defineComponent, onMounted, watch } from 'vue';
+import { ref, defineComponent, onMounted, onUnmounted, watch } from 'vue';
 import {
   NForm,
   NSpin,
@@ -125,6 +130,7 @@ type BasicOptionItem = {
 type FormData = {
   modelType: string;
   archive: UploadFileInfo[];
+  alias: string;
   hashCode: string;
   fileSize: string;
   modelSize: string;
@@ -135,6 +141,7 @@ function defaultFormData() {
   return {
     modelType: '',
     archive: [],
+    alias: '',
     hashCode: '',
     fileSize: '',
     modelSize: '',
@@ -178,8 +185,12 @@ export default defineComponent({
     const formData = ref<FormData>(defaultFormData());
     const userStore = useUserStore();
 
-    const checkpointValidator = (rule: FormItemRule, value: string) => {
+    let uploadArchiveAbort: AbortController | null = null;
+
+    const notBeEmptyValidatorWithModelType = (rule: FormItemRule, value: string) => {
       if (formData.value.modelType === 'CHECKPOINT' && !value) {
+        return new Error('Can not be empty');
+      } else if (formData.value.modelType === 'LORA' && !value) {
         return new Error('Can not be empty');
       }
       return true;
@@ -191,17 +202,19 @@ export default defineComponent({
       } else {
         const errors = value.filter((item) => !item.url);
         if (errors.length > 0) {
-          return new Error('Please wait upload done');
+          return new Error('Wait upload...');
         }
       }
       return true;
     };
 
     const formRule: FormRules = {
+      modelType: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
       archive: [{ required: true, type: 'array', validator: uploadValidator, trigger: ['input', 'blur'] }],
-      floatingPoint: [{ required: true, validator: checkpointValidator, trigger: ['input', 'blur'] }],
-      modelSize: [{ required: true, validator: checkpointValidator, trigger: ['input', 'blur'] }],
+      alias: [{ required: true, validator: notBeEmptyValidatorWithModelType, trigger: ['input', 'blur'] }],
       hashCode: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
+      modelSize: [{ required: true, validator: notBeEmptyValidatorWithModelType, trigger: ['input', 'blur'] }],
+      floatingPoint: [{ required: true, validator: notBeEmptyValidatorWithModelType, trigger: ['input', 'blur'] }],
       fileSize: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
     };
     const formSubmitting = ref(false);
@@ -249,19 +262,32 @@ export default defineComponent({
         message.error('presign error');
         return;
       }
+      if (uploadArchiveAbort) {
+        uploadArchiveAbort.abort();
+        uploadArchiveAbort = null;
+      }
+      uploadArchiveAbort = new AbortController();
       const resp = await upload({
         file,
         policyData,
         onProgress: ({ progress }) => onProgress({ percent: (progress || 0) * 100 }),
+        abortSignal: uploadArchiveAbort.signal,
       });
-      if (resp._result !== 0) {
-        onError();
-        console.error(resp._desc || '');
-        message.error(resp._desc || '');
-        return;
+      if (uploadArchiveAbort) {
+        uploadArchiveAbort = null;
       }
-      file.url = resp.sn;
-      onFinish();
+      if (resp._result === 0) {
+        file.url = resp.sn;
+        onFinish();
+      } else {
+        if (resp._result > 0) {
+          console.error(resp._desc || '');
+          message.error(resp._desc || '');
+        } else if (resp._result < 0) {
+          console.warn(resp._desc);
+        }
+        onError();
+      }
     };
 
     const handleUploadRemove = ({ file, fileList }: UploadRemoveOptions) => {
@@ -271,10 +297,16 @@ export default defineComponent({
         list.push(item.url);
       });
       formData.value.archive = list;
+      formData.value.hashCode = '';
+      formData.value.fileSize = '';
+      if (uploadArchiveAbort) {
+        uploadArchiveAbort.abort();
+      }
     };
 
     const handleSubmit = async () => {
       let versionSn = props.versionSn;
+      let alias = formData.value.alias;
       let modelSize = formData.value.modelSize;
       let floatingPoint = formData.value.floatingPoint;
       let hashCode = formData.value.hashCode;
@@ -284,6 +316,7 @@ export default defineComponent({
       let url = '/emchub/api/client/modelVersion/updateOne';
       let params = {
         versionSn,
+        alias,
         modelSize,
         floatingPoint,
         hashCodeSha256: hashCode,
@@ -367,6 +400,7 @@ export default defineComponent({
       }
       const {
         floatingPoint = '',
+        alias = '',
         fileSize = 0,
         hashCodeSha256 = '',
         modelFileUrl = '{}',
@@ -377,6 +411,7 @@ export default defineComponent({
 
       formData.value = {
         modelType: formData.value.modelType,
+        alias: alias,
         hashCode: hashCodeSha256,
         fileSize: !fileSize ? '' : String(fileSize),
         modelSize: modelSize,
@@ -384,6 +419,7 @@ export default defineComponent({
         archive: archive ? [archive] : [],
       };
     };
+
     const init = async (modelSn: string, versionSn: string) => {
       ready.value = false;
       await initItems();
@@ -399,6 +435,13 @@ export default defineComponent({
       },
       { immediate: true }
     );
+
+    onUnmounted(() => {
+      if (uploadArchiveAbort) {
+        uploadArchiveAbort.abort();
+        uploadArchiveAbort = null;
+      }
+    });
 
     return {
       ready,

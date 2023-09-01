@@ -82,7 +82,7 @@
               :disabled="!ready || formSubmitting"
               :loading="formSubmitting"
               @click.stop.prevent="onPressSubmit"
-              >Save</NButton
+              >Save & Done</NButton
             >
             <NButton
               type="primary"
@@ -200,7 +200,7 @@ export default defineComponent({
       } else {
         const errors = value.filter((item) => !item.url);
         if (errors.length > 0) {
-          return new Error('Please wait upload done');
+          return new Error('Wait upload...');
         }
       }
       return true;
@@ -209,8 +209,8 @@ export default defineComponent({
       version: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
       baseModel: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
       baseModelType: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
-      triggerWords: [{ required: true, type: 'array', message: 'Can not be empty', trigger: ['input', 'blur'] }],
-      description: [{ required: true, validator: Utils.validatorStrLength(0, 200), trigger: ['input', 'blur'] }],
+      triggerWords: [{ required: false, type: 'array', message: 'Can not be empty', trigger: ['input', 'blur'] }],
+      description: [{ required: false, validator: Utils.validatorStrLength(0, 200), trigger: ['input', 'blur'] }],
       images: [{ required: true, type: 'array', validator: uploadValidator, trigger: ['input', 'blur'] }],
     };
     const formSubmitting = ref(false);

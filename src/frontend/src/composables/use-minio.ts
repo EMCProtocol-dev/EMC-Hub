@@ -1,8 +1,7 @@
 import { Client as MinioClient } from 'minio';
-import { Axios, AxiosProgressEvent } from 'axios';
+import { Axios, AxiosProgressEvent, isCancel } from 'axios';
 import { sign } from '@/tools/open-api';
 import { Http } from '@/tools/http';
-
 const HOST = '36.155.7.145';
 const PORT = 9000;
 const SSL = false;
@@ -40,6 +39,7 @@ interface UploadOptions {
   data?: any;
   headers?: any;
   policyData?: PolicyResult | null;
+  abortSignal?: AbortSignal;
   onProgress?: (e: AxiosProgressEvent) => void;
 }
 
@@ -70,7 +70,7 @@ export function useMinio() {
     }
     return minioClient;
   };
-  
+
   const presignedHttp = async (params: PresignHttpOptions) => {
     const appid = 'emc-hub-a63123cf';
     const secret = '9c4283f0-3509-11ee-8d81-06c27dd31a5a';
@@ -122,7 +122,7 @@ export function useMinio() {
   };
 
   const upload = async (params: UploadOptions): Promise<Resp365> => {
-    let { file, headers, url, policyData: _policyData, onProgress } = params;
+    let { file, headers, url, policyData: _policyData, onProgress, abortSignal } = params;
 
     const policyData = _policyData ? _policyData : await presignedPolicy(file);
 
@@ -135,12 +135,13 @@ export function useMinio() {
       formData.append(k, policyData.postFormData[k]);
     });
     formData.append('file', file.file as File);
-
     const axios: Axios = new Axios({ timeout: 60 * 60 * 1000 });
+
     const onUploadProgress = (event: AxiosProgressEvent) => typeof onProgress === 'function' && onProgress(event);
     try {
       const resp = await axios.post(`${policyData.postURL}`, formData, {
         onUploadProgress,
+        signal: abortSignal,
       });
       if (resp.status === 200 || resp.status === 204) {
         if (!policyData.doneURL) {
@@ -164,7 +165,11 @@ export function useMinio() {
         return { _result: 1, _desc: `upload error ${resp.status}` };
       }
     } catch (e: any) {
-      return { _result: 1, _desc: e.toString() };
+      if (isCancel(e)) {
+        return { _result: -1, _desc: e.toString() };
+      } else {
+        return { _result: 1, _desc: e.toString() };
+      }
     }
   };
 

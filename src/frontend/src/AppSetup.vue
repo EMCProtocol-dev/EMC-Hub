@@ -62,8 +62,7 @@ export default defineComponent({
     };
 
     const themeOverrides = ref(window.matchMedia('(prefers-color-scheme: dark)').matches ? darkThemeOverrides : lightThemeOverrides);
-    console.log(themeOverrides.value);
-
+    
     return { theme, themeOverrides, lightThemeOverrides, darkThemeOverrides };
   },
 });

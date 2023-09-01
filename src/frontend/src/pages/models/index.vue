@@ -30,8 +30,9 @@
           </div>
         </template>
         <template #header-extra>
-          <!-- <template v-if="nickname === '顺子'"></template> -->
-          <NButton type="primary" ghost strong @click="onPressUpload">Click to upload</NButton>
+          <template v-if="nickname === '顺子'">
+            <NButton type="primary" ghost strong @click="onPressUpload">Click to upload</NButton>
+          </template>
         </template>
         <NSpace :wrap-item="false" :size="[24, 0]" :wrap="true">
           <template v-if="loading">
@@ -189,7 +190,8 @@ export default defineComponent({
           message.error('Please sign in first');
           return;
         }
-        window.open('http://localhost:8080/#/model-upload', `emchub-upload-${new Date().getTime()}`);
+        const host = process.env.NODE_ENV === 'developer' ? 'http://localhost:8080' : 'https://models.emchub.ai';
+        window.open(`${host}/#/model-upload`, `emchub-upload-${new Date().getTime()}`);
         // router.push({ name: 'model-upload' });
       },
       onPressItem(item: any) {
