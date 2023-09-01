@@ -25,23 +25,37 @@
     </NSpace>
     <template v-if="newList">
       <template v-if="newList.length !== 0">
+<<<<<<< HEAD
         <Waterfall :list="newList" :gutter="24" :width="248" :delay="1000">
+=======
+        <Waterfall :list="newList" :gutter="24" :width="248">
+>>>>>>> f3be274 (9.1)
           <template #item="{ item, url, index }">
             <GalleryItem :item="item" @press="onPressImages" :key="item.id" />
           </template>
         </Waterfall>
       </template>
       <template v-else>
+<<<<<<< HEAD
         <NSpace align="center" justify="center" style="background: #fff; min-height: 400px">
           <NEmpty description="No pictures" />
         </NSpace>
+=======
+        <div style="background: #fff; padding: 24px">
+          <NEmpty description="No pictures" />
+        </div>
+>>>>>>> f3be274 (9.1)
       </template>
     </template>
     <template v-else>
       <NSpin size="medium" />
     </template>
 
+<<<<<<< HEAD
     <GalleryUpload :showModal="showModal" :modelInfo="modelInfo" @cancel="cancel" :initList="initList" />
+=======
+    <GalleryUpload :showModal="showModal" :modelsnapshot="modelSn" :modelHashCode="modelHashCode" :modelName="modelName" @cancel="cancel" />
+>>>>>>> f3be274 (9.1)
   </div>
 </template>
 
@@ -60,7 +74,13 @@ import 'vue-waterfall-plugin-next/dist/style.css';
 export default defineComponent({
   name: 'node-detail',
   props: {
+<<<<<<< HEAD
     modelInfo: { type: Object, default: {} },
+=======
+    modelHashCode: { type: String, default: '' },
+    modelName: { type: String, default: '' },
+    modelSn: { type: String, default: '' },
+>>>>>>> f3be274 (9.1)
   },
   components: {
     NCard,
@@ -86,7 +106,11 @@ export default defineComponent({
     Waterfall,
   },
 
+<<<<<<< HEAD
   setup(props, ctx) {
+=======
+  setup(props) {
+>>>>>>> f3be274 (9.1)
     const route = useRoute();
     const message = useMessage();
     const router = useRouter();
@@ -105,6 +129,10 @@ export default defineComponent({
       initList();
     });
     const { modelSn } = route.params;
+<<<<<<< HEAD
+=======
+
+>>>>>>> f3be274 (9.1)
     const updateList = async () => {
       loading.value = true;
       const resp = await http.get({
@@ -125,7 +153,21 @@ export default defineComponent({
       newList,
       selectValue,
       showModal,
+<<<<<<< HEAD
       initList,
+=======
+      breakpoints: {
+        1200: {
+          rowPerView: 4,
+        },
+        800: {
+          rowPerView: 3,
+        },
+        500: {
+          rowPerView: 2,
+        },
+      },
+>>>>>>> f3be274 (9.1)
       options: [
         {
           label: 'NEWEST',

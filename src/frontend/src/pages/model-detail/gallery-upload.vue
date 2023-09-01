@@ -9,7 +9,11 @@
         <NSpace justify="center" :wrap-item="false" :size="[4, 0]">
           <div style="text-align: center">
             <!-- flex: 0.5; -->
+<<<<<<< HEAD
             Release <NEllipsis style="max-width: 160px">{{ modelInfo.modelName }}</NEllipsis
+=======
+            Release <NEllipsis style="max-width: 160px">{{ modelName }}</NEllipsis
+>>>>>>> f3be274 (9.1)
             >Model Relaterd Images
           </div>
         </NSpace>
@@ -32,11 +36,16 @@
                   trigger-style="width:100%;height:100%;flex-wrap:wrap"
                 >
                   <NUploadDragger style="height: 282px; flex-direction: column; justify-content: space-evenly">
+<<<<<<< HEAD
                     <img src="@/assets/icon_upload_image.png" width="96" height="96" />
                     <NText style="font-size: 16px">
                       Drag the image here or
                       <span style="color: #a45eff; text-decoration: underline">Click Upload</span>
                     </NText>
+=======
+                    <img src="@/assets/icon_upload.png" width="96" height="96" />
+                    <NText style="font-size: 16px"> Drag the image here or <span style="color: #a45eff; text-decoration: underline">Click Upload</span> </NText>
+>>>>>>> f3be274 (9.1)
                     <NP depth="3" style="margin: 8px 0 0 0; padding: 0 24px">Directly upload the picture of the AI generation background, and the relevant creation information will be automatically read </NP>
                   </NUploadDragger>
                 </NUpload>
@@ -216,8 +225,15 @@ export default defineComponent({
 
   props: {
     showModal: { type: Boolean, default: false },
+<<<<<<< HEAD
     modelInfo: { type: Object, default: {} },
     initList: { type: Function, default: {} },
+=======
+    userInfo: { type: Object, default: {} },
+    modelsnapshot: { type: String, default: '' },
+    modelHashCode: { type: String, default: '' },
+    modelName: { type: String, default: '' },
+>>>>>>> f3be274 (9.1)
   },
   emits: ['cancel', 'info'],
   setup(props, context) {
@@ -314,6 +330,7 @@ export default defineComponent({
         }
         onFinish();
         const url = resp.url || '';
+<<<<<<< HEAD
 
         const [parameters, isParameters] = await StableDiffusionMetadata.extract(file.file as File);
         formData.value.images = url;
@@ -350,17 +367,45 @@ export default defineComponent({
         }
 
         const { prompt = '', negativePrompt = '', seed = '', sampler = '', steps = '', cfgScale = '', width = 0, height = 0 } = pf;
+=======
+        const parameters: string = await parametersWith(file.file as File);
+        formData.value.images = url;
+        parametersValue.value = parameters;
+        const pf = parameterFormat(parameters);
+
+        const modelsHash = props.modelHashCode.toLowerCase();
+        const imageModelsHash = pf.modelHash.toLowerCase();
+        const isModelImage = modelsHash.startsWith(imageModelsHash);
+        isModel.value = isModelImage;
+
+        if (!isModel.value) {
+          return message.error('Model the hash, please upload again');
+        } else {
+          formData.value.name = props.modelName || '';
+        }
+
+        const { prompt, negativePrompt, seed, sampler, steps, cfgScale, modelHash, width, height } = pf;
+>>>>>>> f3be274 (9.1)
 
         formData.value = {
           ...formData.value,
           prompt,
           negativePrompt,
           sampler,
+<<<<<<< HEAD
           steps,
           cfgScale,
           seed,
           width: String(width),
           height: String(height),
+=======
+          steps: steps ? steps.toString() : '',
+          cfgScale: cfgScale ? cfgScale.toString() : '',
+          seed: seed ? seed.toString() : '',
+          modelHash: modelHash,
+          width: width,
+          height: height,
+>>>>>>> f3be274 (9.1)
         };
       } catch {
         message.error('Failed to upload');
@@ -368,6 +413,7 @@ export default defineComponent({
     };
 
     const onRemove = () => {
+<<<<<<< HEAD
       formData.value = {
         title: '',
         name: '',
@@ -382,6 +428,12 @@ export default defineComponent({
         height: '',
         images: '',
       };
+=======
+      formData.value = { title: '', name: '', description: '', prompt: '', negativePrompt: '', sampler: '', steps: '', cfgScale: '', seed: '', modelHash: '', width: '', height: '', images: '' };
+    };
+    const onPressMask = () => {
+      context.emit('cancel');
+>>>>>>> f3be274 (9.1)
     };
     const onPressMask = () => {
       context.emit('cancel');
@@ -402,12 +454,20 @@ export default defineComponent({
       formRule,
       handleClose() {
         onRemove();
+<<<<<<< HEAD
         //   message.info('Card Close');
+=======
+        message.info('Card Close');
+>>>>>>> f3be274 (9.1)
         context.emit('cancel');
       },
       async onPressSubmit() {
         try {
+<<<<<<< HEAD
           if (formData.value.title === '' || formData.value.name === '') {
+=======
+          if (formData.value.modelHash === '' || formData.value.title === '' || formData.value.name === '') {
+>>>>>>> f3be274 (9.1)
             return message.error('Can not be empty');
           } else if (!isModel.value) {
             return message.error('Model the hash, please upload again');
@@ -415,7 +475,11 @@ export default defineComponent({
             const { name, title, width, height, description, prompt, negativePrompt, images, sampler, steps, cfgScale, seed } = formData.value;
 
             const insertData = {
+<<<<<<< HEAD
               modelSn: props.modelInfo.modelSn,
+=======
+              modelSn: props.modelsnapshot,
+>>>>>>> f3be274 (9.1)
               modelName: name,
               imageTitle: title,
               resolution: `${width}*${height}`,
@@ -442,7 +506,10 @@ export default defineComponent({
             onRemove();
             submitting.value = false;
           }
+<<<<<<< HEAD
           props.initList();
+=======
+>>>>>>> f3be274 (9.1)
           context.emit('cancel');
         } catch (error) {
           submitting.value = false;

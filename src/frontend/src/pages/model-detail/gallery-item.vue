@@ -3,12 +3,16 @@
     <div class="item-carousel-wrap">
       <NCarousel class="item-carousel" :autoplay="true">
         <!-- <template v-for="cover in item.covers"> -->
+<<<<<<< HEAD
         <template v-if="item.url">
           <AppImage class="item-cover" :src="item.url" object-fit="cover" :preview-disabled="true" :imgProps="{ style: 'width:100%;height:100%;' }" />
         </template>
         <template v-else>
           <NEmpty style="padding: 96px 0" />
         </template>
+=======
+        <AppImage class="item-cover" :src="item.url" object-fit="cover" :preview-disabled="true" :imgProps="{ style: 'width:100%;height:100%;' }" />
+>>>>>>> f3be274 (9.1)
         <!-- </template> -->
       </NCarousel>
     </div>
@@ -18,7 +22,11 @@
       </NSpace>
       <!-- <NAvatar round size="large" src="" /> -->
       <NSpace vertical :size="[0, 0]">
+<<<<<<< HEAD
         <NH4 class="item-body-row">{{ item.userName || 'user' + item.userId }}</NH4>
+=======
+        <NH4 class="item-body-row">{{ item.name || 'user' }}</NH4>
+>>>>>>> f3be274 (9.1)
         <NH6 class="item-body-row" style="font-size: 12px; color: #666"> {{ createTime }}</NH6>
       </NSpace>
     </NSpace>
@@ -27,22 +35,37 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
+<<<<<<< HEAD
 import { NSpace, NCarousel, NTag, NH6, NH4, NAvatar, NIcon, NEmpty } from 'naive-ui';
+=======
+import { NSpace, NCarousel, NTag, NH6, NH4, NAvatar, NIcon } from 'naive-ui';
+>>>>>>> f3be274 (9.1)
 import { PersonSharp as IconPerson } from '@vicons/ionicons5';
 import moment from 'moment';
 
 import AppImage from '@/components/app-image.vue';
+import { timeStamp } from 'console';
 
 export default defineComponent({
   name: 'model-item',
+<<<<<<< HEAD
   components: { NSpace, NCarousel, NTag, NH6, NH4, NAvatar, NIcon, NEmpty, IconPerson, AppImage },
+=======
+  components: { NSpace, NCarousel, NTag, NH6, NH4, NAvatar, NIcon, IconPerson, AppImage },
+>>>>>>> f3be274 (9.1)
   props: { item: { type: Object, default: () => ({}) } },
   emits: ['press'],
 
   setup(props, ctx) {
     const { item } = props;
     const createTime = computed(() => {
+<<<<<<< HEAD
       const time = moment(item.createTime).fromNow();
+=======
+      const timeStampMSec = moment(item.createTime).valueOf();
+      // const timeStampSec = moment(timeStampMSec).format('X');
+      const time = moment(timeStampMSec).fromNow();
+>>>>>>> f3be274 (9.1)
       return time;
     });
 

@@ -59,7 +59,7 @@
           <NGridItem span="2 880:1">
             <div class="layout-left">
               <div class="carousel-wrap">
-                <NCarousel class="carousel" :autoplay="true">
+                <NCarousel class="carousel" :autoplay="true" :show-arrow="covers.length > 1 ? true : false">
                   <template v-for="cover in covers">
                     <img class="cover" :src="cover" />
                   </template>
@@ -141,7 +141,11 @@
             </template>
           </NButton>
         </template>
+<<<<<<< HEAD
         <NodeList :hash="nodeHashCode" @pressitem="onNodeClose" />
+=======
+        <NodeList :hash="hashCode" @pressitem="onNodePressItem" />
+>>>>>>> f3be274 (9.1)
       </NCard>
     </NModal>
   </div>
@@ -150,6 +154,7 @@
 <script lang="ts">
 import { ref, defineComponent, onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+<<<<<<< HEAD
 import {
   NCard,
   NH3,
@@ -176,6 +181,14 @@ import {
   CaretForwardCircleOutline as IconRun,
   CloseSharp as IconClose,
 } from '@vicons/ionicons5';
+=======
+
+import { NCard, NH2, NH3, NSpace, NSpin, NTag, NCarousel, NDescriptions, NDescriptionsItem, NButton, NIcon, NModal, NGrid, NGridItem, useMessage, NPopselect } from 'naive-ui';
+import { useUserStore } from '@/stores/user';
+import { Http } from '@/tools/http';
+import { Utils } from '@/tools/utils';
+import { DownloadSharp as IconDownload, CaretForwardCircleOutline as IconRun, CloseSharp as IconClose } from '@vicons/ionicons5';
+>>>>>>> f3be274 (9.1)
 import NodeList from './node-list.vue';
 
 export default defineComponent({
@@ -208,7 +221,11 @@ export default defineComponent({
     const errorText = ref('');
     //modal property
     const nodeVisible = ref(false);
+<<<<<<< HEAD
     const nodeHashCode = ref('');
+=======
+    const router = useRouter();
+>>>>>>> f3be274 (9.1)
 
     const name = ref('');
     const covers = ref<string[]>([]);
@@ -277,8 +294,11 @@ export default defineComponent({
       errorText,
 
       nodeVisible,
+<<<<<<< HEAD
       nodeHashCode,
 
+=======
+>>>>>>> f3be274 (9.1)
       name,
       covers,
       version,
@@ -295,11 +315,66 @@ export default defineComponent({
           return;
         }
         nodeVisible.value = true;
+<<<<<<< HEAD
         nodeHashCode.value = modelHashCode.value;
+=======
+>>>>>>> f3be274 (9.1)
       },
       onNodeClose() {
         nodeVisible.value = false;
       },
+<<<<<<< HEAD
+=======
+      async onNodePressItem(item: NodeItem) {
+        let sdWindow: WindowProxy | null;
+        let parameters = '';
+
+        if (covers.value[0].parameters) {
+          parameters = covers.value[0].parameters;
+        } else {
+          try {
+            parameters = await parametersWith(covers.value[0].url);
+            //parameters = 'Prompt\nNavite Promp\nStep:1;Seed:1;';
+            //import {format as parameterFormat} from '@/tools/parameters';
+            //const pf = parameterFormat(parameters);
+            // {
+            //   prompt: '',
+            //   negativePrompt: '',
+            //   steps: 0,
+            //   sampler: '',
+            //   width: 0,
+            //   height: 0,
+            //   cfgScale: 0,
+            //   seed: '',
+            //   clipSkip: 0,
+            // }
+          } catch (e) {
+            console.error(e);
+          }
+        }
+
+        console.info('image parameters :\n', parameters);
+        if (parameters) {
+          const handleMessage = (event: MessageEvent) => {
+            const request: any = event.data as any;
+            if (request.type === 'emcsd-txt2img-ready') {
+              sdWindow?.postMessage({ type: 'emcsd-txt2img-parameters', data: parameters }, '*');
+            }
+            window.removeEventListener('message', handleMessage);
+          };
+          window.addEventListener('message', handleMessage);
+        } else {
+          console.warn(`${covers.value[0].url} can not parse parameters`);
+        }
+
+        nodeVisible.value = false;
+        sdWindow = window.open(`https://sd.edgematrix.pro/#/txt2img?nodeid=${item.nodeId}`, `sd-window-${new Date().getTime()}`);
+        // sdWindow = window.open(
+        //   `http://localhost:8080/#/txt2img?nodeid=${item.nodeId}`,
+        //   `sd-window-${new Date().getTime()}`
+        // );
+      },
+>>>>>>> f3be274 (9.1)
       onPressArchive() {
         if (!archive.value) {
           message.error('Sorry, The package disappears');
