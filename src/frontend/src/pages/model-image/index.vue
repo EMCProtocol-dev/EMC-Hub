@@ -1,33 +1,35 @@
 <template>
-  <NLayout position="absolute" style="display: flex; justify-content: center; align-items: center; background-color: #f9f9f9">
+  <NSpace align="center" justify="center" :wrap-item="false" style="background-color: #f9f9f9">
     <NSpace class="content" :wrap-item="false">
-      <NCard :bordered="false" content-style="padding:0;height:100%" style="width: 100%">
-        <NGrid cols="2" item-responsive style="height: 100%" x-gap="24">
-          <NGridItem span="2 880:1">
+      <NCard :bordered="false" content-style="padding:0;height:100%" style="width: 100%; height: 100%; position: relative">
+        <NIcon class="icon-close" size="36" @click="onPressBack">
+          <IconClose color="#999" />
+        </NIcon>
+        <NGrid cols="1 800:2" item-responsive x-gap="24">
+          <NGridItem>
             <div class="layout-left">
               <div class="carousel-wrap">
                 <NCarousel class="carousel" :autoplay="true">
-                  <template v-for="cover in covers">
-                    <img class="cover" :src="cover.url" />
-                  </template>
+                  <!-- <template v-for="cover in covers"> -->
+                  <img class="cover" :src="imageInfo.url" />
+                  <!-- </template> -->
                 </NCarousel>
               </div>
             </div>
           </NGridItem>
-          <NGridItem span="2 880:1">
-            <div class="layout-right">
+          <NGridItem>
+            <div class="layout-right" style="padding-top: 42px">
               <div style="max-height: calc(100vh - 196px); overflow-y: auto; padding-right: 20px">
                 <div class="header">
-                  <NSpace justify="end">
-                    <NIcon size="36" @click="onPressBack" style="cursor: pointer">
-                      <IconClose color="#999" />
-                    </NIcon>
-                  </NSpace>
                   <div class="header-row">
-                    <NAvatar round size="large" src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg" />
-                    <div class="item-body-row">
-                      <NH4 style="margin-bottom: 0">sdadfsdfsdf</NH4>
-                    </div>
+                    <NSpace align="center" justify="center" :wrap-item="false" style="width: 40px; height: 40px; background-color: #f5f5f5; border-radius: 100%; flex-shrink: 0">
+                      <NIcon size="24"><IconPerson color="#666" /></NIcon>
+                    </NSpace>
+                    <!-- <NAvatar round size="large" src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg" /> -->
+                    <NSpace vertical :size="[0, 0]">
+                      <NH4 class="item-body-row">{{ 'user' }}</NH4>
+                      <NH6 class="item-body-row" style="font-size: 12px; color: #666">{{ moment(imageInfo.createTime).fromNow() }}</NH6>
+                    </NSpace>
                     <!-- <NButton ghost round color="#A45EFF">
                       <template #icon>
                         <NIcon>
@@ -39,16 +41,22 @@
                   </div>
                 </div>
                 <div class="body">
+                  <NH3>{{ imageInfo.imageTitle || '-' }}</NH3>
+                  <div class="body-description">
+                    <div class="with with__column">
+                      <div class="with-label">About your image:</div>
+                      <div class="with-value with-value__area">
+                        {{ imageInfo.description || '-' }}
+                      </div>
+                    </div>
+                  </div>
                   <div class="with with__column">
                     <div class="with-label">Resources Used</div>
                     <NSpace class="with-value with-value__area" justify="space-between" align="center">
-                      <span>A-Mecha Musume</span>
+                      <span>{{ imageInfo.modelName }}</span>
                       <NSpace class="tags" :wrap-item="false" :size="[8, 8]">
                         <!-- <template v-for="tag in tags"> -->
-                        <NTag round size="small" :bordered="false" :color="{ color: '#8f7df8', textColor: '#f1f1f1' }">
-                          Lora
-                          <!-- {{ tag }} -->
-                        </NTag>
+                        <!-- <NTag round size="small" :bordered="false" :color="{ color: '#8f7df8', textColor: '#f1f1f1' }"> Lora </NTag> -->
                         <!-- </template> -->
                       </NSpace>
                     </NSpace>
@@ -56,33 +64,31 @@
                   <div class="with with__column">
                     <div class="with-label">Prompt details</div>
                     <div class="with-value with-value__area">
-                      masterpiece,best q masterpiece,best q masterpiece,best q masterpiece,best q masterpiece,best q masterpiece,best q masterpiece,best q masterpiece,best q masterpiece,best q masterpiece,best q masterpiece,best q starry
-                      starry sky,skylpiece,best q masterpiece,best q masterpiece,best q masterpiece,best q masterpiece,best q masterpiece,best q masterpiece,best q masterpiece,best q masterpiece,best q masterpiece,best q masterpiece,best q
-                      starry sky,skyl
+                      {{ imageInfo.prompt || '-' }}
                     </div>
                   </div>
                   <div class="with with__column">
                     <div class="with-label">Negative prompt</div>
-                    <div class="with-value with-value__area">EasyNegative, (worst quality:1.4), (low quality:1.4), (normal quality:1.4), lowres, badhandv4,</div>
+                    <div class="with-value with-value__area">{{ imageInfo.negativePrompt || '-' }}</div>
                   </div>
                   <NSpace class="with with__column" :wrap="false" :wrap-item="false">
                     <div style="flex: 1">
                       <div class="with-label">Sampler</div>
-                      <div class="with-value with-value__area">Sampler</div>
+                      <div class="with-value with-value__area">{{ imageInfo.sampler || '-' }}</div>
                     </div>
                     <div style="flex: 1">
                       <div class="with-label">Steps</div>
-                      <div class="with-value with-value__area">Steps</div>
+                      <div class="with-value with-value__area">{{ imageInfo.steps || '-' }}</div>
                     </div>
                   </NSpace>
                   <NSpace class="with with__column" :wrap="false" :wrap-item="false">
                     <div style="flex: 1">
                       <div class="with-label">CFG scale</div>
-                      <div class="with-value with-value__area"></div>
+                      <div class="with-value with-value__area">{{ imageInfo.scale || '-' }}</div>
                     </div>
                     <div style="flex: 1">
                       <div class="with-label">Seed</div>
-                      <div class="with-value with-value__area"></div>
+                      <div class="with-value with-value__area">{{ imageInfo.seed || '-' }}</div>
                     </div>
                   </NSpace>
                 </div>
@@ -94,7 +100,7 @@
                   </template>
                   Copy Generation Data
                 </NButton>
-                <NButton color="#A45EFF" size="large" strong @click="onPressBack">
+                <NButton color="#A45EFF" size="large" strong @click="onPressRun">
                   <template #icon>
                     <NIcon><IconPlay /></NIcon>
                   </template>
@@ -106,56 +112,94 @@
         </NGrid>
       </NCard>
     </NSpace>
-  </NLayout>
+  </NSpace>
 </template>
 
 <script lang="ts">
 import { ref, defineComponent, onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { useMinio } from '@/composables/use-minio';
 import { Http } from '@/tools/http';
-import { useUserStore } from '@/stores/user';
-import { sign } from '@/tools/open-api';
 import copy from 'copy-to-clipboard';
+import moment from 'moment';
 
-import { NLayout, NSpace, NGrid, NGridItem, NCard, NSpin, NCarousel, NTag, NButton, NIcon, NAvatar, NH4, useMessage } from 'naive-ui';
-import { StarOutline as IconStar, CloseCircleOutline as IconClose, CopyOutline as IconCopy, PlayCircleOutline as IconPlay } from '@vicons/ionicons5';
+import { NLayout, NSpace, NGrid, NGridItem, NCard, NSpin, NCarousel, NTag, NButton, NIcon, NAvatar, NH4, NH3, useMessage, NH6 } from 'naive-ui';
+import { StarOutline as IconStar, CloseCircleOutline as IconClose, CopyOutline as IconCopy, PlayCircleOutline as IconPlay, PersonSharp as IconPerson } from '@vicons/ionicons5';
+
+type InfoType = {
+  imageTitle: string;
+  modelName: string;
+  description: string;
+  prompt: string;
+  negativePrompt: string;
+  sampler: string;
+  steps: string;
+  scale: string;
+  seed: string;
+  modelHash: string;
+  raw: string;
+  images: string;
+  createTime: string;
+};
+
 export default defineComponent({
   name: 'model-images',
-  components: { NLayout, NSpace, NGrid, NGridItem, NCard, NSpin, NCarousel, NTag, NButton, NIcon, NAvatar, NH4, IconStar, IconClose, IconCopy, IconPlay },
+  components: { NLayout, NSpace, NGrid, NGridItem, NCard, NSpin, NCarousel, NTag, NH3, NH4, NH6, NButton, NIcon, NAvatar, IconStar, IconClose, IconCopy, IconPlay, IconPerson },
   setup() {
     const http = Http.getInstance();
-
-    const name = ref('');
     const message = useMessage();
     const router = useRouter();
-    const covers = ref<Array<{ url: string; parameters: string }>>([
-      {
-        url: 'https://res.emchub.ai/emcbucket/2023/07/24/%5B1690211014903%5D00029-3331471849-masterpiece%2Cbest%20quality%2Cupper%20body%2C1girl%2Csmall%20breasts%2Ccollared_shirt%20and%20flared_skirt%20as%20material2%2Cpink%20theme%2Cbook%20cover%20_%28med.png',
-        parameters: '',
-      },
-    ]);
+    const route = useRoute();
+    const imageInfo = ref({
+      imageTitle: '',
+      modelName: '',
+      description: '',
+      prompt: '',
+      negativePrompt: '',
+      sampler: '',
+      steps: '',
+      scale: '',
+      seed: '',
+      modelHash: '',
+      raw: '',
+      url: '',
+      createTime: '',
+    });
+
+    // const covers = ref<Array<{ url: string; parameters: string }>>([  { url: '', }, ]);
 
     onMounted(() => {
       init();
     });
 
     const init = async () => {
+      const { id } = route.params;
+
       const resp = await http.get({
         url: 'https://client.emchub.ai/emchub/api/client/modelImage/queryOne',
-        data: { id: 1 },
+        data: { id: id },
       });
-      console.log(resp);
+      if (resp._result !== 0) return;
+      console.log(resp.data);
+      imageInfo.value = resp.data;
     };
 
     return {
-      covers,
+      imageInfo,
+      moment,
       onPressCopy() {
-        copy('HHH');
+        copy(imageInfo.value.raw);
         message.success('Copied!');
       },
       onPressBack() {
         router.back();
+      },
+      onPressRun() {
+        message.info('comming soon');
+        // if (!hashCode.value) {
+        //   message.error("Sorry, This model without 'Hash Code'");
+        //   return;
+        // }
+        // nodeVisible.value = true;
       },
     };
   },
@@ -165,9 +209,10 @@ export default defineComponent({
 <style scoped>
 .content {
   width: 1440px;
-  height: calc(100vh - 96px);
+  height: 100%;
+  min-height: calc(100vh - 96px);
   padding: 24px;
-  margin: 48px auto;
+  margin: 48px auto 0;
   background-color: #fff;
   border-radius: 20px;
   box-sizing: border-box;
@@ -181,7 +226,9 @@ export default defineComponent({
 .layout-left,
 .layout-right {
   box-sizing: border-box;
+  width: 100%;
   height: 100%;
+  min-height: 400px;
 }
 .carousel-wrap {
   width: 100%;
@@ -252,5 +299,16 @@ export default defineComponent({
   min-height: 32px;
 
   line-height: 32px;
+}
+.body-description {
+  border-radius: 10px;
+  border: 1px solid #c7cddb;
+  padding: 0 12px;
+}
+.icon-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
 }
 </style>

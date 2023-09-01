@@ -17,7 +17,7 @@
           <NGridItem span="2 880:1">
             <div class="layout-left">
               <div class="carousel-wrap">
-                <NCarousel class="carousel" :autoplay="true">
+                <NCarousel class="carousel" :autoplay="true" :show-arrow="covers.length > 1 ? true : false">
                   <template v-for="cover in covers">
                     <img class="cover" :src="cover.url" />
                   </template>
@@ -99,7 +99,7 @@
             </template>
           </NButton>
         </template>
-        <NodeList :hash="nodeHashCode" @pressitem="onNodePressItem" />
+        <NodeList :hash="hashCode" @pressitem="onNodePressItem" />
       </NCard>
     </NModal>
   </div>
@@ -109,32 +109,11 @@
 import { ref, defineComponent, onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
-import {
-  NCard,
-  NH2,
-  NH3,
-  NSpace,
-  NSpin,
-  NTag,
-  NCarousel,
-  NDescriptions,
-  NDescriptionsItem,
-  NButton,
-  NIcon,
-  NModal,
-  NGrid,
-  NGridItem,
-  useMessage,
-  NPopselect,
-} from 'naive-ui';
+import { NCard, NH2, NH3, NSpace, NSpin, NTag, NCarousel, NDescriptions, NDescriptionsItem, NButton, NIcon, NModal, NGrid, NGridItem, useMessage, NPopselect } from 'naive-ui';
 import { useUserStore } from '@/stores/user';
 import { Http } from '@/tools/http';
 import { Utils } from '@/tools/utils';
-import {
-  DownloadSharp as IconDownload,
-  CaretForwardCircleOutline as IconRun,
-  CloseSharp as IconClose,
-} from '@vicons/ionicons5';
+import { DownloadSharp as IconDownload, CaretForwardCircleOutline as IconRun, CloseSharp as IconClose } from '@vicons/ionicons5';
 import NodeList from './node-list.vue';
 import type { NodeItem } from './node-item';
 import { parametersWith } from '@/tools/exif';
@@ -173,7 +152,6 @@ export default defineComponent({
     const errorText = ref('');
     //modal property
     const nodeVisible = ref(false);
-    const nodeHashCode = ref('');
     const router = useRouter();
 
     const name = ref('');
@@ -239,7 +217,6 @@ export default defineComponent({
       errorText,
       modelSn,
       nodeVisible,
-      nodeHashCode,
       name,
       covers,
       version,
@@ -256,7 +233,6 @@ export default defineComponent({
           return;
         }
         nodeVisible.value = true;
-        nodeHashCode.value = hashCode.value;
       },
       onNodeClose() {
         nodeVisible.value = false;
@@ -304,10 +280,7 @@ export default defineComponent({
         }
 
         nodeVisible.value = false;
-        sdWindow = window.open(
-          `https://sd.edgematrix.pro/#/txt2img?nodeid=${item.nodeId}`,
-          `sd-window-${new Date().getTime()}`
-        );
+        sdWindow = window.open(`https://sd.edgematrix.pro/#/txt2img?nodeid=${item.nodeId}`, `sd-window-${new Date().getTime()}`);
         // sdWindow = window.open(
         //   `http://localhost:8080/#/txt2img?nodeid=${item.nodeId}`,
         //   `sd-window-${new Date().getTime()}`

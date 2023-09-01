@@ -6,114 +6,121 @@
 
     <NCard closable @close="handleClose" style="max-width: 960px">
       <template #header>
-        <NSpace justify="start" :wrap-item="false" :size="[4, 0]">
-          <div style="flex: 0.5; text-align: center">
-            Release<NEllipsis style="max-width: 160px">{{ modelName }}</NEllipsis
+        <NSpace justify="center" :wrap-item="false" :size="[4, 0]">
+          <div style="text-align: center">
+            <!-- flex: 0.5; -->
+            Release <NEllipsis style="max-width: 160px">{{ modelName }}</NEllipsis
             >Model Relaterd Images
           </div>
         </NSpace>
       </template>
       <NForm ref="formRef" :model="formData" style="width: 100%" :rules="formRule">
         <NSpace :wrap="false" :wrap-item="false" :size="[48, 0]">
-          <NSpace vertical style="flex: 1">
-            <NUpload
-              class="upload"
-              multiple
-              directory-dnd
-              action="https://api.emchub.ai/mrchaiemc/fileUpload.do"
-              :max="1"
-              list-type="image-card"
-              :custom-request="handleUploadImage"
-              @remove="onRemove"
-              file-list-style="grid-template-columns:none; "
-              trigger-style="width:100%;height:100%;flex-wrap:wrap"
-            >
-              <NUploadDragger style="height: 282px; flex-direction: column; justify-content: space-evenly">
-                <img src="@/assets/icon_upload.png" width="96" height="96" />
-                <NText style="font-size: 16px"> Drag the image here or <span style="color: #a45eff; text-decoration: underline">Click Upload</span> </NText>
-                <NP depth="3" style="margin: 8px 0 0 0"> Directly upload the picture of the AI generation background, and the relevant creation information will be automatically read </NP>
-              </NUploadDragger>
-            </NUpload>
-            <input type="password" name="password" style="position: fixed; left: -9999px; top: -9999px; z-index: -9999" />
-            <NFormItem path="title" label="Image title" show-require-mark>
-              <NInput class="form-input" v-model:value="formData.title" size="large" placeholder="" @keydown.enter.prevent />
-            </NFormItem>
-            <NFormItem path="" label="About your image" :show-feedback="false">
-              <NInput
-                class="form-input"
-                v-model:value="formData.description"
-                type="textarea"
-                :autosize="{
-                  minRows: 1,
-                  maxRows: 2,
-                }"
-                :maxlength="300"
-                show-count
-                size="large"
-                placeholder=""
-                @keydown.enter.prevent
-              />
-            </NFormItem>
-          </NSpace>
-          <NSpace vertical style="flex: 1; overflow-y: auto">
-            <NFormItem path="" label="Model Name">
-              <NInput class="form-input" v-model:value="formData.name" disabled placeholder="" size="large" @keydown.enter.prevent />
-            </NFormItem>
+          <NGrid cols="1 800:2" item-responsive x-gap="24">
+            <NGridItem>
+              <NSpace vertical style="flex: 1">
+                <NUpload
+                  class="upload"
+                  multiple
+                  directory-dnd
+                  action="https://api.emchub.ai/mrchaiemc/fileUpload.do"
+                  :max="1"
+                  list-type="image-card"
+                  :custom-request="handleUploadImage"
+                  @remove="onRemove"
+                  file-list-style="grid-template-columns:none; "
+                  trigger-style="width:100%;height:100%;flex-wrap:wrap"
+                >
+                  <NUploadDragger style="height: 282px; flex-direction: column; justify-content: space-evenly">
+                    <img src="@/assets/icon_upload.png" width="96" height="96" />
+                    <NText style="font-size: 16px"> Drag the image here or <span style="color: #a45eff; text-decoration: underline">Click Upload</span> </NText>
+                    <NP depth="3" style="margin: 8px 0 0 0; padding: 0 24px">Directly upload the picture of the AI generation background, and the relevant creation information will be automatically read </NP>
+                  </NUploadDragger>
+                </NUpload>
+                <input type="password" name="password" style="position: fixed; left: -9999px; top: -9999px; z-index: -9999" />
+                <NFormItem path="title" label="Image title" show-require-mark>
+                  <NInput class="form-input" v-model:value="formData.title" size="large" placeholder="" @keydown.enter.prevent />
+                </NFormItem>
+                <NFormItem path="" label="About your image" :show-feedback="false">
+                  <NInput
+                    class="form-input"
+                    v-model:value="formData.description"
+                    type="textarea"
+                    :autosize="{
+                      minRows: 1,
+                      maxRows: 2,
+                    }"
+                    :maxlength="300"
+                    show-count
+                    size="large"
+                    placeholder=""
+                    @keydown.enter.prevent
+                  />
+                </NFormItem>
+              </NSpace>
+            </NGridItem>
+            <NGridItem>
+              <NSpace vertical style="flex: 1; overflow-y: auto">
+                <NFormItem path="" label="Model Name">
+                  <NInput class="form-input" v-model:value="formData.name" disabled placeholder="" size="large" @keydown.enter.prevent />
+                </NFormItem>
 
-            <NFormItem path="" label="Prompt">
-              <NInput
-                class="form-input"
-                v-model:value="formData.prompt"
-                type="textarea"
-                disabled
-                placeholder=""
-                :autosize="{
-                  minRows: 1,
-                  maxRows: 3,
-                }"
-                size="large"
-                @keydown.enter.prevent
-              />
-            </NFormItem>
-            <NFormItem path="" label="Negative Prompt">
-              <NInput
-                class="form-input"
-                v-model:value="formData.negativePrompt"
-                type="textarea"
-                disabled
-                placeholder=""
-                :autosize="{
-                  minRows: 1,
-                  maxRows: 3,
-                }"
-                size="large"
-                @keydown.enter.prevent
-              />
-            </NFormItem>
+                <NFormItem path="" label="Prompt">
+                  <NInput
+                    class="form-input"
+                    v-model:value="formData.prompt"
+                    type="textarea"
+                    disabled
+                    placeholder=""
+                    :autosize="{
+                      minRows: 1,
+                      maxRows: 3,
+                    }"
+                    size="large"
+                    @keydown.enter.prevent
+                  />
+                </NFormItem>
+                <NFormItem path="" label="Negative Prompt">
+                  <NInput
+                    class="form-input"
+                    v-model:value="formData.negativePrompt"
+                    type="textarea"
+                    disabled
+                    placeholder=""
+                    :autosize="{
+                      minRows: 1,
+                      maxRows: 3,
+                    }"
+                    size="large"
+                    @keydown.enter.prevent
+                  />
+                </NFormItem>
 
-            <NGrid :cols="2" :x-gap="24" :y-gap="0">
-              <NGridItem :span="2">
-                <NSpace :wrap="false" justify="space-between">
-                  <NFormItem path="" label="Sampler">
-                    <NInput class="form-input" v-model:value="formData.sampler" disabled size="large" placeholder="" @keydown.enter.prevent />
-                  </NFormItem>
-                  <NFormItem path="" label="Steps">
-                    <NInput class="form-input" v-model:value="formData.steps" disabled size="large" placeholder="" @keydown.enter.prevent />
-                  </NFormItem>
-                </NSpace>
-              </NGridItem>
-              <NGridItem :span="2">
-                <NSpace :wrap="false" justify="space-between">
-                  <NFormItem path="" label="Guidance scale" :show-feedback="false">
-                    <NInput class="form-input" v-model:value="formData.cfgScale" disabled size="large" placeholder="" @keydown.enter.prevent />
-                  </NFormItem>
-                  <NFormItem path="" label="Seed" :show-feedback="false">
-                    <NInput class="form-input" v-model:value="formData.seed" disabled size="large" placeholder="" @keydown.enter.prevent />
-                  </NFormItem>
-                </NSpace>
-              </NGridItem>
-            </NGrid>
-          </NSpace>
+                <NGrid :cols="2" :x-gap="24" :y-gap="0">
+                  <NGridItem :span="2">
+                    <NSpace :wrap="false" :wrap-item="false" justify="space-between">
+                      <NFormItem class="form-input-short" path="" label="Sampler">
+                        <NInput class="form-input" v-model:value="formData.sampler" disabled size="large" placeholder="" @keydown.enter.prevent />
+                      </NFormItem>
+                      <NFormItem class="form-input-short" path="" label="Steps">
+                        <NInput class="form-input" v-model:value="formData.steps" disabled size="large" placeholder="" @keydown.enter.prevent />
+                      </NFormItem>
+                    </NSpace>
+                  </NGridItem>
+                  <NGridItem :span="2">
+                    <NSpace :wrap="false" :wrap-item="false" justify="space-between">
+                      <NFormItem class="form-input-short" path="" label="Guidance scale" :show-feedback="false">
+                        <NInput class="form-input" v-model:value="formData.cfgScale" disabled size="large" placeholder="" @keydown.enter.prevent />
+                      </NFormItem>
+                      <NFormItem class="form-input-short" path="" label="Seed" :show-feedback="false">
+                        <NInput class="form-input" v-model:value="formData.seed" disabled size="large" placeholder="" @keydown.enter.prevent />
+                      </NFormItem>
+                    </NSpace>
+                  </NGridItem>
+                </NGrid>
+              </NSpace>
+            </NGridItem>
+          </NGrid>
         </NSpace>
       </NForm>
       <template #footer>
@@ -192,7 +199,7 @@ export default defineComponent({
   props: {
     showModal: { type: Boolean, default: false },
     userInfo: { type: Object, default: {} },
-    id: { type: String, default: '' },
+    modelsnapshot: { type: String, default: '' },
     modelHashCode: { type: String, default: '' },
     modelName: { type: String, default: '' },
   },
@@ -220,10 +227,8 @@ export default defineComponent({
       images: '',
     });
     const parametersValue = ref('');
+    const isModel = ref(false);
 
-    const onPressMask = () => {
-      context.emit('cancel');
-    };
     const formRef = ref<FormInst | null>(null);
     const formRule: FormRules = {
       title: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
@@ -261,63 +266,79 @@ export default defineComponent({
     };
 
     const handleUploadImage = async (params: UploadCustomRequestOptions) => {
-      const { file, onFinish, onError, onProgress } = params;
-      const fileHash = await fileToMD5(file.file as File);
-      if (!fileHash) {
-        onError();
-        message.error('file hash error');
-        return;
-      }
-      const policyData = await handlePresignUpload({
-        fileName: file.name,
-        fileType: file.type || '',
-        fileHash,
-        fileSize: file.file?.size || 0,
-        signType: 0,
-        userId: userStore.user.id,
-      });
-      if (!policyData) {
-        onError();
-        message.error('presign error');
-        return;
-      }
-      const resp = await upload({
-        file,
-        policyData,
-        onProgress: ({ progress }) => onProgress({ percent: (progress || 0) * 100 }),
-      });
-      if (resp._result !== 0) {
-        onError();
-        message.error(resp._desc || '');
-        return;
-      }
-      console.log(resp);
-      onFinish();
-      const url = resp.url || '';
-      const parameters: string = await parametersWith(file.file as File);
-      formData.value.images = url;
-      parametersValue.value = parameters;
-      const pf = parameterFormat(parameters);
+      try {
+        const { file, onFinish, onError, onProgress } = params;
+        const fileHash = await fileToMD5(file.file as File);
+        if (!fileHash) {
+          onError();
+          message.error('file hash error');
+          return;
+        }
+        const policyData = await handlePresignUpload({
+          fileName: file.name,
+          fileType: file.type || '',
+          fileHash,
+          fileSize: file.file?.size || 0,
+          signType: 0,
+          userId: userStore.user.id,
+        });
+        if (!policyData) {
+          onError();
+          message.error('presign error');
+          return;
+        }
+        const resp = await upload({
+          file,
+          policyData,
+          onProgress: ({ progress }) => onProgress({ percent: (progress || 0) * 100 }),
+        });
+        if (resp._result !== 0) {
+          onError();
+          message.error(resp._desc || '');
+          return;
+        }
+        onFinish();
+        const url = resp.url || '';
+        const parameters: string = await parametersWith(file.file as File);
+        formData.value.images = url;
+        parametersValue.value = parameters;
+        const pf = parameterFormat(parameters);
 
-      if (props.modelHashCode !== pf.modelHash) {
-        return message.error('Model the hash, please upload again');
-      } else {
-        formData.value.name = props.modelName;
-      }
+        const modelsHash = props.modelHashCode.toLowerCase();
+        const imageModelsHash = pf.modelHash.toLowerCase();
+        const isModelImage = modelsHash.startsWith(imageModelsHash);
+        isModel.value = isModelImage;
 
-      const { prompt, negativePrompt, seed, sampler, steps, cfgScale, modelHash, width, height } = pf;
-      formData.value = {
-        ...formData.value,
-        prompt,
-        negativePrompt,
-        sampler,
-        steps: steps.toString(),
-        cfgScale: cfgScale.toString(),
-        seed: seed.toString(),
-        modelHash: modelHash,
-        width: width,
-        height: height,
-      };
+        if (!isModel.value) {
+          return message.error('Model the hash, please upload again');
+        } else {
+          formData.value.name = props.modelName || '';
+        }
+
+        const { prompt, negativePrompt, seed, sampler, steps, cfgScale, modelHash, width, height } = pf;
+
+        formData.value = {
+          ...formData.value,
+          prompt,
+          negativePrompt,
+          sampler,
+          steps: steps ? steps.toString() : '',
+          cfgScale: cfgScale ? cfgScale.toString() : '',
+          seed: seed ? seed.toString() : '',
+          modelHash: modelHash,
+          width: width,
+          height: height,
+        };
+      } catch {
+        message.error('Failed to upload');
+      }
+    };
+
+    const onRemove = () => {
+      formData.value = { title: '', name: '', description: '', prompt: '', negativePrompt: '', sampler: '', steps: '', cfgScale: '', seed: '', modelHash: '', width: '', height: '', images: '' };
+    };
+    const onPressMask = () => {
+      context.emit('cancel');
     };
     watch(
       () => props.showModal,
@@ -325,7 +346,6 @@ export default defineComponent({
         isVisible.value = newVal;
       }
     );
-
     return {
       isVisible,
       onPressMask,
@@ -335,46 +355,47 @@ export default defineComponent({
       formRef,
       formRule,
       handleClose() {
+        onRemove();
         message.info('Card Close');
         context.emit('cancel');
       },
       async onPressSubmit() {
         try {
-          if (formData.value.modelHash === '' || formData.value.title === '') {
+          if (formData.value.modelHash === '' || formData.value.title === '' || formData.value.name === '') {
             return message.error('Can not be empty');
-          } else if (props.modelHashCode !== formData.value.modelHash) {
+          } else if (!isModel.value) {
             return message.error('Model the hash, please upload again');
           } else {
+            const { name, title, width, height, description, prompt, negativePrompt, images, sampler, steps, cfgScale, seed } = formData.value;
+
             const insertData = {
-              modelSn: props.id,
-              modelName: formData.value.name,
-              imageTitle: formData.value.title,
-              resolution: formData.value.width + '*' + formData.value.height,
-              description: formData.value.description,
-              Prompt: formData.value.prompt,
-              negativePrompt: formData.value.negativePrompt,
-              url: formData.value.images,
-              sampler: formData.value.sampler,
-              steps: formData.value.steps,
-              scale: formData.value.cfgScale,
-              seed: formData.value.seed,
+              modelSn: props.modelsnapshot,
+              modelName: name,
+              imageTitle: title,
+              resolution: `${width}*${height}`,
+              description: description,
+              prompt: prompt,
+              negativePrompt: negativePrompt,
+              url: images,
+              sampler: sampler,
+              steps: steps,
+              scale: cfgScale,
+              seed: seed,
               raw: parametersValue.value,
             };
-
             submitting.value = true;
             const resp = await http.postJSON({
               url: 'https://client.emchub.ai/emchub/api/client/modelImage/insert',
               data: insertData,
             });
-            console.log(resp);
             if (resp._result !== 0) {
               message.error(resp._desc || '');
               return;
             }
             message.success('Successfully uploaded!');
+            onRemove();
             submitting.value = false;
           }
-
           context.emit('cancel');
         } catch (error) {
           submitting.value = false;
@@ -384,9 +405,7 @@ export default defineComponent({
         copy(parametersValue.value);
         message.success('Copied!');
       },
-      onRemove() {
-        formData.value = { title: '', name: '', description: '', prompt: '', negativePrompt: '', sampler: '', steps: '', cfgScale: '', seed: '', modelHash: '', width: '', height: '', images: '' };
-      },
+      onRemove,
     };
   },
 });
@@ -397,6 +416,10 @@ export default defineComponent({
   width: 300px;
   border-radius: 10px;
 }
+.form-input-short {
+  flex: 0.45;
+}
+
 .upload /deep/ .n-upload-file--image-card-type {
   width: 100%;
   height: 316px;

@@ -1,62 +1,74 @@
 <template>
   <div class="page">
-    <div>
-      <NSpace justify="space-between" style="margin: 96px 0 48px">
-        <NSpace align="center">
-          <NH2 style="margin: 0">Gallery</NH2>
-          <NPopselect v-model:value="selectValue" :options="options" trigger="click">
-            <NButton icon-placement="right">
-              {{ selectValue || 'select' }}
-              <template #icon>
-                <NIcon>
-                  <IconDown />
-                </NIcon>
-              </template>
-            </NButton>
-          </NPopselect>
-        </NSpace>
-        <NButton icon-placement="right" style="background: linear-gradient(90deg, #4e74fc 0%, #bb3ef7 100%); color: #fff" @click="onPressAdd">
-          Add Post
-          <template #icon>
-            <NIcon>
-              <IconAdd color="#fff" />
-            </NIcon>
-          </template>
-        </NButton>
+    <NSpace justify="space-between" style="margin: 96px 0 48px">
+      <NSpace align="center">
+        <NH2 style="margin: 0">Gallery</NH2>
+        <NPopselect v-model:value="selectValue" :options="options" trigger="click">
+          <NButton icon-placement="right">
+            {{ selectValue || 'select' }}
+            <template #icon>
+              <NIcon>
+                <IconDown />
+              </NIcon>
+            </template>
+          </NButton>
+        </NPopselect>
       </NSpace>
-      <NGrid cols="2 600:3 800:4 1000:5" :x-gap="24" :y-gap="24" item-responsive>
-        <template v-for="item in list">
-          <NGridItem>
-            <GalleryItem :item="item" @press="onPressImages" />
-          </NGridItem>
+      <NButton color="#A45EFF" icon-placement="right" style="background: linear-gradient(90deg, #4e74fc 0%, #bb3ef7 100%); color: #fff; padding: 8px 12px; border-radius: 6px" @click="onPressAdd">
+        Add Post
+        <template #icon>
+          <NIcon>
+            <IconAdd color="#fff" />
+          </NIcon>
         </template>
-      </NGrid>
-    </div>
-    <GalleryUpload :showModal="showModal" :id="modelId" :modelHashCode="modelHashCode" :modelName="modelName" @cancel="cancel" @info="getInfo" />
+      </NButton>
+    </NSpace>
+    <template v-if="newList">
+      <template v-if="newList.length !== 0">
+        <Waterfall :list="newList" :gutter="24" :width="248">
+          <template #item="{ item, url, index }">
+            <GalleryItem :item="item" @press="onPressImages" :key="item.id" />
+          </template>
+        </Waterfall>
+      </template>
+      <template v-else>
+        <div style="background: #fff; padding: 24px">
+          <NEmpty description="No pictures" />
+        </div>
+      </template>
+    </template>
+    <template v-else>
+      <NSpin size="medium" />
+    </template>
+
+    <GalleryUpload :showModal="showModal" :modelsnapshot="modelSn" :modelHashCode="modelHashCode" :modelName="modelName" @cancel="cancel" />
   </div>
 </template>
 
 <script lang="ts">
 import { ref, defineComponent, onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { NCard, NH2, NH3, NSpace, NSpin, NTag, NCarousel, NDescriptions, NDescriptionsItem, NButton, NIcon, NModal, NGrid, NGridItem, useMessage, NPopselect } from 'naive-ui';
+import { Http } from '@/tools/http';
+
+import { NCard, NH2, NH3, NSpace, NSpin, NTag, NCarousel, NDescriptions, NDescriptionsItem, NEmpty, NButton, NIcon, NModal, NGrid, NGridItem, useMessage, NPopselect } from 'naive-ui';
 import { AddSharp as IconAdd, ChevronDownSharp as IconDown } from '@vicons/ionicons5';
 import GalleryItem from './gallery-item.vue';
 import GalleryUpload from './gallery-upload.vue';
+import { LazyImg, Waterfall } from 'vue-waterfall-plugin-next';
+import 'vue-waterfall-plugin-next/dist/style.css';
 
 export default defineComponent({
   name: 'node-detail',
   props: {
     modelHashCode: { type: String, default: '' },
     modelName: { type: String, default: '' },
-    modelId: { type: String, default: '' },
+    modelSn: { type: String, default: '' },
   },
   components: {
     NCard,
     NH2,
     NH3,
     NSpace,
-    NSpin,
     NTag,
     NCarousel,
     NDescriptions,
@@ -67,34 +79,66 @@ export default defineComponent({
     NGrid,
     NGridItem,
     NPopselect,
+    NSpin,
+    NEmpty,
     IconAdd,
     IconDown,
     GalleryUpload,
     GalleryItem,
+    Waterfall,
   },
-  setup() {
+
+  setup(props) {
     const route = useRoute();
     const message = useMessage();
     const router = useRouter();
+    const http = Http.getInstance();
 
     const selectValue = ref('NEWEST');
     const showModal = ref(false);
-    const list = ref<any[]>([
-      {
-        id: '03f0cae2-e8f5-4d68-888a-beaad9fcc7f3',
-        covers: [
-          'https://res.emchub.ai/emcbucket/2023/07/24/%5B1690211014903%5D00029-3331471849-masterpiece%2Cbest%20quality%2Cupper%20body%2C1girl%2Csmall%20breasts%2Ccollared_shirt%20and%20flared_skirt%20as%20material2%2Cpink%20theme%2Cbook%20cover%20_%28med.png',
-        ],
-        name: 'Animix Reality',
-        tags: [],
-        status: 'PUBLISH',
-      },
-    ]);
+    const list = ref<any[]>([]);
+    const newList = ref<any[]>([]);
+
+    const pageNo = ref(1);
+    const pageSize = ref(50);
+    const loading = ref(true);
+
+    onMounted(() => {
+      initList();
+    });
+    const { modelSn } = route.params;
+
+    const updateList = async () => {
+      loading.value = true;
+      const resp = await http.get({
+        url: 'https://client.emchub.ai/emchub/api/client/modelImage/queryListByModelSn',
+        data: { pageNo: pageNo.value, pageSize: pageSize.value, modelSn: modelSn },
+      });
+      loading.value = false;
+      if (resp._result !== 0) return;
+      newList.value = resp.pageInfo?.list || [];
+      // const newList: any[] = resp.pageInfo?.list || [];
+    };
+    const initList = async () => {
+      pageNo.value = 1;
+      return updateList();
+    };
 
     return {
-      list,
+      newList,
       selectValue,
       showModal,
+      breakpoints: {
+        1200: {
+          rowPerView: 4,
+        },
+        800: {
+          rowPerView: 3,
+        },
+        500: {
+          rowPerView: 2,
+        },
+      },
       options: [
         {
           label: 'NEWEST',
@@ -107,10 +151,8 @@ export default defineComponent({
       cancel() {
         showModal.value = false;
       },
-      getInfo(value: any) {},
-      onPressImages(val: any) {
-        router.push({ name: 'model-images' });
-        // params: { id: item.id }
+      onPressImages(item: any) {
+        router.push({ name: 'model-images', params: { id: item.id } });
       },
     };
   },
