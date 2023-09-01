@@ -73,7 +73,7 @@
                 :disabled="!ready || formSubmitting"
                 :loading="formSubmitting"
                 @click.stop.prevent="onPressSubmit"
-                >Save</NButton
+                >Save & Done</NButton
               >
               <NButton
                 type="primary"
