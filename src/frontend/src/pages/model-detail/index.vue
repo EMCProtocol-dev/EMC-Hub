@@ -17,7 +17,7 @@
           <NGridItem span="2 880:1">
             <div class="layout-left">
               <div class="carousel-wrap">
-                <NCarousel class="carousel" :autoplay="true" :show-arrow="covers.length > 1 ? true : false">
+                <NCarousel class="carousel" v-model:current-index="carouselIndex" :autoplay="true">
                   <template v-for="cover in covers">
                     <img class="cover" :src="cover.url" />
                   </template>
@@ -46,7 +46,7 @@
                 </div>
                 <div class="with">
                   <div class="with-label">Hash Code</div>
-                  <div class="with-value">{{ hashCode || '-' }}</div>
+                  <div class="with-value">{{ hashCodeSha256Short || '-' }}</div>
                 </div>
                 <div class="with">
                   <div class="with-label">Base Model</div>
@@ -84,7 +84,7 @@
         </NGrid>
       </template>
     </NCard>
-    <ModelGallery :modelSn="modelSn" :modelHashCode="hashCode" :modelName="name" />
+    <ModelGallery :modelSn="modelSn" :modelHashCode="hashCodeSha256" :modelName="name" />
     <NModal v-model:show="nodeVisible" :mask-closable="false">
       <NCard :bordered="false" style="width: 88vw; max-width: 640px" content-style="padding-left:0;padding-right:0;">
         <template #header>
@@ -99,7 +99,18 @@
             </template>
           </NButton>
         </template>
-        <NodeList :hash="hashCode" @pressitem="onNodePressItem" />
+        <NodeList :hash="nodeHashCode" @pressitem="onNodePressItem" @init="onNodeInit" />
+        <template #footer>
+          <NSpace justify="space-between" align="center" :wrap-item="false">
+            <NText style="font-size: 12px">Total {{ nodeList.length }} nodes</NText>
+            <NButton type="warning" size="large" strong @click="onNodeRun">
+              <template #icon>
+                <NIcon><IconRun /></NIcon>
+              </template>
+              Run
+            </NButton>
+          </NSpace>
+        </template>
       </NCard>
     </NModal>
   </div>
@@ -109,11 +120,33 @@
 import { ref, defineComponent, onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
-import { NCard, NH2, NH3, NSpace, NSpin, NTag, NCarousel, NDescriptions, NDescriptionsItem, NButton, NIcon, NModal, NGrid, NGridItem, useMessage, NPopselect } from 'naive-ui';
+import {
+  NCard,
+  NH2,
+  NH3,
+  NSpace,
+  NSpin,
+  NTag,
+  NCarousel,
+  NDescriptions,
+  NDescriptionsItem,
+  NButton,
+  NIcon,
+  NModal,
+  NGrid,
+  NGridItem,
+  NText,
+  useMessage,
+  NPopselect,
+} from 'naive-ui';
 import { useUserStore } from '@/stores/user';
 import { Http } from '@/tools/http';
 import { Utils } from '@/tools/utils';
-import { DownloadSharp as IconDownload, CaretForwardCircleOutline as IconRun, CloseSharp as IconClose } from '@vicons/ionicons5';
+import {
+  DownloadSharp as IconDownload,
+  CaretForwardCircleOutline as IconRun,
+  CloseSharp as IconClose,
+} from '@vicons/ionicons5';
 import NodeList from './node-list.vue';
 import type { NodeItem } from './node-item';
 import { parametersWith } from '@/tools/exif';
@@ -137,6 +170,7 @@ export default defineComponent({
     NModal,
     NGrid,
     NGridItem,
+    NText,
     NPopselect,
     IconRun,
     IconClose,
@@ -150,8 +184,12 @@ export default defineComponent({
     const modelSn = ref(route.params.modelSn as string);
     const error = ref(-1);
     const errorText = ref('');
+    const carouselIndex = ref(0);
+
     //modal property
     const nodeVisible = ref(false);
+    const nodeHashCode = ref('');
+    const nodeList = ref<NodeItem[]>([]);
     const router = useRouter();
 
     const name = ref('');
@@ -160,7 +198,8 @@ export default defineComponent({
     const version = ref('');
     const tags = ref<string[]>([]);
     const baseModel = ref('');
-    const hashCode = ref('');
+    const hashCodeSha256 = ref('');
+    const hashCodeSha256Short = ref('');
     const floatingPoint = ref('');
     const modelSize = ref('');
     const description = ref('');
@@ -194,13 +233,15 @@ export default defineComponent({
           item.parameters = _parameters[index].raw;
         });
       }
-
+      const _hashCodeSha256 = 'aa9c45d00a'; // (lastestVersion.hashCodeSha256 || '-').trim().toLocaleLowerCase();
+      const _shortHashCodeSha256 = _hashCodeSha256.substring(0, 10);
       name.value = data.modelName;
       tags.value = _tags;
       covers.value = _covers;
       description.value = data.description;
       version.value = lastestVersion.modelVersion || '-';
-      hashCode.value = lastestVersion.hashCodeSha256;
+      hashCodeSha256.value = _hashCodeSha256;
+      hashCodeSha256Short.value = _shortHashCodeSha256;
       baseModel.value = lastestVersion.baseModel;
       floatingPoint.value = lastestVersion.floatingPoint;
       modelSize.value = lastestVersion.modelSize;
@@ -216,26 +257,69 @@ export default defineComponent({
       error,
       errorText,
       modelSn,
+      carouselIndex,
       nodeVisible,
+      nodeHashCode,
+      nodeList,
       name,
       covers,
       version,
       tags,
       archive,
       baseModel,
-      hashCode,
+      hashCodeSha256,
+      hashCodeSha256Short,
       floatingPoint,
       modelSize,
       description,
       onPressRun() {
-        if (!hashCode.value) {
+        if (!hashCodeSha256Short.value || hashCodeSha256Short.value === '-') {
           message.error("Sorry, This model without 'Hash Code'");
           return;
         }
         nodeVisible.value = true;
+        nodeHashCode.value = hashCodeSha256Short.value;
       },
       onNodeClose() {
         nodeVisible.value = false;
+      },
+      onNodeInit(list: NodeItem[]) {
+        nodeList.value = list;
+      },
+      async onNodeRun() {
+        let sdWindow: WindowProxy | null;
+        let parameters = '';
+        let coverIndex = carouselIndex.value;
+        if (covers.value[coverIndex].parameters) {
+          parameters = covers.value[coverIndex].parameters;
+        } else {
+          try {
+            parameters = await parametersWith(covers.value[coverIndex].url);
+          } catch (e) {
+            console.error(e);
+          }
+        }
+
+        console.info('image parameters :\n', parameters);
+        
+        if (parameters) {
+          const handleMessage = (event: MessageEvent) => {
+            const request: any = event.data as any;
+            if (request.type === 'emchub-txt2img-ready') {
+              sdWindow?.postMessage({ type: 'emchub-txt2img-parameters', data: parameters }, '*');
+            }
+            window.removeEventListener('message', handleMessage);
+          };
+          window.addEventListener('message', handleMessage);
+        } else {
+          console.warn(`${covers.value[0].url} can not parse parameters`);
+        }
+
+        nodeVisible.value = false;
+        const host = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'https://models.emchub.ai';
+        sdWindow = window.open(`${host}/#/sd/${nodeHashCode.value}`);
+
+        // router.push({ name: 'sd', params: { modelHashCode: nodeHashCode.value } });
       },
       async onNodePressItem(item: NodeItem) {
         let sdWindow: WindowProxy | null;
@@ -246,20 +330,6 @@ export default defineComponent({
         } else {
           try {
             parameters = await parametersWith(covers.value[0].url);
-            //parameters = 'Prompt\nNavite Promp\nStep:1;Seed:1;';
-            //import {format as parameterFormat} from '@/tools/parameters';
-            //const pf = parameterFormat(parameters);
-            // {
-            //   prompt: '',
-            //   negativePrompt: '',
-            //   steps: 0,
-            //   sampler: '',
-            //   width: 0,
-            //   height: 0,
-            //   cfgScale: 0,
-            //   seed: '',
-            //   clipSkip: 0,
-            // }
           } catch (e) {
             console.error(e);
           }
@@ -280,7 +350,10 @@ export default defineComponent({
         }
 
         nodeVisible.value = false;
-        sdWindow = window.open(`https://sd.edgematrix.pro/#/txt2img?nodeid=${item.nodeId}`, `sd-window-${new Date().getTime()}`);
+        sdWindow = window.open(
+          `https://sd.edgematrix.pro/#/txt2img?nodeid=${item.nodeId}`,
+          `sd-window-${new Date().getTime()}`
+        );
         // sdWindow = window.open(
         //   `http://localhost:8080/#/txt2img?nodeid=${item.nodeId}`,
         //   `sd-window-${new Date().getTime()}`
