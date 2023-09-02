@@ -125,7 +125,7 @@ import { ArchiveOutline as ArchiveIcon } from '@vicons/ionicons5';
 import { useUserStore } from '@/stores/user';
 import { fileToSha256Hex } from '@/tools/file-sha256';
 import { useMinio } from '@/composables/use-minio';
-import { parametersWith } from '@/tools/exif';
+import * as SDParams from '@/tools/exif';
 import { Utils } from '@/tools/utils';
 
 type BasicOptionItem = {
@@ -251,7 +251,7 @@ export default defineComponent({
       }
       const url = resp.url || '';
       file.url = url;
-      const parameters: string = await parametersWith(file.file as File);
+      const [parameters, isParameters] = await SDParams.extract(file.file as File);
       formData.value.imagesParameters.push({ id: file.id, raw: parameters });
       onFinish();
     };

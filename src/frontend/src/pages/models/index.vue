@@ -190,7 +190,7 @@ export default defineComponent({
           message.error('Please sign in first');
           return;
         }
-        const host = process.env.NODE_ENV === 'developer' ? 'http://localhost:8080' : 'https://models.emchub.ai';
+        const host = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'https://models.emchub.ai';
         window.open(`${host}/#/model-upload`, `emchub-upload-${new Date().getTime()}`);
         // router.push({ name: 'model-upload' });
       },

@@ -33,13 +33,29 @@
                 >
                   <NUploadDragger style="height: 282px; flex-direction: column; justify-content: space-evenly">
                     <img src="@/assets/icon_upload.png" width="96" height="96" />
-                    <NText style="font-size: 16px"> Drag the image here or <span style="color: #a45eff; text-decoration: underline">Click Upload</span> </NText>
-                    <NP depth="3" style="margin: 8px 0 0 0; padding: 0 24px">Directly upload the picture of the AI generation background, and the relevant creation information will be automatically read </NP>
+                    <NText style="font-size: 16px">
+                      Drag the image here or
+                      <span style="color: #a45eff; text-decoration: underline">Click Upload</span>
+                    </NText>
+                    <NP depth="3" style="margin: 8px 0 0 0; padding: 0 24px"
+                      >Directly upload the picture of the AI generation background, and the relevant creation
+                      information will be automatically read
+                    </NP>
                   </NUploadDragger>
                 </NUpload>
-                <input type="password" name="password" style="position: fixed; left: -9999px; top: -9999px; z-index: -9999" />
+                <input
+                  type="password"
+                  name="password"
+                  style="position: fixed; left: -9999px; top: -9999px; z-index: -9999"
+                />
                 <NFormItem path="title" label="Image title" show-require-mark>
-                  <NInput class="form-input" v-model:value="formData.title" size="large" placeholder="" @keydown.enter.prevent />
+                  <NInput
+                    class="form-input"
+                    v-model:value="formData.title"
+                    size="large"
+                    placeholder=""
+                    @keydown.enter.prevent
+                  />
                 </NFormItem>
                 <NFormItem path="" label="About your image" :show-feedback="false">
                   <NInput
@@ -62,7 +78,14 @@
             <NGridItem>
               <NSpace vertical style="flex: 1; overflow-y: auto">
                 <NFormItem path="" label="Model Name">
-                  <NInput class="form-input" v-model:value="formData.name" disabled placeholder="" size="large" @keydown.enter.prevent />
+                  <NInput
+                    class="form-input"
+                    v-model:value="formData.name"
+                    disabled
+                    placeholder=""
+                    size="large"
+                    @keydown.enter.prevent
+                  />
                 </NFormItem>
 
                 <NFormItem path="" label="Prompt">
@@ -100,20 +123,48 @@
                   <NGridItem :span="2">
                     <NSpace :wrap="false" :wrap-item="false" justify="space-between">
                       <NFormItem class="form-input-short" path="" label="Sampler">
-                        <NInput class="form-input" v-model:value="formData.sampler" disabled size="large" placeholder="" @keydown.enter.prevent />
+                        <NInput
+                          class="form-input"
+                          v-model:value="formData.sampler"
+                          disabled
+                          size="large"
+                          placeholder=""
+                          @keydown.enter.prevent
+                        />
                       </NFormItem>
                       <NFormItem class="form-input-short" path="" label="Steps">
-                        <NInput class="form-input" v-model:value="formData.steps" disabled size="large" placeholder="" @keydown.enter.prevent />
+                        <NInput
+                          class="form-input"
+                          v-model:value="formData.steps"
+                          disabled
+                          size="large"
+                          placeholder=""
+                          @keydown.enter.prevent
+                        />
                       </NFormItem>
                     </NSpace>
                   </NGridItem>
                   <NGridItem :span="2">
                     <NSpace :wrap="false" :wrap-item="false" justify="space-between">
                       <NFormItem class="form-input-short" path="" label="Guidance scale" :show-feedback="false">
-                        <NInput class="form-input" v-model:value="formData.cfgScale" disabled size="large" placeholder="" @keydown.enter.prevent />
+                        <NInput
+                          class="form-input"
+                          v-model:value="formData.cfgScale"
+                          disabled
+                          size="large"
+                          placeholder=""
+                          @keydown.enter.prevent
+                        />
                       </NFormItem>
                       <NFormItem class="form-input-short" path="" label="Seed" :show-feedback="false">
-                        <NInput class="form-input" v-model:value="formData.seed" disabled size="large" placeholder="" @keydown.enter.prevent />
+                        <NInput
+                          class="form-input"
+                          v-model:value="formData.seed"
+                          disabled
+                          size="large"
+                          placeholder=""
+                          @keydown.enter.prevent
+                        />
                       </NFormItem>
                     </NSpace>
                   </NGridItem>
@@ -125,8 +176,25 @@
       </NForm>
       <template #footer>
         <NSpace justify="space-around" :wrap-item="false" style="width: 100%">
-          <NButton class="form-btn" type="primary" color="#A45EFF" size="large" :loading="submitting" @click.stop.prevent="onPressSubmit">Upload</NButton>
-          <NButton class="form-btn" type="primary" color="#A45EFF" ghost size="large" :loading="submitting" @click.stop.prevent="onPressCopy">Copy Generation Data</NButton>
+          <NButton
+            class="form-btn"
+            type="primary"
+            color="#A45EFF"
+            size="large"
+            :loading="submitting"
+            @click.stop.prevent="onPressSubmit"
+            >Upload</NButton
+          >
+          <NButton
+            class="form-btn"
+            type="primary"
+            color="#A45EFF"
+            ghost
+            size="large"
+            :loading="submitting"
+            @click.stop.prevent="onPressCopy"
+            >Copy Generation Data</NButton
+          >
         </NSpace>
       </template>
     </NCard>
@@ -160,8 +228,7 @@ import {
   UploadCustomRequestOptions,
 } from 'naive-ui';
 import copy from 'copy-to-clipboard';
-import { parametersWith } from '@/tools/exif';
-import { format as parameterFormat } from '@/tools/parameters';
+import * as SDParams from '@/tools/exif';
 import { useMinio } from '@/composables/use-minio';
 import { Http } from '@/tools/http';
 import { useUserStore } from '@/stores/user';
@@ -194,7 +261,24 @@ type PresignOptions = {
 };
 
 export default defineComponent({
-  components: { NForm, NGrid, NGridItem, NFormItem, NInput, NSpace, NModal, NButton, NEllipsis, NH3, NH5, NCard, NUpload, NUploadDragger, NText, NP },
+  components: {
+    NForm,
+    NGrid,
+    NGridItem,
+    NFormItem,
+    NInput,
+    NSpace,
+    NModal,
+    NButton,
+    NEllipsis,
+    NH3,
+    NH5,
+    NCard,
+    NUpload,
+    NUploadDragger,
+    NText,
+    NP,
+  },
 
   props: {
     showModal: { type: Boolean, default: false },
@@ -299,10 +383,10 @@ export default defineComponent({
         }
         onFinish();
         const url = resp.url || '';
-        const parameters: string = await parametersWith(file.file as File);
+        const [parameters, isParameters] = await SDParams.extract(file.file as File);
         formData.value.images = url;
         parametersValue.value = parameters;
-        const pf = parameterFormat(parameters);
+        const pf = SDParams.parse(parameters);
 
         const modelsHash = props.modelHashCode.toLowerCase();
         const imageModelsHash = pf.modelHash.toLowerCase();
@@ -335,7 +419,21 @@ export default defineComponent({
     };
 
     const onRemove = () => {
-      formData.value = { title: '', name: '', description: '', prompt: '', negativePrompt: '', sampler: '', steps: '', cfgScale: '', seed: '', modelHash: '', width: '', height: '', images: '' };
+      formData.value = {
+        title: '',
+        name: '',
+        description: '',
+        prompt: '',
+        negativePrompt: '',
+        sampler: '',
+        steps: '',
+        cfgScale: '',
+        seed: '',
+        modelHash: '',
+        width: '',
+        height: '',
+        images: '',
+      };
     };
     const onPressMask = () => {
       context.emit('cancel');
@@ -366,7 +464,20 @@ export default defineComponent({
           } else if (!isModel.value) {
             return message.error('Model the hash, please upload again');
           } else {
-            const { name, title, width, height, description, prompt, negativePrompt, images, sampler, steps, cfgScale, seed } = formData.value;
+            const {
+              name,
+              title,
+              width,
+              height,
+              description,
+              prompt,
+              negativePrompt,
+              images,
+              sampler,
+              steps,
+              cfgScale,
+              seed,
+            } = formData.value;
 
             const insertData = {
               modelSn: props.modelsnapshot,

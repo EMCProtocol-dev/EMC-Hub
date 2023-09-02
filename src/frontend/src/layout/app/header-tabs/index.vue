@@ -69,7 +69,7 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: var(--header-height);
+  height: var(--layout-header-height);
   white-space: nowrap;
   color: inherit;
 }

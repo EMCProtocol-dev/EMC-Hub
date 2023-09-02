@@ -5,11 +5,6 @@ export const routes = [
     component: () => import('@/pages/auth/index.vue'),
   },
   {
-    name: 'dev',
-    path: '/dev',
-    component: () => import('@/pages/dev/index.vue'),
-  },
-  {
     name: 'layout',
     path: '/',
     component: () => import('@/layout/app/index.vue'),
@@ -40,7 +35,11 @@ export const routes = [
         path: 'models/:modelSn',
         component: () => import('@/pages/model-detail/index.vue'),
       },
-
+      {
+        name: 'sd',
+        path: 'sd/:modelHashCode',
+        component: () => import('@/pages/sd/index.vue'),
+      },
       {
         name: 'nodes',
         path: 'nodes',

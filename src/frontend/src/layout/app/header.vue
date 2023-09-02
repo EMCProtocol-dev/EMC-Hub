@@ -54,8 +54,7 @@ export default defineComponent({
 </script>
 <style scoped>
 .header {
-  --header-height: 84px;
-  height: var(--header-height);
+  height: var(--layout-header-height);
   padding: 0 24px;
   border-bottom: solid 1px #e7e7e7;
 }

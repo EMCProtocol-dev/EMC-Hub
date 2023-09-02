@@ -17,7 +17,12 @@
           <NGridItem span="2 880:1">
             <div class="layout-left">
               <div class="carousel-wrap">
-                <NCarousel class="carousel" v-model:current-index="carouselIndex" :autoplay="true">
+                <NCarousel
+                  class="carousel"
+                  v-model:current-index="carouselIndex"
+                  :autoplay="true"
+                  :show-arrow="covers.length > 1"
+                >
                   <template v-for="cover in covers">
                     <img class="cover" :src="cover.url" />
                   </template>
@@ -149,7 +154,7 @@ import {
 } from '@vicons/ionicons5';
 import NodeList from './node-list.vue';
 import type { NodeItem } from './node-item';
-import { parametersWith } from '@/tools/exif';
+import * as SDParams from '@/tools/exif';
 
 import ModelGallery from './model-gallery.vue';
 
@@ -233,7 +238,7 @@ export default defineComponent({
           item.parameters = _parameters[index].raw;
         });
       }
-      const _hashCodeSha256 = 'aa9c45d00a'; // (lastestVersion.hashCodeSha256 || '-').trim().toLocaleLowerCase();
+      const _hashCodeSha256 = (lastestVersion.hashCodeSha256 || '-').trim().toLocaleLowerCase(); //'aa9c45d00a';
       const _shortHashCodeSha256 = _hashCodeSha256.substring(0, 10);
       name.value = data.modelName;
       tags.value = _tags;
@@ -293,15 +298,12 @@ export default defineComponent({
         if (covers.value[coverIndex].parameters) {
           parameters = covers.value[coverIndex].parameters;
         } else {
-          try {
-            parameters = await parametersWith(covers.value[coverIndex].url);
-          } catch (e) {
-            console.error(e);
-          }
+          const [_parameters, isParameters] = await SDParams.extract(covers.value[coverIndex].url);
+          parameters = _parameters;
         }
 
         console.info('image parameters :\n', parameters);
-        
+
         if (parameters) {
           const handleMessage = (event: MessageEvent) => {
             const request: any = event.data as any;
@@ -328,11 +330,8 @@ export default defineComponent({
         if (covers.value[0].parameters) {
           parameters = covers.value[0].parameters;
         } else {
-          try {
-            parameters = await parametersWith(covers.value[0].url);
-          } catch (e) {
-            console.error(e);
-          }
+          const [_parameters, isParameters] = await SDParams.extract(covers.value[0].url);
+          parameters = _parameters;
         }
 
         console.info('image parameters :\n', parameters);

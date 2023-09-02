@@ -117,7 +117,6 @@ export default defineComponent({
     const hideSteps = ref(false);
     const completeVisible = ref(false);
     const completeTitle = ref('');
-    const http = Http.getInstance();
 
     onMounted(() => {
       const queryModelSn = (route.params.modelSn as string) || '-1';
