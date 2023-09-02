@@ -1,5 +1,5 @@
 <template>
-  <NScrollbar style="max-height: 80vh; padding: 0 20px; box-sizing: border-box">
+  <NScrollbar style="max-height: 40vh; padding: 0 20px; box-sizing: border-box">
     <template v-if="error === -1">
       <div class="placeholder-view">
         <NSpin />
@@ -11,41 +11,33 @@
       </div>
     </template>
     <template v-else>
-      <template v-for="item in list">
-        <div class="item" @click="onPressItem(item)">
-          <div class="item-body">
-            <div class="item-row">
-              <div class="item-name">{{ item.nodeId }}</div>
-            </div>
-            <div class="item-row">
-              <NTag>
-                <NSpace align="center" :wrap-item="false" :size="[8, 0]">
-                  <NIcon><IconCpu /></NIcon>
-                  <!-- <NText style="font-size: 12px">{{ item.cpuName }}</NText> -->
-                  <NText style="font-size: 12px">Computing Power : {{ item.avgPower }}E</NText>
-                </NSpace>
-              </NTag>
-            </div>
-          </div>
-          <NIcon>
-            <IconArrowRight />
-          </NIcon>
-        </div>
-      </template>
+      <NSpace :wrap-item="false" :size="[8, 8]">
+        <template v-for="item in list">
+          <NSpace class="item" vertical :wrap-item="false" :size="[0, 8]">
+            <NSpace align="center" :wrap-item="false" :size="[8, 0]">
+              <NIcon><IconNode /></NIcon>
+              <NText style="font-size: 14px">{{ item.nodeId }}</NText>
+            </NSpace>
+            <NSpace align="center" :wrap-item="false" :size="[8, 0]">
+              <NIcon><IconCpu /></NIcon>
+              <NText style="font-size: 12px">Computing Power : {{ item.avgPower }}E</NText>
+            </NSpace>
+          </NSpace>
+        </template>
+      </NSpace>
     </template>
   </NScrollbar>
 </template>
 
 <script lang="ts">
 import { ref, defineComponent, onMounted, computed, watch } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
 import { NCard, NH3, NH5, NSpace, NText, NSpin, NTag, NButton, NIcon, NScrollbar, useMessage } from 'naive-ui';
-import { useUserStore } from '@/stores/user';
 import { Http } from '@/tools/http';
 import {
   EarthSharp as IconEarth,
   HardwareChipSharp as IconCpu,
   ChevronForwardSharp as IconArrowRight,
+  ShareSocialSharp as IconNode,
 } from '@vicons/ionicons5';
 import { Utils } from '@/tools/utils';
 import { NodeItem } from './node-item';
@@ -65,11 +57,12 @@ export default defineComponent({
     IconEarth,
     IconCpu,
     IconArrowRight,
+    IconNode,
   },
   props: {
     hash: { type: String, default: '' },
   },
-  emits: ['pressitem'],
+  emits: ['pressitem', 'init'],
   setup(props, ctx) {
     const error = ref(-1);
     const errorText = ref('');
@@ -81,6 +74,7 @@ export default defineComponent({
       if (!props.hash) {
         error.value = 1;
         errorText.value = 'The hash can not be empty';
+        ctx.emit('init', []);
         return;
       }
       error.value = -1;
@@ -96,6 +90,7 @@ export default defineComponent({
         const countryName = item.ipInfo?.countryName;
         newList.push({
           nodeId: item._id,
+          nodeIdShort: Utils.textOverflow(item._id, 10),
           cpuName: cpuName,
           countryName: countryName,
           avgPower: item.avgPower,
@@ -103,6 +98,7 @@ export default defineComponent({
       });
       list.value = newList;
       error.value = 0;
+      ctx.emit('init', newList);
     };
 
     onMounted(() => {
@@ -133,33 +129,10 @@ export default defineComponent({
 .item {
   padding: 12px;
   border-bottom: solid 1px #e7e7e7;
-  display: flex;
-  align-items: center;
+  width: 100%;
 }
-.item:hover {
+/* .item:hover {
   cursor: pointer;
   background-color: #f1f1f1;
-}
-
-.item-body {
-  flex: 1;
-  width: 0;
-}
-.item-row {
-  display: flex;
-  align-items: center;
-}
-
-.item-row:not(:last-child) {
-  margin-bottom: 8px;
-}
-
-.item-name {
-  font-size: 14px;
-  font-weight: 500;
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+} */
 </style>
