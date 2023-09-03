@@ -399,19 +399,29 @@ export default defineComponent({
           formData.value.name = props.modelName || '';
         }
 
-        const { prompt, negativePrompt, seed, sampler, steps, cfgScale, modelHash, width, height } = pf;
+        const {
+          prompt = '',
+          negativePrompt = '',
+          seed = '',
+          sampler = '',
+          steps = '',
+          cfgScale = '',
+          modelHash = '',
+          width = 0,
+          height = 0,
+        } = pf;
 
         formData.value = {
           ...formData.value,
           prompt,
           negativePrompt,
           sampler,
-          steps: steps ? steps.toString() : '',
-          cfgScale: cfgScale ? cfgScale.toString() : '',
-          seed: seed ? seed.toString() : '',
+          steps,
+          cfgScale,
+          seed,
           modelHash: modelHash,
-          width: width,
-          height: height,
+          width: String(width),
+          height: String(height),
         };
       } catch {
         message.error('Failed to upload');
