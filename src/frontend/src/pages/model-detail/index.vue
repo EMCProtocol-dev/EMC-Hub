@@ -104,7 +104,7 @@
             </template>
           </NButton>
         </template>
-        <NodeList :hash="nodeHashCode" @pressitem="onNodePressItem" @init="onNodeInit" />
+        <NodeList :hash="nodeHashCode" @init="onNodeInit" />
         <template #footer>
           <NSpace justify="space-between" align="center" :wrap-item="false">
             <NText style="font-size: 12px">Total {{ nodeList.length }} nodes</NText>
@@ -322,41 +322,6 @@ export default defineComponent({
         sdWindow = window.open(`${host}/#/sd/${nodeHashCode.value}`);
 
         // router.push({ name: 'sd', params: { modelHashCode: nodeHashCode.value } });
-      },
-      async onNodePressItem(item: NodeItem) {
-        let sdWindow: WindowProxy | null;
-        let parameters = '';
-
-        if (covers.value[0].parameters) {
-          parameters = covers.value[0].parameters;
-        } else {
-          const [_parameters, isParameters] = await StableDiffusionMetadata.extract(covers.value[0].url);
-          parameters = _parameters;
-        }
-
-        console.info('image parameters :\n', parameters);
-        if (parameters) {
-          const handleMessage = (event: MessageEvent) => {
-            const request: any = event.data as any;
-            if (request.type === 'emcsd-txt2img-ready') {
-              sdWindow?.postMessage({ type: 'emcsd-txt2img-parameters', data: parameters }, '*');
-            }
-            window.removeEventListener('message', handleMessage);
-          };
-          window.addEventListener('message', handleMessage);
-        } else {
-          console.warn(`${covers.value[0].url} can not parse parameters`);
-        }
-
-        nodeVisible.value = false;
-        sdWindow = window.open(
-          `https://sd.edgematrix.pro/#/txt2img?nodeid=${item.nodeId}`,
-          `sd-window-${new Date().getTime()}`
-        );
-        // sdWindow = window.open(
-        //   `http://localhost:8080/#/txt2img?nodeid=${item.nodeId}`,
-        //   `sd-window-${new Date().getTime()}`
-        // );
       },
       onPressArchive() {
         if (!archive.value) {

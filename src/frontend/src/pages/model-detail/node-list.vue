@@ -13,7 +13,7 @@
     <template v-else>
       <NSpace :wrap-item="false" :size="[8, 8]">
         <template v-for="item in list">
-          <NSpace class="item" vertical :wrap-item="false" :size="[0, 8]">
+          <NSpace class="item" vertical :wrap-item="false" :size="[0, 8]" @click="onPressItem">
             <NSpace align="center" :wrap-item="false" :size="[8, 0]">
               <NIcon><IconNode /></NIcon>
               <NText style="font-size: 14px">{{ item.nodeId }}</NText>
