@@ -166,8 +166,8 @@ import { getImageMime } from 'base64-image-mime';
 import { useRoute } from 'vue-router';
 import { sampler as samplerOptions } from './options';
 import { config as formConfigs } from './formConfigs';
-import * as SDParams from '@/tools/exif';
-import { parse as parametersParse } from '@/tools/exif';
+import * as StableDiffusionMetadata from '@/tools/stable-diffusion-metadata';
+import { parse as parametersParse } from '@/tools/stable-diffusion-metadata';
 import { sign } from '@/tools/open-api';
 interface FormDataType {
   prompt: string | null;
@@ -265,7 +265,7 @@ export default defineComponent({
     const handleWindowMessage = (event: MessageEvent) => {
       const request: PostMessageRequest = event.data as PostMessageRequest;
       if (request.type === 'emchub-txt2img-parameters' && request.data) {
-        const data: { [k: string]: any } = SDParams.parse(request.data);
+        const data: { [k: string]: any } = StableDiffusionMetadata.parse(request.data);
         Object.entries(data).forEach(([k, v]) => {
           if (v) {
             formData.value[k] = v;

@@ -1,7 +1,7 @@
 import ExifReader from 'exifreader';
 
 /**
- *
+ * Extract stable-diffusion image parameters
  * @param file {File|string} File or Http-Url
  * @returns
  */
@@ -36,13 +36,6 @@ export async function extract(file: File | string): Promise<[string, boolean]> {
   return [parameters, parameters.includes('Steps: ')];
 }
 
-/**
- * Parse parameters
- * Part of the code reference "civitai" [https://github.com/civitai/civitai/blob/b367192a05a3ac0d9a064f978ba3077d8e0aab1b/src/utils/metadata/automatic.metadata.ts]
- * @param parameters
- * @returns
- */
-
 type ImageMeta = {
   prompt?: string;
   negativePrompt?: string;
@@ -71,31 +64,20 @@ const imageMetaKeyMap = new Map<string, string>([
   ['Steps', 'steps'],
   ['Clip skip', 'clipSkip'],
 ]);
-const getImageKey = (key: string) => imageMetaKeyMap.get(key.trim()) ?? key.trim();
+const getImageMetaKey = (key: string) => imageMetaKeyMap.get(key.trim()) ?? key.trim();
 const automaticExtraNetsRegex = /<(lora|hypernet):([a-zA-Z0-9_\.]+):([0-9.]+)>/g;
 const automaticNameHash = /([a-zA-Z0-9_\.]+)\(([a-zA-Z0-9]+)\)/;
 const badExtensionKeys = ['Resources: ', 'Hashed prompt: ', 'Hashed Negative prompt: '];
 const stripKeys = ['Template: ', 'Negative Template: '] as const;
 const hashesRegex = /, Hashes:\s*({[^}]+})/;
 
-function countNestedParentheses(text: string): [number, string] {
-  let count = 0;
-  let result = '';
-  function countMatches(str: string) {
-    let pattern = /^\((.*?)\)$/g;
-    let match = pattern.exec(str);
-    if (match && match[1]) {
-      count++;
-      countMatches(match[1]);
-    } else {
-      result = str;
-    }
-  }
-
-  countMatches(text);
-  return [count, result];
-}
-
+/**
+ * Parse stable-diffusion image parameters
+ * Part of the code reference "civitai" [https://github.com/civitai/civitai/blob/b367192a05a3ac0d9a064f978ba3077d8e0aab1b/src/utils/metadata/automatic.metadata.ts]
+ * @param parameters
+ * @returns {ImageMeta}
+ *
+ */
 export function parse(parameters: string): ImageMeta {
   const metadata: ImageMeta = {};
   if (!parameters) return metadata;
@@ -121,21 +103,19 @@ export function parse(parameters: string): ImageMeta {
     detailsLine = detailsLine.replace(hashesRegex, '');
   }
 
-  const parts: string[] = detailsLine ? detailsLine.split(',') : [];
-  parts.forEach((_) => {
-    const [countParentheses, item] = countNestedParentheses(_.trim());
-    const [_key, _value] = item.split(':');
-    const key = getImageKey(_key);
-    const value = _value === void 0 ? Symbol() : _value.trim();
-    if (countParentheses > 0) {
-      if (!metadata[`*extra(${countParentheses})`]) {
-        metadata[`*extra(${countParentheses})`] = {};
-      }
-      metadata[`*extra(${countParentheses})`][key] = value;
+  let currentKey = '';
+  const parts = detailsLine.split(': ') ?? [];
+  for (const part of parts) {
+    const priorValueEnd = part.lastIndexOf(',');
+    if (parts[parts.length - 1] === part) {
+      metadata[currentKey] = part.trim();
+    } else if (priorValueEnd !== -1) {
+      metadata[currentKey] = part.slice(0, priorValueEnd).trim();
+      currentKey = getImageMetaKey(part.slice(priorValueEnd + 1));
     } else {
-      metadata[key] = value;
+      currentKey = getImageMetaKey(part);
     }
-  });
+  }
 
   // Extract prompts
   const [prompt, ...negativePrompt] = metaLines
@@ -202,4 +182,9 @@ export function parse(parameters: string): ImageMeta {
 
   metadata.resources = resources;
   return metadata;
+}
+
+export function stringify(metadata: ImageMeta): string {
+  //TODO stringify...
+  return '';
 }

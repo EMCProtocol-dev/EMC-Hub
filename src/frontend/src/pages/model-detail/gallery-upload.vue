@@ -228,7 +228,7 @@ import {
   UploadCustomRequestOptions,
 } from 'naive-ui';
 import copy from 'copy-to-clipboard';
-import * as SDParams from '@/tools/exif';
+import * as StableDiffusionMetadata from '@/tools/stable-diffusion-metadata';
 import { useMinio } from '@/composables/use-minio';
 import { Http } from '@/tools/http';
 import { useUserStore } from '@/stores/user';
@@ -383,10 +383,10 @@ export default defineComponent({
         }
         onFinish();
         const url = resp.url || '';
-        const [parameters, isParameters] = await SDParams.extract(file.file as File);
+        const [parameters, isParameters] = await StableDiffusionMetadata.extract(file.file as File);
         formData.value.images = url;
         parametersValue.value = parameters;
-        const pf = SDParams.parse(parameters);
+        const pf = StableDiffusionMetadata.parse(parameters);
 
         const modelsHash = props.modelHashCode.toLowerCase();
         const imageModelsHash = pf.modelHash.toLowerCase();

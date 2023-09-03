@@ -154,7 +154,7 @@ import {
 } from '@vicons/ionicons5';
 import NodeList from './node-list.vue';
 import type { NodeItem } from './node-item';
-import * as SDParams from '@/tools/exif';
+import * as StableDiffusionMetadata from '@/tools/stable-diffusion-metadata';
 
 import ModelGallery from './model-gallery.vue';
 
@@ -298,7 +298,7 @@ export default defineComponent({
         if (covers.value[coverIndex].parameters) {
           parameters = covers.value[coverIndex].parameters;
         } else {
-          const [_parameters, isParameters] = await SDParams.extract(covers.value[coverIndex].url);
+          const [_parameters, isParameters] = await StableDiffusionMetadata.extract(covers.value[coverIndex].url);
           parameters = _parameters;
         }
 
@@ -330,7 +330,7 @@ export default defineComponent({
         if (covers.value[0].parameters) {
           parameters = covers.value[0].parameters;
         } else {
-          const [_parameters, isParameters] = await SDParams.extract(covers.value[0].url);
+          const [_parameters, isParameters] = await StableDiffusionMetadata.extract(covers.value[0].url);
           parameters = _parameters;
         }
 
