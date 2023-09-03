@@ -45,7 +45,7 @@
           <NInput
             type="textarea"
             v-model:value="formData.description"
-            maxlength="200"
+            maxlength="1000"
             show-count
             placeholder="About model"
             @keydown.enter.prevent
@@ -224,7 +224,7 @@ export default defineComponent({
       type: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
       category: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
       tags: [{ required: true, type: 'array', message: 'Can not be empty', trigger: ['input', 'blur'] }],
-      description: [{ required: true, validator: Utils.validatorStrLength(0, 200), trigger: ['input', 'blur'] }],
+      description: [{ required: true, validator: Utils.validatorStrLength(0, 1000), trigger: ['input', 'blur'] }],
     };
     const formSubmitting = ref(false);
     const message = useMessage();

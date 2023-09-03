@@ -36,7 +36,7 @@
           </NSelect>
         </NFormItemGi>
         <NFormItemGi :span="24" path="description" label="Version Description">
-          <NInput type="textarea" v-model:value="formData.description" show-count maxlength="200" />
+          <NInput type="textarea" v-model:value="formData.description" show-count maxlength="1000" />
         </NFormItemGi>
         <NFormItemGi :span="24" path="images" label="Preview Images">
           <NUpload
@@ -210,7 +210,7 @@ export default defineComponent({
       baseModel: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
       baseModelType: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
       triggerWords: [{ required: false, type: 'array', message: 'Can not be empty', trigger: ['input', 'blur'] }],
-      description: [{ required: false, validator: Utils.validatorStrLength(0, 200), trigger: ['input', 'blur'] }],
+      description: [{ required: false, validator: Utils.validatorStrLength(0, 1000), trigger: ['input', 'blur'] }],
       images: [{ required: true, type: 'array', validator: uploadValidator, trigger: ['input', 'blur'] }],
     };
     const formSubmitting = ref(false);
