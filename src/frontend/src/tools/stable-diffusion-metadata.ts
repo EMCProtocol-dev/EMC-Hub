@@ -1,6 +1,22 @@
 import ExifReader from 'exifreader';
 
 /**
+ *
+    const text = `masterpiece, best quality, 1girl, (colorful),(delicate eyes and face), volumatic light, ray tracing, bust shot ,extremely detailed CG unity 8k wallpaper,solo,smile,intricate skirt,((flying petal)),(Flowery meadow) sky, cloudy_sky, moonlight, moon, night, (dark theme:1.3), light, fantasy, windy, magic sparks, dark castle,white hair
+Negative prompt: paintings, sketches, fingers, (worst quality:2), (low quality:2), (normal quality:2), lowres, normal quality, ((monochrome)), ((grayscale)), skin spots, acnes, skin blemishes, age spot, (outdoor:1.6), backlight,(ugly:1.331), (duplicate:1.331), (morbid:1.21), (mutilated:1.21), (tranny:1.331), mutated hands, (poorly drawn hands:1.5), blurry, (bad anatomy:1.21), (bad proportions:1.331), extra limbs, (disfigured:1.331), (more than 2 nipples:1.331), (missing arms:1.331), (extra legs:1.331), (fused fingers:1.61051), (too many fingers:1.61051), (unclear eyes:1.331), lowers, bad hands, missing fingers, extra digit, (futa:1.1),bad hands, missing fingers, bad-hands-5
+Steps: 20, Sampler: DPM++ 2M Karras, CFG scale: 8, Seed: 1931785963, Size: 512x832, Model hash: cca17b08da, Model: MAADBD2fp16, Denoising strength: 0.5, Clip skip: 2, Wildcard negative prompt: "paintings, sketches, fingers, (worst quality:2), (low quality:2), (normal quality:2), lowres, normal quality, ((monochrome)), ((grayscale)), skin spots, acnes, skin blemishes, age spot, (outdoor:1.6), backlight,(ugly:1.331), (duplicate:1.331), (morbid:1.21), (mutilated:1.21), (tranny:1.331), mutated hands, (poorly drawn hands:1.5), blurry, (bad anatomy:1.21), (bad proportions:1.331), extra limbs, (disfigured:1.331), (more than 2 nipples:1.331), (missing arms:1.331), (extra legs:1.331), (fused fingers:1.61051), (too many fingers:1.61051), (unclear eyes:1.331), lowers, bad hands, missing fingers, extra digit, (futa:1.1),bad hands, missing fingers, bad-hands-5", Hires upscale: 2, Hires steps: 20, Hires upscaler: Latent, Version: v1.3.2`;
+
+    const metadata = StableDiffusionMetadata.parse(text);
+    console.info(metadata);
+    //--> {"steps":"20","sampler":"DPM++ 2M Karras","cfgScale":"8","seed":"1931785963","size":"512x832","Model hash":"cca17b08da","Model":"MAADBD2fp16","Denoising strength":"0.5","clipSkip":"2","Wildcard negative prompt":"\"paintings, sketches, fingers, (worst quality:2), (low quality:2), (normal quality:2), lowres, normal quality, ((monochrome)), ((grayscale)), skin spots, acnes, skin blemishes, age spot, (outdoor:1.6), backlight,(ugly:1.331), (duplicate:1.331), (morbid:1.21), (mutilated:1.21), (tranny:1.331), mutated hands, (poorly drawn hands:1.5), blurry, (bad anatomy:1.21), (bad proportions:1.331), extra limbs, (disfigured:1.331), (more than 2 nipples:1.331), (missing arms:1.331), (extra legs:1.331), (fused fingers:1.61051), (too many fingers:1.61051), (unclear eyes:1.331), lowers, bad hands, missing fingers, extra digit, (futa:1.1),bad hands, missing fingers, bad-hands-5\"","Hires upscale":"2","Hires steps":"20","Hires upscaler":"Latent","Version":"v1.3.2","prompt":"masterpiece, best quality, 1girl, (colorful),(delicate eyes and face), volumatic light, ray tracing, bust shot ,extremely detailed CG unity 8k wallpaper,solo,smile,intricate skirt,((flying petal)),(Flowery meadow) sky, cloudy_sky, moonlight, moon, night, (dark theme:1.3), light, fantasy, windy, magic sparks, dark castle,white hair","negativePrompt":"paintings, sketches, fingers, (worst quality:2), (low quality:2), (normal quality:2), lowres, normal quality, ((monochrome)), ((grayscale)), skin spots, acnes, skin blemishes, age spot, (outdoor:1.6), backlight,(ugly:1.331), (duplicate:1.331), (morbid:1.21), (mutilated:1.21), (tranny:1.331), mutated hands, (poorly drawn hands:1.5), blurry, (bad anatomy:1.21), (bad proportions:1.331), extra limbs, (disfigured:1.331), (more than 2 nipples:1.331), (missing arms:1.331), (extra legs:1.331), (fused fingers:1.61051), (too many fingers:1.61051), (unclear eyes:1.331), lowers, bad hands, missing fingers, extra digit, (futa:1.1),bad hands, missing fingers, bad-hands-5","width":512,"height":832,"hashes":{"model":"cca17b08da"},"resources":[{"type":"model","name":"MAADBD2fp16","hash":"cca17b08da"}]}
+    
+    const text2 = StableDiffusionMetadata.stringify(metadata);
+    console.info(text === text2); 
+    //--> true
+ */
+
+
+/**
  * Extract stable-diffusion image parameters
  * @param file {File|string} File or Http-Url
  * @returns
@@ -56,15 +72,19 @@ type Resource = {
   weight?: number;
   hash?: string;
 };
-
-const imageMetaKeyMap = new Map<string, string>([
+const imageMetadataKeys: Array<[string, string]> = [
   ['Seed', 'seed'],
   ['CFG scale', 'cfgScale'],
   ['Sampler', 'sampler'],
   ['Steps', 'steps'],
   ['Clip skip', 'clipSkip'],
-]);
-const getImageMetaKey = (key: string) => imageMetaKeyMap.get(key.trim()) ?? key.trim();
+  ['Size', 'size'],
+];
+const imageMetaKeyMap = new Map<string, string>(imageMetadataKeys);
+const imageMetaKeyReverseMap = new Map<string, string>(
+  imageMetadataKeys.map((i) => i.reverse()) as Array<[string, string]>
+);
+const getImageMetaKey = (key: string, keyMap: Map<string, string>) => keyMap.get(key.trim()) ?? key.trim();
 const automaticExtraNetsRegex = /<(lora|hypernet):([a-zA-Z0-9_\.]+):([0-9.]+)>/g;
 const automaticNameHash = /([a-zA-Z0-9_\.]+)\(([a-zA-Z0-9]+)\)/;
 const badExtensionKeys = ['Resources: ', 'Hashed prompt: ', 'Hashed Negative prompt: '];
@@ -111,9 +131,9 @@ export function parse(parameters: string): ImageMeta {
       metadata[currentKey] = part.trim();
     } else if (priorValueEnd !== -1) {
       metadata[currentKey] = part.slice(0, priorValueEnd).trim();
-      currentKey = getImageMetaKey(part.slice(priorValueEnd + 1));
+      currentKey = getImageMetaKey(part.slice(priorValueEnd + 1), imageMetaKeyMap);
     } else {
-      currentKey = getImageMetaKey(part);
+      currentKey = getImageMetaKey(part, imageMetaKeyMap);
     }
   }
 
@@ -185,6 +205,24 @@ export function parse(parameters: string): ImageMeta {
 }
 
 export function stringify(metadata: ImageMeta): string {
-  //TODO stringify...
-  return '';
+  const { prompt, negativePrompt, width, height, hashes, resources, ...other } = metadata;
+  // [width, height, hashes, resources] is ignore keys
+  const lines: string[] = [];
+  if (!prompt || !other.steps) {
+    //invalid metadata
+    return '';
+  }
+  lines.push(prompt);
+  if (negativePrompt) {
+    lines.push(`Negative prompt: ${negativePrompt}`);
+  }
+  const details: string[] = [];
+  Object.entries(other).forEach(([_k, v]) => {
+    const k = getImageMetaKey(_k, imageMetaKeyReverseMap);
+    details.push(`${k}: ${v}`);
+  });
+  lines.push(details.join(', '));
+
+  return lines.join('\n');
 }
+
