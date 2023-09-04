@@ -204,8 +204,8 @@ interface Result {
   status: number; // 0:none 1:running 2:success 3:failure
 }
 
-const defaultFormData = () => {
-  return {
+const defaultFormData = (data?: any) => {
+  const defaultData = {
     prompt: '',
     negativePrompt: '',
     sampler: samplerOptions[0].val,
@@ -216,6 +216,18 @@ const defaultFormData = () => {
     seed: -1,
     clipSkip: 0,
   };
+  if (!data) {
+    return defaultData;
+  }
+  Object.entries(defaultData).forEach(([k, v]) => {
+    const value = data[k];
+    if (typeof v === 'string') {
+      defaultData[k] = String(value);
+    } else if (typeof v === 'number') {
+      defaultData[k] = parseFloat(value as string);
+    }
+  });
+  return defaultData;
 };
 
 export default defineComponent({
@@ -308,11 +320,7 @@ export default defineComponent({
       const request: PostMessageRequest = event.data as PostMessageRequest;
       if (request.type === 'emchub-txt2img-parameters' && request.data) {
         const data: { [k: string]: any } = StableDiffusionMetadata.parse(request.data);
-        Object.entries(data).forEach(([k, v]) => {
-          if (v) {
-            formData.value[k] = v;
-          }
-        });
+        formData.value = defaultFormData(data);
       }
     };
 
