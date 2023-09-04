@@ -363,7 +363,6 @@ export default defineComponent({
         steps: '',
         cfgScale: '',
         seed: '',
-        modelHash: '',
         width: '',
         height: '',
         images: '',
@@ -393,7 +392,7 @@ export default defineComponent({
       },
       async onPressSubmit() {
         try {
-          if (formData.value.modelHash === '' || formData.value.title === '' || formData.value.name === '') {
+          if (formData.value.title === '' || formData.value.name === '') {
             return message.error('Can not be empty');
           } else if (!isModel.value) {
             return message.error('Model the hash, please upload again');
