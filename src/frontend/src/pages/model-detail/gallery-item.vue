@@ -3,7 +3,12 @@
     <div class="item-carousel-wrap">
       <NCarousel class="item-carousel" :autoplay="true">
         <!-- <template v-for="cover in item.covers"> -->
-        <AppImage class="item-cover" :src="item.url" object-fit="cover" :preview-disabled="true" :imgProps="{ style: 'width:100%;height:100%;' }" />
+        <template v-if="item.url">
+          <AppImage class="item-cover" :src="item.url" object-fit="cover" :preview-disabled="true" :imgProps="{ style: 'width:100%;height:100%;' }" />
+        </template>
+        <template v-else>
+          <NEmpty style="padding: 96px 0" />
+        </template>
         <!-- </template> -->
       </NCarousel>
     </div>
@@ -22,7 +27,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
-import { NSpace, NCarousel, NTag, NH6, NH4, NAvatar, NIcon } from 'naive-ui';
+import { NSpace, NCarousel, NTag, NH6, NH4, NAvatar, NIcon, NEmpty } from 'naive-ui';
 import { PersonSharp as IconPerson } from '@vicons/ionicons5';
 import moment from 'moment';
 
@@ -31,7 +36,7 @@ import { timeStamp } from 'console';
 
 export default defineComponent({
   name: 'model-item',
-  components: { NSpace, NCarousel, NTag, NH6, NH4, NAvatar, NIcon, IconPerson, AppImage },
+  components: { NSpace, NCarousel, NTag, NH6, NH4, NAvatar, NIcon, NEmpty, IconPerson, AppImage },
   props: { item: { type: Object, default: () => ({}) } },
   emits: ['press'],
 
