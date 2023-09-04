@@ -201,7 +201,11 @@ export default defineComponent({
         return new Error('Can not be empty');
       } else {
         const errors: number[] = [];
-        value.forEach((item, index) => errors.push(index + 1));
+        value.forEach((item, index) => {
+          if (!item.url) {
+            errors.push(index + 1);
+          }
+        });
         if (errors.length > 0) {
           return new Error(`Waiting to upload (${errors.join(',')})...`);
         }
