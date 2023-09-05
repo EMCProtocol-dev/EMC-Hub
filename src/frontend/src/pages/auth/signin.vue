@@ -1,17 +1,22 @@
 <template>
-  <SignInAccount
-    ref="signInAccountRef"
-    @signin="onSignin"
-    @signinbefore="onSigninBefore"
-    @signinafter="onSigninAfter"
-  />
+  <div>
+    <!-- <SignInGoogle />
+    <NDivider>or</NDivider> -->
+    <SignInAccount
+      ref="signInAccountRef"
+      @signin="onSignin"
+      @signinbefore="onSigninBefore"
+      @signinafter="onSigninAfter"
+    />
+  </div>
 </template>
 <script lang="ts">
 import { ref, defineComponent, nextTick } from 'vue';
-import { NSpace, NButton } from 'naive-ui';
+import { NSpace, NButton, NDivider } from 'naive-ui';
 import SignInAccount from './signin-account.vue';
+import SignInGoogle from './signin-google.vue';
 export default defineComponent({
-  components: { NSpace, NButton, SignInAccount },
+  components: { NSpace, NButton, NDivider, SignInGoogle, SignInAccount },
   emits: ['signin', 'signinbefore', 'signinafter'],
   setup(props, ctx) {
     const business = ref(false);
@@ -19,7 +24,7 @@ export default defineComponent({
     return {
       business,
       signInAccountRef,
-      postLogin(data: { account: string; password: string; principal: string }) {
+      postLogin(data: { account: string; password: string }) {
         signInAccountRef.value?.postLogin(data);
       },
       onSignin(data: any) {

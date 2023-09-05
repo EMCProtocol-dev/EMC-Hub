@@ -28,7 +28,8 @@
                 </NSpace>
                 <div class="sign-subtitle">Welcome #AI</div>
               </div>
-              <SignInAccount
+
+              <SignIn
                 ref="signinRef"
                 @signin="onSignInSuccess"
                 @signinbefore="signinLoading = true"
@@ -61,7 +62,7 @@ import { useRouter, useRoute } from 'vue-router';
 import type { RouteLocationRaw } from 'vue-router';
 import { NLayout, NLayoutContent, NCard, NH1, NH3, NA, NSpace, NGrid, NGridItem } from 'naive-ui';
 import SignUp from './signup.vue';
-import SignInAccount from './signin-account.vue';
+import SignIn from './signin.vue';
 
 const bgImg1 = require('@/assets/login-img.png');
 const bgImg2 = require('@/assets/login-img1.png');
@@ -79,13 +80,13 @@ export default defineComponent({
     NGrid,
     NGridItem,
     SignUp,
-    SignInAccount,
+    SignIn,
   },
   setup() {
     const router = useRouter();
     const route = useRoute();
     const action = ref('signin');
-    const signinRef = ref<InstanceType<typeof SignInAccount>>();
+    const signinRef = ref<InstanceType<typeof SignIn>>();
     const signinLoading = ref(false);
     const signupLoading = ref(false);
 
@@ -96,9 +97,9 @@ export default defineComponent({
       signupLoading,
       formHeight: computed(() => {
         if (action.value === 'signup') {
-          return '610px';
+          return '510px';
         } else {
-          return '454px';
+          return '520px';
         }
       }),
       bgColor: computed(() => {
@@ -131,7 +132,6 @@ export default defineComponent({
         action.value = 'signin';
         await nextTick();
         signinRef.value?.postLogin({ account, password });
-        console.info('sss');
       },
     };
   },

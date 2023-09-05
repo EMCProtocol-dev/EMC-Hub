@@ -15,19 +15,15 @@ Steps: 20, Sampler: DPM++ 2M Karras, CFG scale: 8, Seed: 1931785963, Size: 512x8
     //--> true
  */
 
-
 /**
  * Extract stable-diffusion image parameters
  * @param file {File|string} File or Http-Url
  * @returns
  */
 export async function extract(file: File | string): Promise<[string, boolean]> {
-  let tags = await ExifReader.load(file);
+  const tags = await ExifReader.load(file);
   let parameters = '';
 
-  /**
-   * TODO Not support decode user-comment because result is garbage characters
-   */
   if (tags.UserComment) {
     try {
       const decoder = new TextDecoder('utf-8');
@@ -43,12 +39,13 @@ export async function extract(file: File | string): Promise<[string, boolean]> {
   } else if (tags.parameters) {
     parameters = tags.parameters?.value;
   } else {
-    console.info(`not found 'parameters'`, tags);
+    console.warn(`not found 'parameters' and 'UserComment'`, tags);
   }
 
   if (parameters) {
     parameters = unescape(parameters.replace('UNICODE', '').replace(/�/g, ''));
   }
+
   return [parameters, parameters.includes('Steps: ')];
 }
 
@@ -225,4 +222,3 @@ export function stringify(metadata: ImageMeta): string {
 
   return lines.join('\n');
 }
-
