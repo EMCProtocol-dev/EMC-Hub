@@ -173,8 +173,13 @@ export function useMinio() {
     }
   };
 
+  const getObject = async (fileName: string): Promise<any> => {
+    const ctx = getContext();
+    return ctx.getObject(BUCKET_NAME, fileName);
+  };
   return {
     presignedHttp,
     upload,
+    getObject,
   };
 }
