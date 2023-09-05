@@ -111,7 +111,8 @@
                 </NSpace>
                 <div class="sign-subtitle">Welcome #AI</div>
               </div>
-              <SignInAccount
+
+              <SignIn
                 ref="signinRef"
                 @signin="onSignInSuccess"
                 @signinbefore="signinLoading = true"
@@ -148,10 +149,14 @@ import type { RouteLocationRaw } from 'vue-router';
 import { NLayout, NLayoutContent, NCard, NH1, NH3, NA, NSpace, NGrid, NGridItem } from 'naive-ui';
 import SignUp from './signup.vue';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import SignIn from './signin.vue';
 =======
 import SignInAccount from './signin-account.vue';
 >>>>>>> 13fe58d (~)
+=======
+import SignIn from './signin.vue';
+>>>>>>> b6f4b5c (～)
 
 const bgImg1 = require('@/assets/login-img.png');
 const bgImg2 = require('@/assets/login-img1.png');
@@ -194,14 +199,18 @@ export default defineComponent({
 >>>>>>> 4a3626c (~)
 =======
     SignUp,
+<<<<<<< HEAD
     SignInAccount,
 >>>>>>> 13fe58d (~)
+=======
+    SignIn,
+>>>>>>> b6f4b5c (～)
   },
   setup() {
     const router = useRouter();
     const route = useRoute();
     const action = ref('signin');
-    const signinRef = ref<InstanceType<typeof SignInAccount>>();
+    const signinRef = ref<InstanceType<typeof SignIn>>();
     const signinLoading = ref(false);
     const signupLoading = ref(false);
 
@@ -213,6 +222,7 @@ export default defineComponent({
       formHeight: computed(() => {
         if (action.value === 'signup') {
 <<<<<<< HEAD
+<<<<<<< HEAD
           return '510px';
         } else {
           return '520px';
@@ -221,6 +231,11 @@ export default defineComponent({
         } else {
           return '454px';
 >>>>>>> 4a3626c (~)
+=======
+          return '510px';
+        } else {
+          return '520px';
+>>>>>>> b6f4b5c (～)
         }
       }),
       bgColor: computed(() => {
@@ -259,6 +274,7 @@ export default defineComponent({
         action.value = 'signin';
         await nextTick();
         signinRef.value?.postLogin({ account, password });
+<<<<<<< HEAD
 =======
       async onSignUpSuccess({
         account,
@@ -277,6 +293,8 @@ export default defineComponent({
         signinRef.value?.postLogin({ account, password });
         console.info('sss');
 >>>>>>> 4a3626c (~)
+=======
+>>>>>>> b6f4b5c (～)
       },
     };
   },

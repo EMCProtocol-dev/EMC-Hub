@@ -1,6 +1,9 @@
 <template>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> b6f4b5c (～)
   <div>
     <!-- <SignInGoogle />
     <NDivider>or</NDivider> -->
@@ -11,6 +14,7 @@
       @signinafter="onSigninAfter"
     />
   </div>
+<<<<<<< HEAD
 </template>
 <script lang="ts">
 import { ref, defineComponent, nextTick } from 'vue';
@@ -84,13 +88,16 @@ export default defineComponent({
     @signinafter="onSigninAfter"
   />
 >>>>>>> 13fe58d (~)
+=======
+>>>>>>> b6f4b5c (～)
 </template>
 <script lang="ts">
 import { ref, defineComponent, nextTick } from 'vue';
-import { NSpace, NButton } from 'naive-ui';
+import { NSpace, NButton, NDivider } from 'naive-ui';
 import SignInAccount from './signin-account.vue';
+import SignInGoogle from './signin-google.vue';
 export default defineComponent({
-  components: { NSpace, NButton, SignInAccount },
+  components: { NSpace, NButton, NDivider, SignInGoogle, SignInAccount },
   emits: ['signin', 'signinbefore', 'signinafter'],
   setup(props, ctx) {
     const business = ref(false);
@@ -98,6 +105,7 @@ export default defineComponent({
     return {
       business,
       signInAccountRef,
+<<<<<<< HEAD
       postLogin(data: { account: string; password: string; principal: string }) {
 <<<<<<< HEAD
         if (current.value === 'signin-wallet') {
@@ -107,6 +115,9 @@ export default defineComponent({
         }
 >>>>>>> 4a3626c (~)
 =======
+=======
+      postLogin(data: { account: string; password: string }) {
+>>>>>>> b6f4b5c (～)
         signInAccountRef.value?.postLogin(data);
 >>>>>>> 13fe58d (~)
       },
