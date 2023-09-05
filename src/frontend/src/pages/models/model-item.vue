@@ -1,48 +1,40 @@
 <template>
   <div class="item" @click="onPressItem">
-    <div class="item-carousel-wrap">
-      <NCarousel class="item-carousel" :autoplay="true">
+    <NSpace class="item-carousel-wrap" :wrap-item="false">
+      <!-- <NCarousel class="item-carousel" :autoplay="true">
         <template v-for="cover in item.covers">
-          <AppImage
-            class="item-cover"
-            :src="cover"
-            object-fit="cover"
-            :preview-disabled="true"
-            :imgProps="{ style: 'width:100%;height:100%;' }"
-          />
-          <!-- <img class="item-cover" :src="cover" /> -->
+          <AppImage class="item-cover" :src="cover" object-fit="cover" :preview-disabled="true" :imgProps="{ style: 'width:100%;height:100%;' }" />
         </template>
-      </NCarousel>
-    </div>
-    <div class="item-body">
-      <div class="item-body-row">
-        <NH4 style="margin-bottom: 0">{{ item.name }}</NH4>
-      </div>
-      <!-- <div class="item-body-row">
-                  <NTag type="success"> {{ item.status }} </NTag>
-                </div> -->
-      <div class="item-body-row">
-        <template v-for="tag in item.tags">
-          <NTag round size="small" :bordered="false" :color="{ color: '#8f7df8', textColor: '#f1f1f1' }">
-            {{ tag }}
-          </NTag>
-        </template>
-      </div>
-    </div>
+      </NCarousel> -->
+      <AppImage class="item-cover" :src="item.covers[0]" object-fit="cover" :preview-disabled="true" :imgProps="{ style: 'width:100%;height:100%;' }" />
+      <NSpace class="item-carousel-overlay" :wrap-item="false">
+        <NSpace class="item-carousel-overlay-type" :wrap-item="false" align="center">{{ item.type }}</NSpace>
+        <NSpace class="item-carousel-overlay-footer" vertical :wrap-item="false" :size="[0, 12]">
+          <NText style="color: #fff">{{ item.name }}</NText>
+          <NSpace :size="[8, 0]" :wrap-item="false">
+            <NAvatar round :size="24" src="https://s3.emchub.ai/hub-media/emc-hub-a63123cf/82/20230902/1-1.png" />
+            <NText style="font-size: 12px; color: #fff">{{ 'user' + item.userId }}</NText>
+          </NSpace>
+        </NSpace>
+      </NSpace>
+    </NSpace>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import { NSpace, NCarousel, NTag, NH4 } from 'naive-ui';
+import { NSpace, NCarousel, NTag, NAvatar, NText } from 'naive-ui';
 import AppImage from '@/components/app-image.vue';
+import { useUserStore } from '@/stores/user';
 
 export default defineComponent({
   name: 'model-item',
-  components: { NSpace, NCarousel, NTag, NH4, AppImage },
+  components: { NSpace, NCarousel, NTag, NAvatar, NText, AppImage },
   props: { item: { type: Object, default: () => ({}) } },
   emits: ['press'],
   setup(props, ctx) {
+    // const userStore = useUserStore();
+    // const userNickname = ref(userStore.user.nickname);
     return {
       onPressItem() {
         ctx.emit('press', props.item);
@@ -53,24 +45,33 @@ export default defineComponent({
 </script>
 <style scoped>
 .item {
-  border: solid 1px #f1f1f1;
-  border-radius: 8px;
+  border-radius: 6px;
   box-shadow: 1px 1px 6px 0 #ccc;
   cursor: pointer;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .item-carousel-wrap {
-  width: 100%;
-  padding-top: calc(100% * 1.25);
   position: relative;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-  overflow: hidden;
+  width: 100%;
+  /* padding-top: calc(100% * 1.25); */
 }
-.item-carousel {
+
+.item-carousel-overlay {
   position: absolute;
   left: 0;
   top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.item-carousel {
+  /* position: absolute;
+  left: 0;
+  top: 0; */
   width: 100%;
   height: 100%;
 }
@@ -95,5 +96,32 @@ export default defineComponent({
 }
 .item-body-row:not(:last-child) {
   margin-bottom: 8px;
+}
+
+.item-body-row-tag {
+  margin-right: 12px;
+}
+
+.item-body-row:not(:last-child) .item-body-row-tag {
+  margin-right: 0px;
+}
+
+.item-carousel-overlay-type {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  height: 24px;
+  padding: 0 16px;
+  color: #ffffff;
+  border-radius: 40px;
+  background-color: #00000052;
+}
+.item-carousel-overlay-footer {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  padding: 12px;
+  background-color: #00000052;
 }
 </style>

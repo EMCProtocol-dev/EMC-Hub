@@ -9,7 +9,7 @@
         <NSpace justify="center" :wrap-item="false" :size="[4, 0]">
           <div style="text-align: center">
             <!-- flex: 0.5; -->
-            Release <NEllipsis style="max-width: 160px">{{ modelName }}</NEllipsis
+            Release <NEllipsis style="max-width: 160px">{{ modelInfo.modelName }}</NEllipsis
             >Model Relaterd Images
           </div>
         </NSpace>
@@ -216,10 +216,7 @@ export default defineComponent({
 
   props: {
     showModal: { type: Boolean, default: false },
-    userInfo: { type: Object, default: {} },
-    modelsnapshot: { type: String, default: '' },
-    modelHashCode: { type: String, default: '' },
-    modelName: { type: String, default: '' },
+    modelInfo: { type: Object, default: {} },
   },
   emits: ['cancel', 'info'],
   setup(props, context) {
@@ -316,22 +313,40 @@ export default defineComponent({
         }
         onFinish();
         const url = resp.url || '';
+
         const [parameters, isParameters] = await StableDiffusionMetadata.extract(file.file as File);
         formData.value.images = url;
         parametersValue.value = parameters;
         const pf = StableDiffusionMetadata.parse(parameters);
         const imageHash: any = pf.hashes;
+        console.log(pf);
+        const { modelHashCode, modelName, modelType, alias } = props.modelInfo;
 
-        const modelsHash = props.modelHashCode.toLowerCase() || '';
-        const imageModelsHash = imageHash.model.toLowerCase() || '';
-
-        const isModelImage = modelsHash.startsWith(imageModelsHash);
-        isModel.value = isModelImage;
+        if (modelType === 'LORA') {
+          const inputString = pf.prompt || '';
+          const regex = /<lora:(.*?):/;
+          const match = regex.exec(inputString);
+          if (match && match.length > 1) {
+            const extractedValue = match[1];
+            if (extractedValue !== alias) {
+              return message.error('please upload again');
+            } else {
+              isModel.value = true;
+            }
+          } else {
+            return message.error('please upload again');
+          }
+        } else if (modelType === 'CHECKPOINT') {
+          const modelsHash = modelHashCode.toLowerCase() || '';
+          const imageModelsHash = imageHash.model.toLowerCase() || '';
+          const isModelImage = modelsHash.startsWith(imageModelsHash);
+          isModel.value = isModelImage;
+        }
 
         if (!isModel.value) {
           return message.error('Model the hash, please upload again');
         } else {
-          formData.value.name = props.modelName || '';
+          formData.value.name = modelName || '';
         }
 
         const { prompt = '', negativePrompt = '', seed = '', sampler = '', steps = '', cfgScale = '', width = 0, height = 0 } = pf;
@@ -400,7 +415,7 @@ export default defineComponent({
             const { name, title, width, height, description, prompt, negativePrompt, images, sampler, steps, cfgScale, seed } = formData.value;
 
             const insertData = {
-              modelSn: props.modelsnapshot,
+              modelSn: props.modelInfo.modelSn,
               modelName: name,
               imageTitle: title,
               resolution: `${width}*${height}`,

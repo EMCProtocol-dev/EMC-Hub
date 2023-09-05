@@ -25,9 +25,9 @@
                     <NSpace align="center" justify="center" :wrap-item="false" style="width: 40px; height: 40px; background-color: #f5f5f5; border-radius: 100%; flex-shrink: 0">
                       <NIcon size="24"><IconPerson color="#666" /></NIcon>
                     </NSpace>
-                    <!-- <NAvatar round size="large" src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg" /> -->
+                    <!-- <NAvatar round size="large" src="" /> -->
                     <NSpace vertical :size="[0, 0]">
-                      <NH4 class="item-body-row">{{ 'user' }}</NH4>
+                      <NH4 class="item-body-row">{{ imageInfo.userName || 'user' + imageInfo.userId }}</NH4>
                       <NH6 class="item-body-row" style="font-size: 12px; color: #666">{{ moment(imageInfo.createTime).fromNow() }}</NH6>
                     </NSpace>
                     <!-- <NButton ghost round color="#A45EFF">
@@ -56,7 +56,7 @@
                       <span>{{ imageInfo.modelName }}</span>
                       <NSpace class="tags" :wrap-item="false" :size="[8, 8]">
                         <!-- <template v-for="tag in tags"> -->
-                        <!-- <NTag round size="small" :bordered="false" :color="{ color: '#8f7df8', textColor: '#f1f1f1' }"> Lora </NTag> -->
+                        <!-- <NTag round size="small" :bordered="false" :color="{ color: '#8f7df8', textColor: '#f1f1f1' }"> {{ imageInfo.type || '-' }}</NTag> -->
                         <!-- </template> -->
                       </NSpace>
                     </NSpace>
@@ -139,6 +139,9 @@ type InfoType = {
   raw: string;
   images: string;
   createTime: string;
+  userName: string;
+  userId: string;
+  type: string;
 };
 
 export default defineComponent({
@@ -163,6 +166,9 @@ export default defineComponent({
       raw: '',
       url: '',
       createTime: '',
+      userName: '',
+      userId: '',
+      type: '',
     });
 
     // const covers = ref<Array<{ url: string; parameters: string }>>([  { url: '', }, ]);
@@ -179,7 +185,6 @@ export default defineComponent({
         data: { id: id },
       });
       if (resp._result !== 0) return;
-      console.log(resp.data);
       imageInfo.value = resp.data;
     };
 

@@ -41,7 +41,7 @@
       <NSpin size="medium" />
     </template>
 
-    <GalleryUpload :showModal="showModal" :modelsnapshot="modelSn" :modelHashCode="modelHashCode" :modelName="modelName" @cancel="cancel" />
+    <GalleryUpload :showModal="showModal" :modelInfo="modelInfo" @cancel="cancel" />
   </div>
 </template>
 
@@ -60,9 +60,7 @@ import 'vue-waterfall-plugin-next/dist/style.css';
 export default defineComponent({
   name: 'node-detail',
   props: {
-    modelHashCode: { type: String, default: '' },
-    modelName: { type: String, default: '' },
-    modelSn: { type: String, default: '' },
+    modelInfo: { type: Object, default: {} },
   },
   components: {
     NCard,
@@ -107,7 +105,6 @@ export default defineComponent({
       initList();
     });
     const { modelSn } = route.params;
-
     const updateList = async () => {
       loading.value = true;
       const resp = await http.get({
@@ -128,17 +125,6 @@ export default defineComponent({
       newList,
       selectValue,
       showModal,
-      breakpoints: {
-        1200: {
-          rowPerView: 4,
-        },
-        800: {
-          rowPerView: 3,
-        },
-        500: {
-          rowPerView: 2,
-        },
-      },
       options: [
         {
           label: 'NEWEST',

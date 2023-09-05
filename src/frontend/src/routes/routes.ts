@@ -53,6 +53,11 @@ export const routes = [
         path: 'cloud',
         component: () => import('@/pages/cloud/index.vue'),
       },
+      {
+        name: 'user',
+        path: 'user/:sign',
+        component: () => import('@/pages/user/index.vue'),
+      },
     ],
   },
   {

@@ -17,12 +17,7 @@
           <NGridItem span="2 880:1">
             <div class="layout-left">
               <div class="carousel-wrap">
-                <NCarousel
-                  class="carousel"
-                  v-model:current-index="carouselIndex"
-                  :autoplay="true"
-                  :show-arrow="covers.length > 1"
-                >
+                <NCarousel class="carousel" v-model:current-index="carouselIndex" :autoplay="true" :show-arrow="covers.length > 1">
                   <template v-for="cover in covers">
                     <img class="cover" :src="cover.url" />
                   </template>
@@ -89,7 +84,7 @@
         </NGrid>
       </template>
     </NCard>
-    <ModelGallery :modelSn="modelSn" :modelHashCode="hashCodeSha256" :modelName="name" />
+    <ModelGallery :modelInfo="modelInfo" />
     <NModal v-model:show="nodeVisible" :mask-closable="false">
       <NCard :bordered="false" style="width: 88vw; max-width: 640px" content-style="padding-left:0;padding-right:0;">
         <template #header>
@@ -125,33 +120,11 @@
 import { ref, defineComponent, onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
-import {
-  NCard,
-  NH2,
-  NH3,
-  NSpace,
-  NSpin,
-  NTag,
-  NCarousel,
-  NDescriptions,
-  NDescriptionsItem,
-  NButton,
-  NIcon,
-  NModal,
-  NGrid,
-  NGridItem,
-  NText,
-  useMessage,
-  NPopselect,
-} from 'naive-ui';
+import { NCard, NH2, NH3, NSpace, NSpin, NTag, NCarousel, NDescriptions, NDescriptionsItem, NButton, NIcon, NModal, NGrid, NGridItem, NText, useMessage, NPopselect } from 'naive-ui';
 import { useUserStore } from '@/stores/user';
 import { Http } from '@/tools/http';
 import { Utils } from '@/tools/utils';
-import {
-  DownloadSharp as IconDownload,
-  CaretForwardCircleOutline as IconRun,
-  CloseSharp as IconClose,
-} from '@vicons/ionicons5';
+import { DownloadSharp as IconDownload, CaretForwardCircleOutline as IconRun, CloseSharp as IconClose } from '@vicons/ionicons5';
 import NodeList from './node-list.vue';
 import type { NodeItem } from './node-item';
 import * as StableDiffusionMetadata from '@/tools/stable-diffusion-metadata';
@@ -196,6 +169,7 @@ export default defineComponent({
     const nodeHashCode = ref('');
     const nodeList = ref<NodeItem[]>([]);
     const router = useRouter();
+    const http = Http.getInstance();
 
     const name = ref('');
     const covers = ref<Array<{ url: string; parameters: string }>>([]);
@@ -208,7 +182,15 @@ export default defineComponent({
     const floatingPoint = ref('');
     const modelSize = ref('');
     const description = ref('');
-    const http = Http.getInstance();
+    const type = ref('');
+
+    const modelInfo = ref({
+      modelHashCode: '',
+      modelName: '',
+      modelType: '',
+      modelSn: '',
+      alias: '',
+    });
 
     const init = async () => {
       error.value = -1;
@@ -244,6 +226,7 @@ export default defineComponent({
       tags.value = _tags;
       covers.value = _covers;
       description.value = data.description;
+      type.value = data.type || '-';
       version.value = lastestVersion.modelVersion || '-';
       hashCodeSha256.value = _hashCodeSha256;
       hashCodeSha256Short.value = _shortHashCodeSha256;
@@ -252,6 +235,12 @@ export default defineComponent({
       modelSize.value = lastestVersion.modelSize;
       archive.value = _modelFile.url || '';
       error.value = 0;
+
+      modelInfo.value.modelHashCode = _hashCodeSha256;
+      modelInfo.value.modelName = data.modelName;
+      modelInfo.value.modelType = data.type;
+      modelInfo.value.modelSn = modelSn.value;
+      modelInfo.value.alias = data.modelVersions[0].alias;
     };
 
     onMounted(() => {
@@ -277,6 +266,8 @@ export default defineComponent({
       floatingPoint,
       modelSize,
       description,
+      type,
+      modelInfo,
       onPressRun() {
         if (!hashCodeSha256Short.value || hashCodeSha256Short.value === '-') {
           message.error("Sorry, This model without 'Hash Code'");

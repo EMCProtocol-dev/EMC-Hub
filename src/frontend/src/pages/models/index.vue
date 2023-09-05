@@ -1,7 +1,6 @@
 <template>
   <div class="page">
     <NSpace vertical :size="[0, 24]" :wrap-item="false">
-      <!--  -->
       <NGrid cols="5" :x-gap="24" :y-gap="24" item-responsive>
         <NGridItem span="5 1000:2">
           <NSpace :wrap-item="false" :wrap="false" :size="[24, 0]">
@@ -41,13 +40,17 @@
             </NSpace>
           </template>
           <template v-else>
-            <NGrid cols="2 600:3 800:4 1000:5" :x-gap="24" :y-gap="24" item-responsive>
+            <!-- <NGrid cols="2 600:3 800:4 1000:5" :x-gap="24" :y-gap="24" item-responsive>
               <template v-for="item in list">
                 <NGridItem>
-                  <ModelItem :item="item" @press="onPressItem" style="width: auto" />
-                </NGridItem>
+            </NGridItem>
+                  </template>
+                </NGrid> -->
+            <Waterfall :list="list" :gutter="24" :width="300">
+              <template #item="{ item, url, index }">
+                <ModelItem :item="item" @press="onPressItem" style="width: auto" />
               </template>
-            </NGrid>
+            </Waterfall>
           </template>
         </NSpace>
       </NCard>
@@ -62,7 +65,8 @@ import { useRouter } from 'vue-router';
 import { Http } from '@/tools/http';
 import { Utils } from '@/tools/utils';
 import { useUserStore } from '@/stores/user';
-
+import { Waterfall } from 'vue-waterfall-plugin-next';
+import 'vue-waterfall-plugin-next/dist/style.css';
 import NFTItem from './nft-item.vue';
 import type { Item as NftItemDef } from './nft-item';
 
@@ -87,6 +91,7 @@ export default defineComponent({
     NCarousel,
     NFTItem,
     ModelItem,
+    Waterfall,
   },
   beforeRouteEnter(to, from, next) {
     if (typeof to.meta !== 'object') {
@@ -144,6 +149,8 @@ export default defineComponent({
           name: item.modelName,
           status: item.status,
           covers: covers,
+          type: item.type,
+          userId: item.userId,
         });
       });
       itemCount.value = total;
