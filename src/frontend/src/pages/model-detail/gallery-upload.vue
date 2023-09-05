@@ -402,7 +402,7 @@ export default defineComponent({
       formRule,
       handleClose() {
         onRemove();
-        message.info('Card Close');
+      //   message.info('Card Close');
         context.emit('cancel');
       },
       async onPressSubmit() {
