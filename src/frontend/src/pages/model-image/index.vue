@@ -123,6 +123,7 @@
             </NGrid>
          </NCard>
       </NSpace>
+
    </NSpace>
 </template>
 
@@ -136,6 +137,7 @@ import { useIsMobile, useIsTablet, useIsSmallDesktop, useIsDesktop } from '@/com
 
 import { NLayout, NSpace, NGrid, NGridItem, NCard, NScrollbar, NSpin, NCarousel, NTag, NButton, NIcon, NAvatar, NH4, NH3, useMessage, NH6 } from 'naive-ui';
 import { StarOutline as IconStar, CloseCircleOutline as IconClose, CopyOutline as IconCopy, PlayCircleOutline as IconPlay, PersonSharp as IconPerson } from '@vicons/ionicons5';
+import * as StableDiffusionMetadata from '@/tools/stable-diffusion-metadata';
 
 type InfoType = {
    imageTitle: string;
@@ -155,6 +157,7 @@ type InfoType = {
    userId: string;
    type: string;
    modelSn: string;
+   hashs: string;
 };
 type contentType = {
    style: { 'max-height': string; };
@@ -188,7 +191,8 @@ export default defineComponent({
          userName: '',
          userId: '',
          type: '',
-         modelSn: ''
+         modelSn: '',
+         hashs: ''
       });
 
       // const covers = ref<Array<{ url: string; parameters: string }>>([  { url: '', }, ]);
@@ -218,6 +222,9 @@ export default defineComponent({
          });
          if (resp._result !== 0) return;
          imageInfo.value = resp.data;
+         const pf = StableDiffusionMetadata.parse(resp.data.raw);
+         const hashs: any = pf.hashes
+         imageInfo.value.hashs = hashs.model;
       };
 
       return {
@@ -232,9 +239,37 @@ export default defineComponent({
          onPressBack() {
             router.back();
          },
-         onPressRun() {
-            message.info('comming soon');
-            // router.push({ name: 'sd', params: { modelHashCode: imageInfo.value.modelSn } });
+         async onPressRun() {
+            // message.info('comming soon');
+            let sdWindow: WindowProxy | null;
+            let parameters = '';
+            if (imageInfo.value.raw) {
+               parameters = imageInfo.value.raw;
+            } else {
+               const [_parameters, isParameters] = await StableDiffusionMetadata.extract(imageInfo.value.url);
+               parameters = _parameters;
+            }
+
+            console.info('image parameters :\n', parameters);
+
+            if (parameters) {
+               const handleMessage = (event: MessageEvent) => {
+                  const request: any = event.data as any;
+                  if (request.type === 'emchub-txt2img-ready') {
+                     sdWindow?.postMessage({ type: 'emchub-txt2img-parameters', data: parameters }, '*');
+                  }
+                  window.removeEventListener('message', handleMessage);
+               };
+               window.addEventListener('message', handleMessage);
+            } else {
+               console.warn(`${imageInfo.value.url} can not parse parameters`);
+            }
+
+            const host = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'https://models.emchub.ai';
+
+            sdWindow = window.open(`${host}/#/sd/${imageInfo.value.hashs}`);
+
+            // router.push({ name: 'sd', params: { modelHashCode: ''} });
          },
       };
    },
