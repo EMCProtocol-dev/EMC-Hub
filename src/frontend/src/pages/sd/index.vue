@@ -6,7 +6,7 @@
           <div class="scroll-body">
             <NForm ref="formRef" :model="formData">
               <NGrid :cols="24" :x-gap="24">
-                <NFormItemGi :span="24" path="modelHash" label="Model">
+                <NFormItemGi :span="24" path="modelHash" label="Checkpoint">
                   <NSelect
                     v-model:value="formData.modelHash"
                     :options="modelHashItems"
@@ -16,6 +16,30 @@
                     value-field="val"
                   >
                   </NSelect>
+                </NFormItemGi>
+                <NFormItemGi :span="24" label="LoRA">
+                  <template v-if="modelHashItemsLoading">
+                    <NSpace
+                      align="center"
+                      justify="center"
+                      :wrap-item="false"
+                      :wrap="false"
+                      style="height: 200px; width: 100%"
+                    >
+                      <NSpin />
+                    </NSpace>
+                  </template>
+                  <template v-else>
+                    <NScrollbar x-scrollable>
+                      <NSpace :wrap-item="false" :wrap="false" style="padding-bottom: 24px; padding-right: 8px">
+                        <template v-for="item in loraItems">
+                          <div style="width: 160px">
+                            <LoraItem :item="item" @press="onPressLoraItem" />
+                          </div>
+                        </template>
+                      </NSpace>
+                    </NScrollbar>
+                  </template>
                 </NFormItemGi>
                 <NFormItemGi :span="24" path="prompt" label="Prompt">
                   <NInput
@@ -185,11 +209,14 @@ import * as StableDiffusionMetadata from '@/tools/stable-diffusion-metadata';
 import { sign } from '@/tools/open-api';
 import OpenEmcHubConfig from '@/credentials.emchub.json';
 import { shortHashCodeSha256 } from '../model-detail/utils';
+import LoraItem from './lora-item.vue';
+import type { LoraItem as AsLoraItem, LoraItemCover as AsLoraItemCover } from './lora-item.vue';
+
 interface FormDataType {
   modelHash: string;
 
-  prompt: string | null;
-  negativePrompt: string | null;
+  prompt: string;
+  negativePrompt: string;
 
   sampler: string; //sampler_index
   steps: number; //steps
@@ -217,13 +244,7 @@ interface Result {
   status: number; // 0:none 1:running 2:success 3:failure
 }
 
-type ModelHashGroup = {
-  type: 'group';
-  label: string;
-  key: string;
-  children: ModelHashItem[];
-};
-type ModelHashItem = {
+type SelectItem = {
   label: string;
   val: string;
   raw: string;
@@ -276,8 +297,9 @@ export default defineComponent({
     NDescriptionsItem,
     NAlert,
     CloudDownloadOutlineIcon,
+    LoraItem,
   },
-  setup() {
+  setup(props, ctx) {
     const message = useMessage();
     const route = useRoute();
     const scrollBarStyle = ref({
@@ -285,8 +307,10 @@ export default defineComponent({
       padding: '0 24px',
       'box-sizing': 'border-box',
     });
+    const ready = ref(false);
     const modelHashItemsLoading = ref(true);
-    const modelHashItems = ref<ModelHashGroup[]>([]);
+    const modelHashItems = ref<SelectItem[]>([]);
+    const loraItems = ref<AsLoraItem[]>([]);
     const formRef = ref<FormInst | null>(null);
     const formData = ref<FormDataType>(defaultFormData());
     const result = ref<Result>({ errorCode: 0, errorMessage: '', image: '', imageParameters: '', status: 0 });
@@ -312,7 +336,7 @@ export default defineComponent({
           }
           const { status, fileUrl, failReason } = resp.data || {};
           if (status === 0 || status === 1) {
-            const maxIntervalTime = 10000;
+            const maxIntervalTime = 3000;
             const executeTime = Math.round(new Date().getTime() - beforeTime);
             const diffTime = maxIntervalTime - executeTime;
             setTimeout(() => handler(), Math.max(1, diffTime));
@@ -352,7 +376,31 @@ export default defineComponent({
       }
     };
 
+    const queryImageStatus = async (url: string) => {
+      const handle = async () => {
+        const now = new Date().getTime();
+        const { status, data: resp } = await http.client.get(url);
+        const executeTime = new Date().getTime() - now;
+        const diff = 5000 - executeTime;
+        if (!ready.value) {
+          return false;
+        } else if (status === 200) {
+          return true;
+        } else {
+          return new Promise((resolve) => setTimeout(() => handle().then(resolve), Math.max(1, diff)));
+        }
+      };
+      return handle();
+    };
+
+    const updatePrompt = () => {
+      //  /\s\<lora:(.*):\d+\>/.test('asdsa <lora:asdxzcxzc123123:11> <asdsad>asdsad')
+      const loraList: string[] = [];
+      loraList.join(' ');
+    };
+
     onMounted(async () => {
+      ready.value = false;
       modelHashItemsLoading.value = true;
       const resp = await http.get({
         url: '/emchub/api/client/modelInfo/queryList',
@@ -360,29 +408,63 @@ export default defineComponent({
       });
       modelHashItemsLoading.value = false;
       const list: any[] = resp.pageInfo?.list || [];
-      const modeHashGroups: ModelHashGroup[] = [];
-      list.forEach(({ modelSn, modelName, modelVersions }) => {
-        const group: ModelHashGroup = { type: 'group', label: modelName, key: modelSn, children: [] };
-        modeHashGroups.push(group);
-        modelVersions.forEach(({ modelVersion, hashCodeSha256 }) => {
-          group.children.push({
-            label: `${modelName}:${modelVersion}`,
-            val: shortHashCodeSha256(hashCodeSha256),
-            raw: hashCodeSha256,
-          });
+      list.sort((a, b) => {
+        if (b.modelName < a.modelName) {
+          return 1;
+        }
+        if (a.modelName < b.modelName) {
+          return -1;
+        }
+        return 0;
+      });
+      const _modeHashItems: SelectItem[] = [];
+      const _loraItems: AsLoraItem[] = [];
+      const queryModelHash = (route.params.modelHashCode as string) || '';
+
+      list.forEach(({ type, modelName, modelVersions }) => {
+        modelVersions.forEach(({ modelVersion, hashCodeSha256, alias, previewPicturesUrl }) => {
+          const shortHash = shortHashCodeSha256(hashCodeSha256);
+          if (type === 'CHECKPOINT') {
+            _modeHashItems.push({
+              label: `${modelName}:${modelVersion}`,
+              val: shortHash,
+              raw: hashCodeSha256,
+            });
+            if (queryModelHash === shortHash) {
+              formData.value.modelHash = queryModelHash;
+            }
+          } else if (type === 'LORA') {
+            const images: AsLoraItemCover[] = Utils.parseJSON(previewPicturesUrl) || [];
+            _loraItems.push({
+              label: `${modelName}:${modelVersion}`,
+              modelName,
+              modelVersion,
+              covers: images,
+              alias: alias,
+              hashCodeSha256: hashCodeSha256,
+              shortHashCodeSha256: shortHash,
+            });
+          }
         });
       });
-      modelHashItems.value = modeHashGroups;
-      const queryModelHash = (route.params.modelHashCode as string) || '';
-      formData.value.modelHash = queryModelHash;
+      modelHashItems.value = _modeHashItems;
+      loraItems.value = _loraItems;
+      //set default model
+      if (!formData.value.modelHash) {
+        formData.value.modelHash = _modeHashItems[0].val;
+      }
 
       if (window.opener) {
         window.opener.postMessage({ type: 'emchub-txt2img-ready' }, '*');
       }
       window.addEventListener('message', handleWindowMessage);
+
+      ready.value = true;
     });
 
     onUnmounted(() => {
+      //Important!!
+      ready.value = false;
       window.removeEventListener('message', handleWindowMessage);
     });
 
@@ -391,6 +473,7 @@ export default defineComponent({
       samplerOptions,
       modelHashItemsLoading,
       modelHashItems,
+      loraItems,
       formRef,
       formData,
       result,
@@ -399,6 +482,14 @@ export default defineComponent({
       },
       onPressDownload() {
         downloadBase64(result.value.image);
+      },
+      onPressLoraItem(item: AsLoraItem) {
+        const reg = new RegExp(`\\s\\<lora:${item.alias}:\\d+\\>`);
+        if (reg.test(formData.value.prompt)) {
+          formData.value.prompt = formData.value.prompt.replace(reg, '');
+        } else {
+          formData.value.prompt += ` <lora:${item.alias}:1>`;
+        }
       },
       async onPressGenerate() {
         const errors: string[] = [];
@@ -460,8 +551,22 @@ export default defineComponent({
           result.value.errorMessage = resp2._desc || '';
           return;
         }
-        const image = (resp2.data as string) || '';
-        const url = `data:${getImageMime(image) || 'image/png'};base64,${image}`;
+        // const image = (resp2.data as string) || '';
+        // const url = `data:${getImageMime(image) || 'image/png'};base64,${image}`;
+        const url = (resp2.data as string) || '';
+        if (!url) {
+          result.value.status = 3;
+          result.value.errorCode = resp2._result;
+          result.value.errorMessage = 'Not found url';
+          return;
+        }
+        const isGenerated = await queryImageStatus(url);
+        if (!isGenerated) {
+          result.value.status = 3;
+          result.value.errorCode = resp2._result;
+          result.value.errorMessage = 'Generate failure, unknow error';
+          return;
+        }
         result.value.status = 2;
         result.value.image = url;
         const [parameters, isParameters] = await StableDiffusionMetadata.extract(url);
