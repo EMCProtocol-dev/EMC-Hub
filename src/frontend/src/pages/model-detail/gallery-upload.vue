@@ -163,7 +163,7 @@ import {
   UploadCustomRequestOptions,
 } from 'naive-ui';
 import copy from 'copy-to-clipboard';
-import * as StableDiffusionMetadata from '@/tools/stable-diffusion-metadata';
+import * as StableDiffusionMetadata from 'stable-diffusion-image-metadata';
 import { useMinio } from '@/composables/use-minio';
 import { Http } from '@/tools/http';
 import { useUserStore } from '@/stores/user';

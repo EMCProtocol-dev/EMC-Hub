@@ -137,7 +137,7 @@ import { useIsMobile, useIsTablet, useIsSmallDesktop, useIsDesktop } from '@/com
 
 import { NLayout, NSpace, NGrid, NGridItem, NCard, NScrollbar, NSpin, NCarousel, NTag, NButton, NIcon, NAvatar, NH4, NH3, useMessage, NH6 } from 'naive-ui';
 import { StarOutline as IconStar, CloseCircleOutline as IconClose, CopyOutline as IconCopy, PlayCircleOutline as IconPlay, PersonSharp as IconPerson } from '@vicons/ionicons5';
-import * as StableDiffusionMetadata from '@/tools/stable-diffusion-metadata';
+import * as StableDiffusionMetadata from 'stable-diffusion-image-metadata';
 
 type InfoType = {
    imageTitle: string;
@@ -265,7 +265,7 @@ export default defineComponent({
                console.warn(`${imageInfo.value.url} can not parse parameters`);
             }
 
-            const host = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'https://models.emchub.ai';
+            const host = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : window.location.origin;
 
             sdWindow = window.open(`${host}/#/sd/${imageInfo.value.hashs}`);
 

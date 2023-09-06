@@ -125,7 +125,7 @@ import { ArchiveOutline as ArchiveIcon } from '@vicons/ionicons5';
 import { useUserStore } from '@/stores/user';
 import { fileToSha256Hex } from '@/tools/file-sha256';
 import { useMinio } from '@/composables/use-minio';
-import * as StableDiffusionMetadata from '@/tools/stable-diffusion-metadata';
+import * as StableDiffusionMetadata from 'stable-diffusion-image-metadata';
 import { Utils } from '@/tools/utils';
 
 type BasicOptionItem = {

@@ -10,7 +10,7 @@ export function navigateToSD(modelHashCode: string, parameters: string) {
     window.addEventListener('message', handleMessage);
   }
 
-  const host = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'https://models.emchub.ai';
+  const host = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : window.location.origin;
   const sdWindow: WindowProxy | null = window.open(`${host}/#/sd/${modelHashCode}`);
 }
 

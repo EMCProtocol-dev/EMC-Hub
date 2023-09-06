@@ -205,7 +205,7 @@ import { getImageMime } from 'base64-image-mime';
 import { useRoute } from 'vue-router';
 import { sampler as samplerOptions } from './options';
 import { config as formConfigs } from './formConfigs';
-import * as StableDiffusionMetadata from '@/tools/stable-diffusion-metadata';
+import * as StableDiffusionMetadata from 'stable-diffusion-image-metadata';
 import { sign } from '@/tools/open-api';
 import OpenEmcHubConfig from '@/credentials.emchub.json';
 import { shortHashCodeSha256 } from '../model-detail/utils';
@@ -371,7 +371,15 @@ export default defineComponent({
       const request: PostMessageRequest = event.data as PostMessageRequest;
       if (request.type === 'emchub-txt2img-parameters' && request.data) {
         const data: { [k: string]: any } = StableDiffusionMetadata.parse(request.data);
-        formData.value = defaultFormData(data);
+        formData.value.prompt = data.prompt;
+        formData.value.negativePrompt = data.negativePrompt;
+        formData.value.sampler = data.sampler;
+        formData.value.steps = data.steps;
+        formData.value.width = data.width;
+        formData.value.height = data.height;
+        formData.value.cfgScale = data.cfgScale;
+        formData.value.seed = data.seed;
+        formData.value.clipSkip = data.clipSkip;
       }
     };
 
@@ -430,7 +438,7 @@ export default defineComponent({
               raw: hashCodeSha256,
             });
             if (queryModelHash === shortHash) {
-              formData.value.modelHash = queryModelHash;
+              formData.value.modelHash = shortHash;
             }
           } else if (type === 'LORA') {
             const images: AsLoraItemCover[] = Utils.parseJSON(previewPicturesUrl) || [];
@@ -493,11 +501,13 @@ export default defineComponent({
       async onPressGenerate() {
         const errors: string[] = [];
         const insideBody = {};
+        const modelHashItem = modelHashItems.value.find((item) => item.val === formData.value.modelHash);
+        const modelHash = modelHashItem?.raw;
         const body = {
-          modelHash: formData.value.modelHash,
+          modelHash: modelHash,
           generativeParameters: '',
         };
-        if (!formData.value.modelHash) {
+        if (!modelHash) {
           errors.push(`'Model' can not be empty`);
         }
         formConfigs.forEach((item, index) => {

@@ -128,7 +128,7 @@ import {
 } from '@vicons/ionicons5';
 
 import { navigateToSD } from './utils';
-import * as StableDiffusionMetadata from '@/tools/stable-diffusion-metadata';
+import * as StableDiffusionMetadata from 'stable-diffusion-image-metadata';
 import { useMinio } from '@/composables/use-minio';
 import ModelGallery from './model-gallery.vue';
 
