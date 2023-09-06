@@ -217,6 +217,7 @@ export default defineComponent({
   props: {
     showModal: { type: Boolean, default: false },
     modelInfo: { type: Object, default: {} },
+    initList: { type: Function, default: {} },
   },
   emits: ['cancel', 'info'],
   setup(props, context) {
@@ -402,7 +403,7 @@ export default defineComponent({
       formRule,
       handleClose() {
         onRemove();
-      //   message.info('Card Close');
+        //   message.info('Card Close');
         context.emit('cancel');
       },
       async onPressSubmit() {
@@ -442,6 +443,7 @@ export default defineComponent({
             onRemove();
             submitting.value = false;
           }
+          props.initList();
           context.emit('cancel');
         } catch (error) {
           submitting.value = false;

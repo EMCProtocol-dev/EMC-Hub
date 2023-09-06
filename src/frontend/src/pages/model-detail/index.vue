@@ -1,127 +1,125 @@
 <template>
-   <div class="page">
-      <NCard :bordered="false" content-style="padding:24px 0 24px 24px" style="border-radius: 20px">
-         <!-- <NSpace class="layout" :wrap-item="false" :size="[0, 0]"></NSpace> -->
-         <template v-if="error === -1">
-            <NSpace class="layout-loading" align="center" justify="center">
-               <NSpin />
-            </NSpace>
-         </template>
-         <template v-else-if="error > 0">
-            <NSpace class="layout-loading" align="center" justify="center">
-               <span>{{ errorText }}</span>
-            </NSpace>
-         </template>
-         <template v-else>
-            <NGrid cols="2" item-responsive>
-               <NGridItem span="2 880:1">
-                  <div class="layout-left">
-                     <div class="carousel-wrap">
-                        <NCarousel class="carousel" v-model:current-index="carouselIndex" :autoplay="true"
-                           :show-arrow="covers.length > 1">
-                           <template v-for="cover in covers">
-                              <img class="cover" :src="cover.url" />
-                           </template>
-                        </NCarousel>
-                     </div>
-                  </div>
-               </NGridItem>
-               <NGridItem span="2 880:1">
-                  <div class="layout-right" style="padding: 24px">
-                     <div class="header">
-                        <div class="header-row">
-                           <div class="name">{{ name }}</div>
-                        </div>
-                        <NSpace class="tags" :wrap-item="false" :size="[8, 8]">
-                           <template v-for="tag in tags">
-                              <NTag round size="small" :bordered="false"
-                                 :color="{ color: '#8f7df8', textColor: '#f1f1f1' }">
-                                 {{ tag }}
-                              </NTag>
-                           </template>
-                        </NSpace>
-                     </div>
-                     <div class="body">
-                        <div class="with">
-                           <div class="with-label">Version</div>
-                           <div class="with-value">v{{ version }}</div>
-                        </div>
-                        <div class="with">
-                           <div class="with-label">Hash Code</div>
-                           <div class="with-value">{{ hashCodeSha256Short || '-' }}</div>
-                        </div>
-                        <div class="with">
-                           <div class="with-label">Base Model</div>
-                           <div class="with-value">{{ baseModel || '-' }}</div>
-                        </div>
-                        <div class="with">
-                           <div class="with-label">Model Size</div>
-                           <div class="with-value">{{ modelSize || '-' }}</div>
-                        </div>
-                        <div class="with">
-                           <div class="with-label">Floating Point</div>
-                           <div class="with-value">{{ floatingPoint || '-' }}</div>
-                        </div>
-                        <div class="with with__column">
-                           <div class="with-label">Description</div>
-                           <div class="with-value with-value__area">{{ description }}</div>
-                        </div>
-                     </div>
-                     <NSpace align="center" :size="[24, 24]" style="margin-top: 12px">
-                        <NButton type="warning" size="large" strong @click="onPressRun">
-                           <template #icon>
-                              <NIcon>
-                                 <IconRun />
-                              </NIcon>
-                           </template>
-                           Run model
-                        </NButton>
-                        <NButton type="primary" size="large" strong @click="onPressArchive">
-                           <template #icon>
-                              <NIcon>
-                                 <IconDownload />
-                              </NIcon>
-                           </template>
-                           Download model package
-                        </NButton>
-                     </NSpace>
-                  </div>
-               </NGridItem>
-            </NGrid>
-         </template>
-      </NCard>
-      <ModelGallery :modelInfo="modelInfo" />
-      <NModal v-model:show="nodeVisible" :mask-closable="false">
-         <NCard :bordered="false" style="width: 88vw; max-width: 640px" content-style="padding-left:0;padding-right:0;">
-            <template #header>
-               <NH3 style="margin-bottom: 0">Nodes for running</NH3>
-            </template>
-            <template #header-extra>
-               <NButton quaternary circle @click="onNodeClose">
-                  <template #icon>
-                     <NIcon>
-                        <IconClose />
-                     </NIcon>
+  <div class="page">
+    <NCard :bordered="false" content-style="padding:24px 0 24px 24px" style="border-radius: 20px">
+      <!-- <NSpace class="layout" :wrap-item="false" :size="[0, 0]"></NSpace> -->
+      <template v-if="error === -1">
+        <NSpace class="layout-loading" align="center" justify="center">
+          <NSpin />
+        </NSpace>
+      </template>
+      <template v-else-if="error > 0">
+        <NSpace class="layout-loading" align="center" justify="center">
+          <span>{{ errorText }}</span>
+        </NSpace>
+      </template>
+      <template v-else>
+        <NGrid cols="2" item-responsive>
+          <NGridItem span="2 880:1">
+            <div class="layout-left">
+              <div class="carousel-wrap">
+                <NCarousel class="carousel" v-model:current-index="carouselIndex" :autoplay="true" :show-arrow="covers.length > 1">
+                  <template v-for="cover in covers">
+                    <img class="cover" :src="cover.url" />
                   </template>
-               </NButton>
+                </NCarousel>
+              </div>
+            </div>
+          </NGridItem>
+          <NGridItem span="2 880:1">
+            <div class="layout-right" style="padding: 24px">
+              <div class="header">
+                <div class="header-row">
+                  <div class="name">{{ name }}</div>
+                </div>
+                <NSpace class="tags" :wrap-item="false" :size="[8, 8]">
+                  <template v-for="tag in tags">
+                    <NTag round size="small" :bordered="false" :color="{ color: '#8f7df8', textColor: '#f1f1f1' }">
+                      {{ tag }}
+                    </NTag>
+                  </template>
+                </NSpace>
+              </div>
+              <div class="body">
+                <div class="with">
+                  <div class="with-label">Version</div>
+                  <div class="with-value">v{{ version }}</div>
+                </div>
+                <div class="with">
+                  <div class="with-label">Hash Code</div>
+                  <div class="with-value">{{ hashCodeSha256Short || '-' }}</div>
+                </div>
+                <div class="with">
+                  <div class="with-label">Base Model</div>
+                  <div class="with-value">{{ baseModel || '-' }}</div>
+                </div>
+                <div class="with">
+                  <div class="with-label">Model Size</div>
+                  <div class="with-value">{{ modelSize || '-' }}</div>
+                </div>
+                <div class="with">
+                  <div class="with-label">Floating Point</div>
+                  <div class="with-value">{{ floatingPoint || '-' }}</div>
+                </div>
+                <div class="with with__column">
+                  <div class="with-label">Description</div>
+                  <div class="with-value with-value__area">{{ description }}</div>
+                </div>
+              </div>
+              <NSpace align="center" :size="[24, 24]" style="margin-top: 12px">
+                <NButton type="warning" size="large" strong @click="onNodeRun">
+                  <template #icon>
+                    <NIcon>
+                      <IconRun />
+                    </NIcon>
+                  </template>
+                  Run model
+                </NButton>
+                <NButton type="primary" size="large" strong @click="onPressArchive">
+                  <template #icon>
+                    <NIcon>
+                      <IconDownload />
+                    </NIcon>
+                  </template>
+                  Download model package
+                </NButton>
+              </NSpace>
+            </div>
+          </NGridItem>
+        </NGrid>
+      </template>
+    </NCard>
+    <ModelGallery :modelInfo="modelInfo" />
+    <!-- <NModal v-model:show="nodeVisible" :mask-closable="false">
+      <NCard :bordered="false" style="width: 88vw; max-width: 640px" content-style="padding-left:0;padding-right:0;">
+        <template #header>
+          <NH3 style="margin-bottom: 0">Nodes for running</NH3>
+        </template>
+        <template #header-extra>
+          <NButton quaternary circle @click="onNodeClose">
+            <template #icon>
+              <NIcon>
+                <IconClose />
+              </NIcon>
             </template>
-            <NodeList :hash="nodeHashCode" @init="onNodeInit" />
-            <template #footer>
-               <NSpace justify="space-between" align="center" :wrap-item="false">
-                  <NText style="font-size: 12px">Total {{ nodeList.length }} nodes</NText>
-                  <NButton type="warning" size="large" strong @click="onNodeRun">
-                     <template #icon>
-                        <NIcon>
-                           <IconRun />
-                        </NIcon>
-                     </template>
-                     Run
-                  </NButton>
-               </NSpace>
-            </template>
-         </NCard>
-      </NModal>
-   </div>
+          </NButton>
+        </template>
+        <NodeList :hash="nodeHashCode" @init="onNodeInit" />
+        <template #footer>
+          <NSpace justify="space-between" align="center" :wrap-item="false">
+            <NText style="font-size: 12px">Total {{ nodeList.length }} nodes</NText>
+            <NButton type="warning" size="large" strong @click="onNodeRun">
+              <template #icon>
+                <NIcon>
+                  <IconRun />
+                </NIcon>
+              </template>
+              Run
+            </NButton>
+          </NSpace>
+        </template>
+      </NCard>
+    </NModal> -->
+  </div>
 </template>
 
 <script lang="ts">
@@ -140,197 +138,197 @@ import * as StableDiffusionMetadata from '@/tools/stable-diffusion-metadata';
 import ModelGallery from './model-gallery.vue';
 
 export default defineComponent({
-   name: 'node-detail',
-   components: {
-      NCard,
-      NH2,
-      NH3,
-      NSpace,
-      NSpin,
-      NTag,
-      NCarousel,
-      NDescriptions,
-      NDescriptionsItem,
-      NButton,
-      NIcon,
-      NModal,
-      NGrid,
-      NGridItem,
-      NText,
-      NPopselect,
-      IconRun,
-      IconClose,
-      IconDownload,
-      NodeList,
-      ModelGallery,
-   },
-   setup() {
-      const route = useRoute();
-      const message = useMessage();
-      const modelSn = ref(route.params.modelSn as string);
-      const error = ref(-1);
-      const errorText = ref('');
-      const carouselIndex = ref(0);
+  name: 'node-detail',
+  components: {
+    NCard,
+    NH2,
+    NH3,
+    NSpace,
+    NSpin,
+    NTag,
+    NCarousel,
+    NDescriptions,
+    NDescriptionsItem,
+    NButton,
+    NIcon,
+    NModal,
+    NGrid,
+    NGridItem,
+    NText,
+    NPopselect,
+    IconRun,
+    IconClose,
+    IconDownload,
+    NodeList,
+    ModelGallery,
+  },
+  setup() {
+    const route = useRoute();
+    const message = useMessage();
+    const modelSn = ref(route.params.modelSn as string);
+    const error = ref(-1);
+    const errorText = ref('');
+    const carouselIndex = ref(0);
 
-      //modal property
-      const nodeVisible = ref(false);
-      const nodeHashCode = ref('');
-      const nodeList = ref<NodeItem[]>([]);
-      const router = useRouter();
-      const http = Http.getInstance();
+    //modal property
+    const nodeVisible = ref(false);
+    const nodeHashCode = ref('');
+    const nodeList = ref<NodeItem[]>([]);
+    const router = useRouter();
+    const http = Http.getInstance();
 
-      const name = ref('');
-      const covers = ref<Array<{ url: string; parameters: string }>>([]);
-      const archive = ref('');
-      const version = ref('');
-      const tags = ref<string[]>([]);
-      const baseModel = ref('');
-      const hashCodeSha256 = ref('');
-      const hashCodeSha256Short = ref('');
-      const floatingPoint = ref('');
-      const modelSize = ref('');
-      const description = ref('');
-      const type = ref('');
+    const name = ref('');
+    const covers = ref<Array<{ url: string; parameters: string }>>([]);
+    const archive = ref('');
+    const version = ref('');
+    const tags = ref<string[]>([]);
+    const baseModel = ref('');
+    const hashCodeSha256 = ref('');
+    const hashCodeSha256Short = ref('');
+    const floatingPoint = ref('');
+    const modelSize = ref('');
+    const description = ref('');
+    const type = ref('');
 
-      const modelInfo = ref({
-         modelHashCode: '',
-         modelName: '',
-         modelType: '',
-         modelSn: '',
-         alias: '',
+    const modelInfo = ref({
+      modelHashCode: '',
+      modelName: '',
+      modelType: '',
+      modelSn: '',
+      alias: '',
+    });
+
+    const init = async () => {
+      error.value = -1;
+      errorText.value = '';
+      const resp = await http.get({
+        url: '/emchub/api/client/modelInfo/queryOne',
+        data: { modelSn: modelSn.value },
       });
+      if (resp._result !== 0) {
+        error.value = 1;
+        errorText.value = 'Not found model';
+        return;
+      }
+      const data: any = resp.data || {};
 
-      const init = async () => {
-         error.value = -1;
-         errorText.value = '';
-         const resp = await http.get({
-            url: '/emchub/api/client/modelInfo/queryOne',
-            data: { modelSn: modelSn.value },
-         });
-         if (resp._result !== 0) {
-            error.value = 1;
-            errorText.value = 'Not found model';
-            return;
-         }
-         const data: any = resp.data || {};
+      let _tags: string[] = data.tags.split(',');
 
-         let _tags: string[] = data.tags.split(',');
+      let _covers: Array<{ url: string; parameters: string }> = [];
+      let _parameters: Array<{ id: string; raw: string }> = [];
+      let _modelFile: { id?: string; name?: string; url?: string } = {};
+      const lastestVersion = data.modelVersions && data.modelVersions[0] ? data.modelVersions[0] : {};
+      if (lastestVersion.versionId) {
+        _parameters = Utils.parseJSON(lastestVersion.previewPicturesGenParams);
+        _covers = Utils.parseJSON(lastestVersion.previewPicturesUrl) || [];
+        _modelFile = Utils.parseJSON(lastestVersion.modelFileUrl);
+        _covers.forEach((item, index) => {
+          item.parameters = _parameters[index].raw;
+        });
+      }
+      const _hashCodeSha256 = (lastestVersion.hashCodeSha256 || '-').trim().toLocaleLowerCase(); //'aa9c45d00a';
+      const _shortHashCodeSha256 = _hashCodeSha256.substring(0, 10);
+      name.value = data.modelName;
+      tags.value = _tags;
+      covers.value = _covers;
+      description.value = data.description;
+      type.value = data.type || '-';
+      version.value = lastestVersion.modelVersion || '-';
+      hashCodeSha256.value = _hashCodeSha256;
+      hashCodeSha256Short.value = _shortHashCodeSha256;
+      baseModel.value = lastestVersion.baseModel;
+      floatingPoint.value = lastestVersion.floatingPoint;
+      modelSize.value = lastestVersion.modelSize;
+      archive.value = _modelFile.url || '';
+      error.value = 0;
 
-         let _covers: Array<{ url: string; parameters: string }> = [];
-         let _parameters: Array<{ id: string; raw: string }> = [];
-         let _modelFile: { id?: string; name?: string; url?: string } = {};
-         const lastestVersion = data.modelVersions && data.modelVersions[0] ? data.modelVersions[0] : {};
-         if (lastestVersion.versionId) {
-            _parameters = Utils.parseJSON(lastestVersion.previewPicturesGenParams);
-            _covers = Utils.parseJSON(lastestVersion.previewPicturesUrl) || [];
-            _modelFile = Utils.parseJSON(lastestVersion.modelFileUrl);
-            _covers.forEach((item, index) => {
-               item.parameters = _parameters[index].raw;
-            });
-         }
-         const _hashCodeSha256 = (lastestVersion.hashCodeSha256 || '-').trim().toLocaleLowerCase(); //'aa9c45d00a';
-         const _shortHashCodeSha256 = _hashCodeSha256.substring(0, 10);
-         name.value = data.modelName;
-         tags.value = _tags;
-         covers.value = _covers;
-         description.value = data.description;
-         type.value = data.type || '-';
-         version.value = lastestVersion.modelVersion || '-';
-         hashCodeSha256.value = _hashCodeSha256;
-         hashCodeSha256Short.value = _shortHashCodeSha256;
-         baseModel.value = lastestVersion.baseModel;
-         floatingPoint.value = lastestVersion.floatingPoint;
-         modelSize.value = lastestVersion.modelSize;
-         archive.value = _modelFile.url || '';
-         error.value = 0;
+      modelInfo.value.modelHashCode = _hashCodeSha256;
+      modelInfo.value.modelName = data.modelName;
+      modelInfo.value.modelType = data.type;
+      modelInfo.value.modelSn = modelSn.value;
+      modelInfo.value.alias = data.modelVersions[0].alias;
+    };
 
-         modelInfo.value.modelHashCode = _hashCodeSha256;
-         modelInfo.value.modelName = data.modelName;
-         modelInfo.value.modelType = data.type;
-         modelInfo.value.modelSn = modelSn.value;
-         modelInfo.value.alias = data.modelVersions[0].alias;
-      };
+    onMounted(() => {
+      init();
+    });
 
-      onMounted(() => {
-         init();
-      });
+    return {
+      error,
+      errorText,
+      modelSn,
+      carouselIndex,
+      nodeVisible,
+      nodeHashCode,
+      nodeList,
+      name,
+      covers,
+      version,
+      tags,
+      archive,
+      baseModel,
+      hashCodeSha256,
+      hashCodeSha256Short,
+      floatingPoint,
+      modelSize,
+      description,
+      type,
+      modelInfo,
+      // onPressRun() {
+      //   if (!hashCodeSha256Short.value || hashCodeSha256Short.value === '-') {
+      //     message.error("Sorry, This model without 'Hash Code'");
+      //     return;
+      //   }
+      //   nodeVisible.value = true;
+      //   nodeHashCode.value = hashCodeSha256Short.value;
+      // },
+      // onNodeClose() {
+      //   nodeVisible.value = false;
+      // },
+      onNodeInit(list: NodeItem[]) {
+        nodeList.value = list;
+      },
+      async onNodeRun() {
+        let sdWindow: WindowProxy | null;
+        let parameters = '';
+        let coverIndex = carouselIndex.value;
+        if (covers.value[coverIndex].parameters) {
+          parameters = covers.value[coverIndex].parameters;
+        } else {
+          const [_parameters, isParameters] = await StableDiffusionMetadata.extract(covers.value[coverIndex].url);
+          parameters = _parameters;
+        }
 
-      return {
-         error,
-         errorText,
-         modelSn,
-         carouselIndex,
-         nodeVisible,
-         nodeHashCode,
-         nodeList,
-         name,
-         covers,
-         version,
-         tags,
-         archive,
-         baseModel,
-         hashCodeSha256,
-         hashCodeSha256Short,
-         floatingPoint,
-         modelSize,
-         description,
-         type,
-         modelInfo,
-         onPressRun() {
-            if (!hashCodeSha256Short.value || hashCodeSha256Short.value === '-') {
-               message.error("Sorry, This model without 'Hash Code'");
-               return;
+        console.info('image parameters :\n', parameters);
+
+        if (parameters) {
+          const handleMessage = (event: MessageEvent) => {
+            const request: any = event.data as any;
+            if (request.type === 'emchub-txt2img-ready') {
+              sdWindow?.postMessage({ type: 'emchub-txt2img-parameters', data: parameters }, '*');
             }
-            nodeVisible.value = true;
-            nodeHashCode.value = hashCodeSha256Short.value;
-         },
-         onNodeClose() {
-            nodeVisible.value = false;
-         },
-         onNodeInit(list: NodeItem[]) {
-            nodeList.value = list;
-         },
-         async onNodeRun() {
-            let sdWindow: WindowProxy | null;
-            let parameters = '';
-            let coverIndex = carouselIndex.value;
-            if (covers.value[coverIndex].parameters) {
-               parameters = covers.value[coverIndex].parameters;
-            } else {
-               const [_parameters, isParameters] = await StableDiffusionMetadata.extract(covers.value[coverIndex].url);
-               parameters = _parameters;
-            }
+            window.removeEventListener('message', handleMessage);
+          };
+          window.addEventListener('message', handleMessage);
+        } else {
+          console.warn(`${covers.value[0].url} can not parse parameters`);
+        }
 
-            console.info('image parameters :\n', parameters);
+        //   nodeVisible.value = false;
+        const host = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'https://models.emchub.ai';
+        sdWindow = window.open(`${host}/#/sd/${hashCodeSha256Short.value}`);
 
-            if (parameters) {
-               const handleMessage = (event: MessageEvent) => {
-                  const request: any = event.data as any;
-                  if (request.type === 'emchub-txt2img-ready') {
-                     sdWindow?.postMessage({ type: 'emchub-txt2img-parameters', data: parameters }, '*');
-                  }
-                  window.removeEventListener('message', handleMessage);
-               };
-               window.addEventListener('message', handleMessage);
-            } else {
-               console.warn(`${covers.value[0].url} can not parse parameters`);
-            }
-
-            nodeVisible.value = false;
-            const host = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'https://models.emchub.ai';
-            sdWindow = window.open(`${host}/#/sd/${nodeHashCode.value}`);
-
-            // router.push({ name: 'sd', params: { modelHashCode: nodeHashCode.value } });
-         },
-         onPressArchive() {
-            if (!archive.value) {
-               message.error('Sorry, The package disappears');
-               return;
-            }
-            window.open(archive.value);
-         },
-      };
-   },
+        // router.push({ name: 'sd', params: { modelHashCode: nodeHashCode.value } });
+      },
+      onPressArchive() {
+        if (!archive.value) {
+          message.error('Sorry, The package disappears');
+          return;
+        }
+        window.open(archive.value);
+      },
+    };
+  },
 });
 </script>
 
@@ -338,82 +336,82 @@ export default defineComponent({
 /* .layout {
 } */
 .layout-loading {
-   width: 100%;
-   height: 600px;
+  width: 100%;
+  height: 600px;
 }
 
 .layout-left,
 .layout-right {
-   box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 .carousel-wrap {
-   width: 100%;
-   padding-top: 100%;
-   position: relative;
+  width: 100%;
+  padding-top: 100%;
+  position: relative;
 }
 
 .carousel {
-   position: absolute;
-   left: 0;
-   top: 0;
-   width: 100%;
-   height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .cover {
-   width: 100%;
-   height: 100%;
-   border-radius: 10px;
-   object-fit: cover;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  object-fit: cover;
 }
 
 .header {
-   margin-bottom: 16px;
+  margin-bottom: 16px;
 }
 
 .header-row {
-   display: flex;
-   flex-direction: row;
-   align-items: center;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .header-row:not(:last-child) {
-   margin-bottom: 8px;
+  margin-bottom: 8px;
 }
 
 .name {
-   font-size: 26px;
-   font-weight: 700;
+  font-size: 26px;
+  font-weight: 700;
 }
 
 .with {
-   display: flex;
-   flex-direction: row;
-   align-items: center;
-   padding: 12px 0;
-   border-bottom: dashed 1px #f1f1f1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: dashed 1px #f1f1f1;
 }
 
 .with-label {
-   width: 120px;
-   font-weight: 500;
+  width: 120px;
+  font-weight: 500;
 }
 
 .with__column {
-   flex-direction: column;
-   align-items: unset;
+  flex-direction: column;
+  align-items: unset;
 }
 
 .with__column .with-label {
-   width: auto;
-   margin-bottom: 4px;
+  width: auto;
+  margin-bottom: 4px;
 }
 
 .with-value__area {
-   padding: 4px 8px;
-   border-radius: 4px;
-   background-color: #f1f1f1;
-   min-height: 80px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: #f1f1f1;
+  min-height: 80px;
 }
 </style>
