@@ -6,7 +6,11 @@
           <div class="scroll-body">
             <NForm ref="formRef" :model="formData">
               <NGrid :cols="24" :x-gap="24">
+<<<<<<< HEAD
                 <NFormItemGi :span="24" path="modelHash" label="Checkpoint">
+=======
+                <NFormItemGi :span="24" path="modelHash" label="Model">
+>>>>>>> 77b72c4 (~)
                   <NSelect
                     v-model:value="formData.modelHash"
                     :options="modelHashItems"
@@ -17,6 +21,7 @@
                   >
                   </NSelect>
                 </NFormItemGi>
+<<<<<<< HEAD
                 <NFormItemGi :span="24" label="LoRA">
                   <template v-if="modelHashItemsLoading">
                     <NSpace
@@ -41,6 +46,8 @@
                     </NScrollbar>
                   </template>
                 </NFormItemGi>
+=======
+>>>>>>> 77b72c4 (~)
                 <NFormItemGi :span="24" path="prompt" label="Prompt">
                   <NInput
                     type="textarea"
@@ -209,6 +216,7 @@ import * as StableDiffusionMetadata from 'stable-diffusion-image-metadata';
 import { sign } from '@/tools/open-api';
 import OpenEmcHubConfig from '@/credentials.emchub.json';
 import { shortHashCodeSha256 } from '../model-detail/utils';
+<<<<<<< HEAD
 import LoraItem from './lora-item.vue';
 import type { LoraItem as AsLoraItem, LoraItemCover as AsLoraItemCover } from './lora-item';
 interface FormDataType {
@@ -216,6 +224,13 @@ interface FormDataType {
 
   prompt: string;
   negativePrompt: string;
+=======
+interface FormDataType {
+  modelHash: string;
+
+  prompt: string | null;
+  negativePrompt: string | null;
+>>>>>>> 77b72c4 (~)
 
   sampler: string; //sampler_index
   steps: number; //steps
@@ -243,7 +258,11 @@ interface Result {
   status: number; // 0:none 1:running 2:success 3:failure
 }
 
+<<<<<<< HEAD
 type SelectItem = {
+=======
+type ModelHashItem = {
+>>>>>>> 77b72c4 (~)
   label: string;
   val: string;
   raw: string;
@@ -311,10 +330,15 @@ export default defineComponent({
       padding: '0 24px',
       'box-sizing': 'border-box',
     });
+<<<<<<< HEAD
     const ready = ref(false);
     const modelHashItemsLoading = ref(true);
     const modelHashItems = ref<SelectItem[]>([]);
     const loraItems = ref<AsLoraItem[]>([]);
+=======
+    const modelHashItemsLoading = ref(true);
+    const modelHashItems = ref<ModelHashItem[]>([]);
+>>>>>>> 77b72c4 (~)
     const formRef = ref<FormInst | null>(null);
     const formData = ref<FormDataType>(defaultFormData());
     const result = ref<Result>({ errorCode: 0, errorMessage: '', image: '', imageParameters: '', status: 0 });
@@ -412,7 +436,10 @@ export default defineComponent({
     };
 
     onMounted(async () => {
+<<<<<<< HEAD
       ready.value = false;
+=======
+>>>>>>> 77b72c4 (~)
       modelHashItemsLoading.value = true;
       const resp = await http.get({
         url: '/emchub/api/client/modelInfo/queryList',
@@ -420,6 +447,7 @@ export default defineComponent({
       });
       modelHashItemsLoading.value = false;
       const list: any[] = resp.pageInfo?.list || [];
+<<<<<<< HEAD
       list.sort((a, b) => {
         if (b.modelName < a.modelName) {
           return 1;
@@ -467,6 +495,21 @@ export default defineComponent({
       }
 
       window.addEventListener('message', handleWindowMessage);
+=======
+      const _modelHashItems: ModelHashItem[] = [];
+      list.forEach(({ modelName, modelVersions }) => {
+        modelVersions.forEach(({ modelVersion, hashCodeSha256 }) => {
+          _modelHashItems.push({
+            label: `${modelName}:${modelVersion}`,
+            val: shortHashCodeSha256(hashCodeSha256),
+            raw: hashCodeSha256,
+          });
+        });
+      });
+      modelHashItems.value = _modelHashItems;
+      const queryModelHash = (route.params.modelHashCode as string) || '';
+      formData.value.modelHash = queryModelHash;
+>>>>>>> 77b72c4 (~)
 
       if (window.opener) {
         window.opener.postMessage({ type: 'emchub-txt2img-ready' }, '*');
@@ -486,7 +529,10 @@ export default defineComponent({
       samplerOptions,
       modelHashItemsLoading,
       modelHashItems,
+<<<<<<< HEAD
       loraItems,
+=======
+>>>>>>> 77b72c4 (~)
       formRef,
       formData,
       result,
@@ -510,10 +556,17 @@ export default defineComponent({
         const modelHashItem = modelHashItems.value.find((item) => item.val === formData.value.modelHash);
         const modelHash = modelHashItem?.raw;
         const body = {
+<<<<<<< HEAD
           modelHash: modelHash,
           generativeParameters: '',
         };
         if (!modelHash) {
+=======
+          modelHash: formData.value.modelHash,
+          generativeParameters: '',
+        };
+        if (!formData.value.modelHash) {
+>>>>>>> 77b72c4 (~)
           errors.push(`'Model' can not be empty`);
         }
         formConfigs.forEach((item, index) => {

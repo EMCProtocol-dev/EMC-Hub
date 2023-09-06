@@ -59,7 +59,17 @@
           <NGridItem span="2 880:1">
             <div class="layout-left">
               <div class="carousel-wrap">
+<<<<<<< HEAD
                 <NCarousel class="carousel" v-model:current-index="carouselIndex" :autoplay="true">
+=======
+                <NCarousel
+                  class="carousel"
+                  v-model:current-index="carouselIndex"
+                  :autoplay="true"
+                  :show-arrow="covers.length > 1"
+                >
+                  v-model:current-index="carouselIndex" :autoplay="true" :show-arrow="covers.length > 1" >
+>>>>>>> 77b72c4 (~)
                   <template v-for="cover in covers">
                     <img class="cover" :src="cover" />
                   </template>
@@ -132,6 +142,7 @@
       </template>
     </NCard>
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     <ModelGallery :modelSn="modelSn" :modelHashCode="hashCodeSha256" :modelName="name" />
 >>>>>>> a9050e8 (~)
@@ -171,6 +182,9 @@
 >>>>>>> a9050e8 (~)
       </NCard>
     </NModal>
+=======
+    <ModelGallery :modelInfo="modelInfo" />
+>>>>>>> 77b72c4 (~)
   </div>
 </template>
 
@@ -208,7 +222,10 @@ import {
 
 import {
   NCard,
+<<<<<<< HEAD
   NH2,
+=======
+>>>>>>> 77b72c4 (~)
   NH3,
   NSpace,
   NSpin,
@@ -225,6 +242,7 @@ import {
   useMessage,
   NPopselect,
 } from 'naive-ui';
+<<<<<<< HEAD
 import { useUserStore } from '@/stores/user';
 import { Http } from '@/tools/http';
 import { Utils } from '@/tools/utils';
@@ -232,13 +250,25 @@ import { Utils } from '@/tools/utils';
 import { DownloadSharp as IconDownload, CaretForwardCircleOutline as IconRun, CloseSharp as IconClose } from '@vicons/ionicons5';
 >>>>>>> f3be274 (9.1)
 =======
+=======
+import { Http } from '@/tools/http';
+import { Utils } from '@/tools/utils';
+>>>>>>> 77b72c4 (~)
 import {
   DownloadSharp as IconDownload,
   CaretForwardCircleOutline as IconRun,
   CloseSharp as IconClose,
 } from '@vicons/ionicons5';
+<<<<<<< HEAD
 >>>>>>> a9050e8 (~)
 import NodeList from './node-list.vue';
+=======
+
+import { navigateToSD } from './utils';
+import * as StableDiffusionMetadata from '@/tools/stable-diffusion-metadata';
+
+import ModelGallery from './model-gallery.vue';
+>>>>>>> 77b72c4 (~)
 
 export default defineComponent({
   name: 'node-detail',
@@ -264,7 +294,12 @@ export default defineComponent({
 >>>>>>> a9050e8 (~)
     IconRun,
     IconClose,
+<<<<<<< HEAD
     NodeList,
+=======
+    IconDownload,
+    ModelGallery,
+>>>>>>> 77b72c4 (~)
   },
   setup() {
     const router = useRouter();
@@ -275,6 +310,7 @@ export default defineComponent({
     const errorText = ref('');
     const carouselIndex = ref(0);
 
+<<<<<<< HEAD
     //modal property
     const nodeVisible = ref(false);
 <<<<<<< HEAD
@@ -285,6 +321,8 @@ export default defineComponent({
     const nodeHashCode = ref('');
     const nodeList = ref<NodeItem[]>([]);
 >>>>>>> a9050e8 (~)
+=======
+>>>>>>> 77b72c4 (~)
     const router = useRouter();
 >>>>>>> f3be274 (9.1)
 
@@ -384,10 +422,13 @@ export default defineComponent({
 =======
       modelSn,
       carouselIndex,
+<<<<<<< HEAD
       nodeVisible,
       nodeHashCode,
       nodeList,
 >>>>>>> a9050e8 (~)
+=======
+>>>>>>> 77b72c4 (~)
       name,
       covers,
       version,
@@ -403,6 +444,7 @@ export default defineComponent({
       floatingPoint,
       modelSize,
       description,
+<<<<<<< HEAD
       onPressRun() {
 <<<<<<< HEAD
         if (!modelHashCode.value) {
@@ -415,10 +457,16 @@ export default defineComponent({
 =======
 >>>>>>> f3be274 (9.1)
 =======
+=======
+      type,
+      modelInfo,
+      async onPressRun() {
+>>>>>>> 77b72c4 (~)
         if (!hashCodeSha256Short.value || hashCodeSha256Short.value === '-') {
           message.error("Sorry, This model without 'Hash Code'");
           return;
         }
+<<<<<<< HEAD
         nodeVisible.value = true;
         nodeHashCode.value = hashCodeSha256Short.value;
 >>>>>>> a9050e8 (~)
@@ -435,11 +483,15 @@ export default defineComponent({
       },
       async onNodeRun() {
         let sdWindow: WindowProxy | null;
+=======
+>>>>>>> 77b72c4 (~)
         let parameters = '';
         let coverIndex = carouselIndex.value;
-        if (covers.value[coverIndex].parameters) {
-          parameters = covers.value[coverIndex].parameters;
+        let cover = covers.value[coverIndex];
+        if (cover.parameters) {
+          parameters = cover.parameters;
         } else {
+<<<<<<< HEAD
           try {
             parameters = await parametersWith(covers.value[coverIndex].url);
           } catch (e) {
@@ -467,6 +519,17 @@ export default defineComponent({
         sdWindow = window.open(`${host}/#/sd/${nodeHashCode.value}`);
 
         // router.push({ name: 'sd', params: { modelHashCode: nodeHashCode.value } });
+=======
+          const [_parameters, isParameters] = await StableDiffusionMetadata.extract(cover.url);
+          parameters = _parameters;
+        }
+        console.info('image parameters : ', parameters);
+        if (!parameters) {
+          console.warn(`${cover.url} can not parse parameters`);
+        }
+
+        navigateToSD(hashCodeSha256Short.value, parameters);
+>>>>>>> 77b72c4 (~)
       },
 >>>>>>> a9050e8 (~)
       async onNodePressItem(item: NodeItem) {
@@ -594,4 +657,8 @@ export default defineComponent({
   min-height: 80px;
 }
 </style>
+<<<<<<< HEAD
 >>>>>>> ac1038c (~)
+=======
+../sd/node-item
+>>>>>>> 77b72c4 (~)
