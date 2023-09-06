@@ -17,6 +17,7 @@ export function navigateToSD(modelHashCode: string, parameters: string) {
   }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   const sdWindow: WindowProxy | null = window.open(`${window.location.origin}/#/sd/${modelHashCode}`);
 }
 
@@ -26,6 +27,9 @@ export function shortHashCodeSha256(hashCodeSha256: string) {
 }
 =======
   const host = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'https://models.emchub.ai';
+=======
+  const host = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : window.location.origin;
+>>>>>>> 6df9060 (~)
   const sdWindow: WindowProxy | null = window.open(`${host}/#/sd/${modelHashCode}`);
 }
 

@@ -557,6 +557,7 @@ export default defineComponent({
         const modelHash = modelHashItem?.raw;
         const body = {
 <<<<<<< HEAD
+<<<<<<< HEAD
           modelHash: modelHash,
           generativeParameters: '',
         };
@@ -567,6 +568,12 @@ export default defineComponent({
         };
         if (!formData.value.modelHash) {
 >>>>>>> 77b72c4 (~)
+=======
+          modelHash: modelHash,
+          generativeParameters: '',
+        };
+        if (!modelHash) {
+>>>>>>> 6df9060 (~)
           errors.push(`'Model' can not be empty`);
         }
         formConfigs.forEach((item, index) => {

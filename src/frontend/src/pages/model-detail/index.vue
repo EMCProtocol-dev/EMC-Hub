@@ -265,8 +265,13 @@ import NodeList from './node-list.vue';
 =======
 
 import { navigateToSD } from './utils';
+<<<<<<< HEAD
 import * as StableDiffusionMetadata from '@/tools/stable-diffusion-metadata';
 
+=======
+import * as StableDiffusionMetadata from 'stable-diffusion-image-metadata';
+import { useMinio } from '@/composables/use-minio';
+>>>>>>> 6df9060 (~)
 import ModelGallery from './model-gallery.vue';
 >>>>>>> 77b72c4 (~)
 

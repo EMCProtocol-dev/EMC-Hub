@@ -146,11 +146,14 @@ import { useUserStore } from '@/stores/user';
 import { fileToSha256Hex } from '@/tools/file-sha256';
 import { useMinio } from '@/composables/use-minio';
 import * as StableDiffusionMetadata from 'stable-diffusion-image-metadata';
+<<<<<<< HEAD
 =======
 import { fileToMD5, fileToSha256Hex } from '@/tools/file-sha256';
 import { useMinio } from '@/composables/use-minio';
 import { parametersWith } from '@/tools/exif';
 >>>>>>> 13fe58d (~)
+=======
+>>>>>>> 6df9060 (~)
 import { Utils } from '@/tools/utils';
 
 type BasicOptionItem = {
