@@ -72,14 +72,14 @@
             @click.stop.prevent="onPressPrev"
             >Prev</NButton
           >
-          <NButton
+          <!-- <NButton
             type="primary"
             strong
             :disabled="!ready || formSubmitting || uploadLoadingArchive"
             :loading="formSubmitting"
             @click.stop.prevent="onPressSubmit"
             >Save & Done</NButton
-          >
+          > -->
           <NButton
             type="primary"
             strong

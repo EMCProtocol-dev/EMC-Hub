@@ -67,14 +67,14 @@
               >
             </template>
             <template v-else>
-              <NButton
+              <!-- <NButton
                 type="primary"
                 strong
                 :disabled="!ready || formSubmitting"
                 :loading="formSubmitting"
                 @click.stop.prevent="onPressSubmit"
                 >Save & Done</NButton
-              >
+              > -->
               <NButton
                 type="primary"
                 strong
