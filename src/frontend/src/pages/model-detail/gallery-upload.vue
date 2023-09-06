@@ -32,7 +32,7 @@
                   trigger-style="width:100%;height:100%;flex-wrap:wrap"
                 >
                   <NUploadDragger style="height: 282px; flex-direction: column; justify-content: space-evenly">
-                    <img src="@/assets/icon_upload.png" width="96" height="96" />
+                    <img src="@/assets/icon_upload_image.png" width="96" height="96" />
                     <NText style="font-size: 16px">
                       Drag the image here or
                       <span style="color: #a45eff; text-decoration: underline">Click Upload</span>
@@ -320,7 +320,6 @@ export default defineComponent({
         parametersValue.value = parameters;
         const pf = StableDiffusionMetadata.parse(parameters);
         const imageHash: any = pf.hashes;
-        console.log(pf);
         const { modelHashCode, modelName, modelType, alias } = props.modelInfo;
 
         if (modelType === 'LORA') {
@@ -330,7 +329,7 @@ export default defineComponent({
           if (match && match.length > 1) {
             const extractedValue = match[1];
             if (extractedValue !== alias) {
-              return message.error('please upload again');
+              return message.error('The picture is not of the model,please upload again');
             } else {
               isModel.value = true;
             }

@@ -1,12 +1,7 @@
 <template>
   <NSpace class="header-tabs" align="center" :size="[24, 0]" :wrap-item="false" :wrap="false">
     <template v-for="item in tabs">
-      <AppLink
-        class="header-tabs-item"
-        active-class="header-tabs-item__actived"
-        :link="item.path"
-        :target="item.path.startsWith('http') ? '_blank' : '_self'"
-      >
+      <AppLink class="header-tabs-item" active-class="header-tabs-item__actived" :link="item.path" :target="item.path.startsWith('http') ? '_blank' : '_self'">
         <span class="header-tabs-item-text">{{ item.name }}</span>
       </AppLink>
     </template>
@@ -60,7 +55,7 @@ export default defineComponent({
 </script>
 <style scoped>
 .header-tabs {
-  --actived-color: #8f7df8;
+  --actived-color: #6c2cfd;
   margin-right: 24px;
 }
 

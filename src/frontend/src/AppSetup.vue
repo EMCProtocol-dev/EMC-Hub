@@ -49,10 +49,15 @@ export default defineComponent({
         // height: '40px',
       },
       common: {
-        // primaryColor: '#000000',
+        primaryColor: '#6c2cfd',
       },
       Upload: {
         draggerBorderHover: '1px dashed #9747FF',
+      },
+      Tabs: {
+        // tabTextColorActive: '#6c2cfd',
+        // tabTextColorHover: '#6c2cfd',
+        // barColor: '#6c2cfd',
       },
     };
 
@@ -62,7 +67,7 @@ export default defineComponent({
     };
 
     const themeOverrides = ref(window.matchMedia('(prefers-color-scheme: dark)').matches ? darkThemeOverrides : lightThemeOverrides);
-    
+
     return { theme, themeOverrides, lightThemeOverrides, darkThemeOverrides };
   },
 });

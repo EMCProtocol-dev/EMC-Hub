@@ -21,14 +21,22 @@
 
       <NUl class="tabs-nav-ul">
         <NLi class="tabs-nav-li">
-          <img class="tabs-nav-li-icon" src="@/assets/icon_profile.png" />
+          <img class="tabs-nav-li-icon" src="@/assets/icon_logout.png" />
           <span>Logout</span>
         </NLi>
       </NUl>
     </NSpace>
-    <NSpace class="tabs-pane">
+    <NSpace class="tabs-pane" :wrap-item="false">
       <!-- <UserProfile /> -->
-      <UserPosts />
+      <template v-if="routerSign === 'profile'">
+        <UserProfile />
+      </template>
+      <template v-if="routerSign === 'models'">
+        <UserPosts />
+      </template>
+      <template v-if="routerSign === 'posts'">
+        <UserPosts />
+      </template>
     </NSpace>
   </NSpace>
 </template>
@@ -66,10 +74,15 @@ export default defineComponent({
     const router = useRouter();
 
     const tabIcon1 = require('@/assets/icon_profile.png');
+    const tabIcon2 = require('@/assets/icon_model.png');
+    const tabIcon3 = require('@/assets/icon_upload.png');
+    const tabIcon4 = require('@/assets/icon_wallet.png');
+
     const tabs = ref<tabsFlag[]>([
       { sign: 'profile', name: 'Your profile', icon: tabIcon1 },
-      { sign: 'posts', name: 'My posts', icon: tabIcon1 },
-      { sign: 'wallet', name: 'My wallet', icon: tabIcon1 },
+      { sign: 'models', name: 'My models', icon: tabIcon2 },
+      { sign: 'posts', name: 'My posts', icon: tabIcon3 },
+      { sign: 'wallet', name: 'My wallet', icon: tabIcon4 },
     ]);
     const routerSign = ref('');
 

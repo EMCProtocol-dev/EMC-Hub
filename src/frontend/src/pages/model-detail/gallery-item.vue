@@ -32,7 +32,6 @@ import { PersonSharp as IconPerson } from '@vicons/ionicons5';
 import moment from 'moment';
 
 import AppImage from '@/components/app-image.vue';
-import { timeStamp } from 'console';
 
 export default defineComponent({
   name: 'model-item',
@@ -43,9 +42,7 @@ export default defineComponent({
   setup(props, ctx) {
     const { item } = props;
     const createTime = computed(() => {
-      const timeStampMSec = moment(item.createTime).valueOf();
-      // const timeStampSec = moment(timeStampMSec).format('X');
-      const time = moment(timeStampMSec).fromNow();
+      const time = moment(item.createTime).fromNow();
       return time;
     });
 
