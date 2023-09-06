@@ -17,7 +17,13 @@
           <NGridItem span="2 880:1">
             <div class="layout-left">
               <div class="carousel-wrap">
-                <NCarousel class="carousel" v-model:current-index="carouselIndex" :autoplay="true" :show-arrow="covers.length > 1">
+                <NCarousel
+                  class="carousel"
+                  v-model:current-index="carouselIndex"
+                  :autoplay="true"
+                  :show-arrow="covers.length > 1"
+                >
+                  v-model:current-index="carouselIndex" :autoplay="true" :show-arrow="covers.length > 1" >
                   <template v-for="cover in covers">
                     <img class="cover" :src="cover.url" />
                   </template>
@@ -66,7 +72,7 @@
                 </div>
               </div>
               <NSpace align="center" :size="[24, 24]" style="margin-top: 12px">
-                <NButton type="warning" size="large" strong @click="onNodeRun">
+                <NButton type="warning" size="large" strong @click="onPressRun">
                   <template #icon>
                     <NIcon>
                       <IconRun />
@@ -89,36 +95,6 @@
       </template>
     </NCard>
     <ModelGallery :modelInfo="modelInfo" />
-    <!-- <NModal v-model:show="nodeVisible" :mask-closable="false">
-      <NCard :bordered="false" style="width: 88vw; max-width: 640px" content-style="padding-left:0;padding-right:0;">
-        <template #header>
-          <NH3 style="margin-bottom: 0">Nodes for running</NH3>
-        </template>
-        <template #header-extra>
-          <NButton quaternary circle @click="onNodeClose">
-            <template #icon>
-              <NIcon>
-                <IconClose />
-              </NIcon>
-            </template>
-          </NButton>
-        </template>
-        <NodeList :hash="nodeHashCode" @init="onNodeInit" />
-        <template #footer>
-          <NSpace justify="space-between" align="center" :wrap-item="false">
-            <NText style="font-size: 12px">Total {{ nodeList.length }} nodes</NText>
-            <NButton type="warning" size="large" strong @click="onNodeRun">
-              <template #icon>
-                <NIcon>
-                  <IconRun />
-                </NIcon>
-              </template>
-              Run
-            </NButton>
-          </NSpace>
-        </template>
-      </NCard>
-    </NModal> -->
   </div>
 </template>
 
@@ -126,13 +102,33 @@
 import { ref, defineComponent, onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
-import { NCard, NH2, NH3, NSpace, NSpin, NTag, NCarousel, NDescriptions, NDescriptionsItem, NButton, NIcon, NModal, NGrid, NGridItem, NText, useMessage, NPopselect } from 'naive-ui';
-import { useUserStore } from '@/stores/user';
+import {
+  NCard,
+  NH3,
+  NSpace,
+  NSpin,
+  NTag,
+  NCarousel,
+  NDescriptions,
+  NDescriptionsItem,
+  NButton,
+  NIcon,
+  NModal,
+  NGrid,
+  NGridItem,
+  NText,
+  useMessage,
+  NPopselect,
+} from 'naive-ui';
 import { Http } from '@/tools/http';
 import { Utils } from '@/tools/utils';
-import { DownloadSharp as IconDownload, CaretForwardCircleOutline as IconRun, CloseSharp as IconClose } from '@vicons/ionicons5';
-import NodeList from './node-list.vue';
-import type { NodeItem } from './node-item';
+import {
+  DownloadSharp as IconDownload,
+  CaretForwardCircleOutline as IconRun,
+  CloseSharp as IconClose,
+} from '@vicons/ionicons5';
+
+import { navigateToSD } from './utils';
 import * as StableDiffusionMetadata from '@/tools/stable-diffusion-metadata';
 
 import ModelGallery from './model-gallery.vue';
@@ -141,7 +137,6 @@ export default defineComponent({
   name: 'node-detail',
   components: {
     NCard,
-    NH2,
     NH3,
     NSpace,
     NSpin,
@@ -159,7 +154,6 @@ export default defineComponent({
     IconRun,
     IconClose,
     IconDownload,
-    NodeList,
     ModelGallery,
   },
   setup() {
@@ -170,10 +164,6 @@ export default defineComponent({
     const errorText = ref('');
     const carouselIndex = ref(0);
 
-    //modal property
-    const nodeVisible = ref(false);
-    const nodeHashCode = ref('');
-    const nodeList = ref<NodeItem[]>([]);
     const router = useRouter();
     const http = Http.getInstance();
 
@@ -258,9 +248,6 @@ export default defineComponent({
       errorText,
       modelSn,
       carouselIndex,
-      nodeVisible,
-      nodeHashCode,
-      nodeList,
       name,
       covers,
       version,
@@ -274,51 +261,26 @@ export default defineComponent({
       description,
       type,
       modelInfo,
-      // onPressRun() {
-      //   if (!hashCodeSha256Short.value || hashCodeSha256Short.value === '-') {
-      //     message.error("Sorry, This model without 'Hash Code'");
-      //     return;
-      //   }
-      //   nodeVisible.value = true;
-      //   nodeHashCode.value = hashCodeSha256Short.value;
-      // },
-      // onNodeClose() {
-      //   nodeVisible.value = false;
-      // },
-      onNodeInit(list: NodeItem[]) {
-        nodeList.value = list;
-      },
-      async onNodeRun() {
-        let sdWindow: WindowProxy | null;
+      async onPressRun() {
+        if (!hashCodeSha256Short.value || hashCodeSha256Short.value === '-') {
+          message.error("Sorry, This model without 'Hash Code'");
+          return;
+        }
         let parameters = '';
         let coverIndex = carouselIndex.value;
-        if (covers.value[coverIndex].parameters) {
-          parameters = covers.value[coverIndex].parameters;
+        let cover = covers.value[coverIndex];
+        if (cover.parameters) {
+          parameters = cover.parameters;
         } else {
-          const [_parameters, isParameters] = await StableDiffusionMetadata.extract(covers.value[coverIndex].url);
+          const [_parameters, isParameters] = await StableDiffusionMetadata.extract(cover.url);
           parameters = _parameters;
         }
-
-        console.info('image parameters :\n', parameters);
-
-        if (parameters) {
-          const handleMessage = (event: MessageEvent) => {
-            const request: any = event.data as any;
-            if (request.type === 'emchub-txt2img-ready') {
-              sdWindow?.postMessage({ type: 'emchub-txt2img-parameters', data: parameters }, '*');
-            }
-            window.removeEventListener('message', handleMessage);
-          };
-          window.addEventListener('message', handleMessage);
-        } else {
-          console.warn(`${covers.value[0].url} can not parse parameters`);
+        console.info('image parameters : ', parameters);
+        if (!parameters) {
+          console.warn(`${cover.url} can not parse parameters`);
         }
 
-        //   nodeVisible.value = false;
-        const host = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'https://models.emchub.ai';
-        sdWindow = window.open(`${host}/#/sd/${hashCodeSha256Short.value}`);
-
-        // router.push({ name: 'sd', params: { modelHashCode: nodeHashCode.value } });
+        navigateToSD(hashCodeSha256Short.value, parameters);
       },
       onPressArchive() {
         if (!archive.value) {
@@ -415,3 +377,4 @@ export default defineComponent({
   min-height: 80px;
 }
 </style>
+../sd/node-item

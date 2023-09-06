@@ -1,5 +1,6 @@
 import { instance as authClient } from '@emcecosystem/auth-client';
 import type { FormItemRule } from 'naive-ui';
+
 function getLocalStorage(key: string) {
   let data = window.localStorage.getItem(key);
   if (!data) return data;

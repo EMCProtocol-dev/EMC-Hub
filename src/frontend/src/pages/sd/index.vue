@@ -6,6 +6,17 @@
           <div class="scroll-body">
             <NForm ref="formRef" :model="formData">
               <NGrid :cols="24" :x-gap="24">
+                <NFormItemGi :span="24" path="modelHash" label="Model">
+                  <NSelect
+                    v-model:value="formData.modelHash"
+                    :options="modelHashItems"
+                    :loading="modelHashItemsLoading"
+                    filterable
+                    label-field="label"
+                    value-field="val"
+                  >
+                  </NSelect>
+                </NFormItemGi>
                 <NFormItemGi :span="24" path="prompt" label="Prompt">
                   <NInput
                     type="textarea"
@@ -173,8 +184,10 @@ import { config as formConfigs } from './formConfigs';
 import * as StableDiffusionMetadata from '@/tools/stable-diffusion-metadata';
 import { sign } from '@/tools/open-api';
 import OpenEmcHubConfig from '@/credentials.emchub.json';
-
+import { shortHashCodeSha256 } from '../model-detail/utils';
 interface FormDataType {
+  modelHash: string;
+
   prompt: string | null;
   negativePrompt: string | null;
 
@@ -204,8 +217,15 @@ interface Result {
   status: number; // 0:none 1:running 2:success 3:failure
 }
 
+type ModelHashItem = {
+  label: string;
+  val: string;
+  raw: string;
+};
+
 const defaultFormData = (data?: any) => {
   const defaultData = {
+    modelHash: '',
     prompt: '',
     negativePrompt: '',
     sampler: samplerOptions[0].val,
@@ -259,6 +279,8 @@ export default defineComponent({
       padding: '0 24px',
       'box-sizing': 'border-box',
     });
+    const modelHashItemsLoading = ref(true);
+    const modelHashItems = ref<ModelHashItem[]>([]);
     const formRef = ref<FormInst | null>(null);
     const formData = ref<FormDataType>(defaultFormData());
     const result = ref<Result>({ errorCode: 0, errorMessage: '', image: '', imageParameters: '', status: 0 });
@@ -325,6 +347,27 @@ export default defineComponent({
     };
 
     onMounted(async () => {
+      modelHashItemsLoading.value = true;
+      const resp = await http.get({
+        url: '/emchub/api/client/modelInfo/queryList',
+        data: { pageNo: 1, pageSize: 999 },
+      });
+      modelHashItemsLoading.value = false;
+      const list: any[] = resp.pageInfo?.list || [];
+      const _modelHashItems: ModelHashItem[] = [];
+      list.forEach(({ modelName, modelVersions }) => {
+        modelVersions.forEach(({ modelVersion, hashCodeSha256 }) => {
+          _modelHashItems.push({
+            label: `${modelName}:${modelVersion}`,
+            val: shortHashCodeSha256(hashCodeSha256),
+            raw: hashCodeSha256,
+          });
+        });
+      });
+      modelHashItems.value = _modelHashItems;
+      const queryModelHash = (route.params.modelHashCode as string) || '';
+      formData.value.modelHash = queryModelHash;
+
       if (window.opener) {
         window.opener.postMessage({ type: 'emchub-txt2img-ready' }, '*');
       }
@@ -338,6 +381,8 @@ export default defineComponent({
     return {
       scrollBarStyle,
       samplerOptions,
+      modelHashItemsLoading,
+      modelHashItems,
       formRef,
       formData,
       result,
@@ -351,22 +396,25 @@ export default defineComponent({
         const errors: string[] = [];
         const insideBody = {};
         const body = {
-          modelHash: route.params.modelHashCode,
+          modelHash: formData.value.modelHash,
           generativeParameters: '',
         };
-        formConfigs.forEach((item) => {
+        if (!formData.value.modelHash) {
+          errors.push(`'Model' can not be empty`);
+        }
+        formConfigs.forEach((item, index) => {
+          let exposeKey = item.exposeKey;
           let value = formData.value[item.key];
+          if (!exposeKey) {
+            errors.push(`Config error, [${index}] expose key is empty`);
+          }
           //set default value
           if (!value && typeof item.defaultValue !== 'undefined') {
             value = item.defaultValue;
           }
           //is required
           if (item.required && !value) {
-            errors.push(`${item.key} can not be empty`);
-          }
-          let exposeKey = item.exposeKey;
-          if (item.exposeRequired && !exposeKey) {
-            errors.push(`expose key '${item.exposeKey}' is empty`);
+            errors.push(`'${item.label}' can not be empty`);
           }
           insideBody[exposeKey] = value;
         });
