@@ -23,7 +23,6 @@
                   :autoplay="true"
                   :show-arrow="covers.length > 1"
                 >
-                  v-model:current-index="carouselIndex" :autoplay="true" :show-arrow="covers.length > 1" >
                   <template v-for="cover in covers">
                     <img class="cover" :src="cover.url" />
                   </template>
@@ -80,7 +79,7 @@
                   </template>
                   Run model
                 </NButton>
-                <NButton type="primary" size="large" strong @click="onPressArchive">
+                <NButton type="primary" size="large" strong :loading="archiveUrlLoading" @click="onPressArchive">
                   <template #icon>
                     <NIcon>
                       <IconDownload />
@@ -130,7 +129,7 @@ import {
 
 import { navigateToSD } from './utils';
 import * as StableDiffusionMetadata from '@/tools/stable-diffusion-metadata';
-
+import { useMinio } from '@/composables/use-minio';
 import ModelGallery from './model-gallery.vue';
 
 export default defineComponent({
@@ -163,7 +162,7 @@ export default defineComponent({
     const error = ref(-1);
     const errorText = ref('');
     const carouselIndex = ref(0);
-
+    const archiveUrlLoading = ref(false);
     const router = useRouter();
     const http = Http.getInstance();
 
@@ -187,6 +186,8 @@ export default defineComponent({
       modelSn: '',
       alias: '',
     });
+
+    const { getArchiveUrl } = useMinio();
 
     const init = async () => {
       error.value = -1;
@@ -248,6 +249,7 @@ export default defineComponent({
       errorText,
       modelSn,
       carouselIndex,
+      archiveUrlLoading,
       name,
       covers,
       version,
@@ -282,12 +284,19 @@ export default defineComponent({
 
         navigateToSD(hashCodeSha256Short.value, parameters);
       },
-      onPressArchive() {
+      async onPressArchive() {
         if (!archive.value) {
           message.error('Sorry, The package disappears');
           return;
         }
-        window.open(archive.value);
+        archiveUrlLoading.value = true;
+        const { url } = await getArchiveUrl(archive.value);
+        archiveUrlLoading.value = false;
+        if (!url) {
+          message.error('Sorry, Not found url');
+          return;
+        }
+        window.open(url);
       },
     };
   },

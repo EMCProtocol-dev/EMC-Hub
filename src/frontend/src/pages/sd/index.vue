@@ -217,6 +217,12 @@ interface Result {
   status: number; // 0:none 1:running 2:success 3:failure
 }
 
+type ModelHashGroup = {
+  type: 'group';
+  label: string;
+  key: string;
+  children: ModelHashItem[];
+};
 type ModelHashItem = {
   label: string;
   val: string;
@@ -280,7 +286,7 @@ export default defineComponent({
       'box-sizing': 'border-box',
     });
     const modelHashItemsLoading = ref(true);
-    const modelHashItems = ref<ModelHashItem[]>([]);
+    const modelHashItems = ref<ModelHashGroup[]>([]);
     const formRef = ref<FormInst | null>(null);
     const formData = ref<FormDataType>(defaultFormData());
     const result = ref<Result>({ errorCode: 0, errorMessage: '', image: '', imageParameters: '', status: 0 });
@@ -354,17 +360,19 @@ export default defineComponent({
       });
       modelHashItemsLoading.value = false;
       const list: any[] = resp.pageInfo?.list || [];
-      const _modelHashItems: ModelHashItem[] = [];
-      list.forEach(({ modelName, modelVersions }) => {
+      const modeHashGroups: ModelHashGroup[] = [];
+      list.forEach(({ modelSn, modelName, modelVersions }) => {
+        const group: ModelHashGroup = { type: 'group', label: modelName, key: modelSn, children: [] };
+        modeHashGroups.push(group);
         modelVersions.forEach(({ modelVersion, hashCodeSha256 }) => {
-          _modelHashItems.push({
+          group.children.push({
             label: `${modelName}:${modelVersion}`,
             val: shortHashCodeSha256(hashCodeSha256),
             raw: hashCodeSha256,
           });
         });
       });
-      modelHashItems.value = _modelHashItems;
+      modelHashItems.value = modeHashGroups;
       const queryModelHash = (route.params.modelHashCode as string) || '';
       formData.value.modelHash = queryModelHash;
 

@@ -173,13 +173,17 @@ export function useMinio() {
     }
   };
 
-  const getObject = async (fileName: string): Promise<any> => {
-    const ctx = getContext();
-    return ctx.getObject(BUCKET_NAME, fileName);
+  const getArchiveUrl = async (sn: string): Promise<{ expireTime: number; sn: string; url: string }> => {
+    const resp = await Http.getInstance().get({
+      url: `https://upload.emchub.ai/emc/api/client/userUpload/queryUrlBySn`,
+      data: { sn },
+    });
+    const defaultData = { expireTime: 0, sn: '', url: '' };
+    return resp.data ? Object.assign(defaultData, resp.data) : defaultData;
   };
   return {
     presignedHttp,
     upload,
-    getObject,
+    getArchiveUrl,
   };
 }
