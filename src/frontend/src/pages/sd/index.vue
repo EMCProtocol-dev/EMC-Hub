@@ -210,8 +210,7 @@ import { sign } from '@/tools/open-api';
 import OpenEmcHubConfig from '@/credentials.emchub.json';
 import { shortHashCodeSha256 } from '../model-detail/utils';
 import LoraItem from './lora-item.vue';
-import type { LoraItem as AsLoraItem, LoraItemCover as AsLoraItemCover } from './lora-item.vue';
-
+import type { LoraItem as AsLoraItem, LoraItemCover as AsLoraItemCover } from './lora-item';
 interface FormDataType {
   modelHash: string;
 

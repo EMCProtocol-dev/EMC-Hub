@@ -31,20 +31,7 @@ import { defineComponent, computed } from 'vue';
 import type { PropType } from 'vue';
 import { NSpace, NCarousel, NText, NIcon, NEmpty } from 'naive-ui';
 import AppImage from '@/components/app-image.vue';
-
-export type LoraItemCover = {
-  url: string;
-};
-
-export type LoraItem = {
-  label: string;
-  modelName: string;
-  modelVersion: string;
-  covers: LoraItemCover[];
-  alias: string;
-  hashCodeSha256: string;
-  shortHashCodeSha256: string;
-};
+import type { LoraItem } from './lora-item';
 
 export default defineComponent({
   name: 'lora-item',
