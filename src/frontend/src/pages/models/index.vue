@@ -35,7 +35,7 @@
         </template>
         <NSpace :wrap-item="false" :size="[24, 0]" :wrap="true">
           <template v-if="loading">
-            <NSpace align="center" justify="center" :wrap-item="false" :wrap="false" style="width: 100%; height: 400px">
+            <NSpace align="center" justify="center" :wrap-item="false" :wrap="false" style="width: 100%; height: 600px">
               <NSpin />
             </NSpace>
           </template>
@@ -47,10 +47,18 @@
             </NGridItem>
                   </template>
                 </NGrid> -->
-            <!--  -->
-            <Waterfall :list="list" :gutter="24" :width="249.6" style="min-height: 600px" row-key="sn">
+            <!-- <ModelItem :item="item" @press="onPressItem" style="width: auto" :key="item.modelId" /> -->
+            <Waterfall :list="list" :gutter="24" :width="249.6" style="min-height: 600px" row-key="id">
               <template #item="{ item, url, index }">
-                <ModelItem :item="item" @press="onPressItem" style="width: auto" />
+                <NSpace class="item-carousel-wrap" :wrap-item="false" @click="onPressItem(item)">
+                  <LazyImg class="item-cover" :url="item.covers[0]" />
+                  <NSpace class="item-carousel-overlay" :wrap-item="false">
+                    <NSpace class="item-carousel-overlay-type" :wrap-item="false" align="center">{{ item.type }}</NSpace>
+                    <NSpace class="item-carousel-overlay-footer" vertical :wrap-item="false" :size="[0, 12]">
+                      <NText style="color: #fff">{{ item.name }}</NText>
+                    </NSpace>
+                  </NSpace>
+                </NSpace>
               </template>
             </Waterfall>
           </template>
@@ -67,7 +75,7 @@ import { useRouter } from 'vue-router';
 import { Http } from '@/tools/http';
 import { Utils } from '@/tools/utils';
 import { useUserStore } from '@/stores/user';
-import { Waterfall } from 'vue-waterfall-plugin-next';
+import { Waterfall, LazyImg } from 'vue-waterfall-plugin-next';
 import 'vue-waterfall-plugin-next/dist/style.css';
 import NFTItem from './nft-item.vue';
 import type { Item as NftItemDef } from './nft-item';
@@ -94,6 +102,7 @@ export default defineComponent({
     NFTItem,
     ModelItem,
     Waterfall,
+    LazyImg,
   },
   beforeRouteEnter(to, from, next) {
     if (typeof to.meta !== 'object') {
@@ -234,5 +243,59 @@ export default defineComponent({
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.item-carousel-wrap {
+  position: relative;
+  width: 100%;
+  border-radius: 6px;
+  box-shadow: 1px 1px 6px 0 #ccc;
+  cursor: pointer;
+  box-sizing: border-box;
+  overflow: hidden;
+  /* padding-top: calc(100% * 1.25); */
+}
+
+.item-carousel-overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.item-cover {
+  width: 100%;
+  height: 100%;
+  transform: scale(1);
+  transition: all 0.2s;
+  object-fit: cover;
+}
+
+.item-carousel-wrap:hover .item-cover {
+  transform: scale(1.2);
+}
+
+.item-carousel-overlay-type {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  height: 20px;
+  padding: 0px 12px;
+  font-size: 12px;
+  color: #ffffff;
+  border-radius: 40px;
+  background-color: #00000052;
+}
+
+.item-carousel-overlay-footer {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  padding: 12px;
+  background-color: #00000052;
 }
 </style>

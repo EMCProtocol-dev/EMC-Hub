@@ -1,100 +1,77 @@
 <template>
-  <NSpace class="page" :size="[24, 0]" :wrap-item="false">
-    <!-- <NTabs type="card" animated placement="left" :tab-style="tabStyle" :pane-wrapper-style="wrapperStyle" :pane-style="paneStyle">
-      <NTabPane name="profile">
-        <template #tab>Your profile</template>
-        <NSpace class="tabs-pane">Open Modal</NSpace>
-      </NTabPane>
-      <NTabPane name="posts">
-        <template #tab>My posts</template>
-      </NTabPane>
-    </NTabs> -->
-    <NSpace class="tabs-nav" vertical :wrap-item="false">
-      <NUl class="tabs-nav-ul">
-        <template v-for="item in tabs">
-          <NLi :class="['tabs-nav-li', routerSign === item.sign ? 'tabs-nav-li-active' : '']" @click="onPressItem(item.sign)">
-            <img class="tabs-nav-li-icon" :src="item.icon" />
-            <span>{{ item.name }} </span>
-          </NLi>
-        </template>
-      </NUl>
-
-      <NUl class="tabs-nav-ul">
-        <NLi class="tabs-nav-li">
-          <img class="tabs-nav-li-icon" src="@/assets/icon_logout.png" />
-          <span>Logout</span>
-        </NLi>
-      </NUl>
-    </NSpace>
-    <NSpace class="tabs-pane" :wrap-item="false">
-      <!-- <UserProfile /> -->
-      <template v-if="routerSign === 'profile'">
-        <UserProfile />
-      </template>
-      <template v-if="routerSign === 'models'">
-        <UserPosts />
-      </template>
-      <template v-if="routerSign === 'posts'">
-        <UserPosts />
-      </template>
-    </NSpace>
-  </NSpace>
+  <NLayout has-sider style="background: #f9f9f9">
+    <NLayoutSider collapse-mode="width" :width="240" :content-style="siderStyle.style">
+      <NMenu :collapsed="false" :collapsed-width="64" :collapsed-icon-size="22" :options="menuOptions" key-field="whateverKey" label-field="whateverLabel" children-field="whateverChildren" />
+    </NLayoutSider>
+    <NLayoutContent :content-style="contentStyle.style"> 平山道 </NLayoutContent>
+  </NLayout>
 </template>
 <script lang="ts">
 import { ref, defineComponent, onMounted, watch, nextTick, computed } from 'vue';
-import { NButton, TabsProps, NTabs, NTabPane, NSpace, NCard, NModal, NGrid, NIcon, NGridItem, NUl, NLi, useMessage } from 'naive-ui';
+import { NLayout, NLayoutSider, NLayoutContent, NMenu } from 'naive-ui';
+import type { MenuOption } from 'naive-ui';
 import { useRouter, useRoute, onBeforeRouteUpdate } from 'vue-router';
 import UserProfile from './user-profile.vue';
 import UserPosts from './user-posts.vue';
 
-type tabsFlag = {
-  sign: string;
-  name: string;
-  icon: any;
-};
-
 export default defineComponent({
   name: 'user',
   components: {
-    NButton,
-    NTabs,
-    NTabPane,
-    NSpace,
-    NCard,
-    NModal,
-    NGrid,
-    NGridItem,
-    NIcon,
-    NUl,
-    NLi,
-    UserProfile,
-    UserPosts,
+    NLayout,
+    NLayoutSider,
+    NLayoutContent,
+    NMenu,
   },
   setup(props, context) {
-    const router = useRouter();
+    const collapsed = ref(true);
+    const menuOptions: MenuOption[] = [
+      {
+        whateverLabel: '且听风吟',
+        whateverKey: 'hear-the-wind-sing',
+      },
+      {
+        whateverLabel: '1973年的弹珠玩具',
+        whateverKey: 'pinball-1973',
+      },
+      {
+        whateverLabel: '寻羊冒险记',
+        whateverKey: 'a-wild-sheep-chase',
+      },
+      {
+        whateverLabel: '舞，舞，舞',
+        whateverKey: 'dance-dance-dance',
+        whateverChildren: [
+          {
+            whateverLabel: '人物',
+            whateverKey: 'people',
+          },
+          {
+            whateverLabel: '人物',
+            whateverKey: 'people1',
+          },
+        ],
+      },
+    ];
 
-    const tabIcon1 = require('@/assets/icon_profile.png');
-    const tabIcon2 = require('@/assets/icon_model.png');
-    const tabIcon3 = require('@/assets/icon_upload.png');
-    const tabIcon4 = require('@/assets/icon_wallet.png');
-
-    const tabs = ref<tabsFlag[]>([
-      { sign: 'profile', name: 'Your profile', icon: tabIcon1 },
-      { sign: 'models', name: 'My models', icon: tabIcon2 },
-      { sign: 'posts', name: 'My posts', icon: tabIcon3 },
-      { sign: 'wallet', name: 'My wallet', icon: tabIcon4 },
-    ]);
-    const routerSign = ref('');
-
-    onMounted(() => {
-      routerSign.value = router.currentRoute.value.params.sign as string;
+    const siderStyle = computed(() => {
+      return {
+        style: {
+          'margin-right': '240px',
+          'padding': '12px',
+          'border-radius': '20px',
+        },
+      };
+    });
+    const contentStyle = computed(() => {
+      return { style: { padding: '24px' } };
     });
 
-    const onPressItem = (item: any) => {
-      router.push({ name: 'user', params: { sign: item } });
+    return {
+      menuOptions,
+      collapsed,
+      siderStyle,
+      contentStyle,
     };
-
-    return { tabs, routerSign, onPressItem };
   },
 });
 </script>

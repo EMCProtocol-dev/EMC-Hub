@@ -6,7 +6,9 @@
           <AppImage class="item-cover" :src="cover" object-fit="cover" :preview-disabled="true" :imgProps="{ style: 'width:100%;height:100%;' }" />
         </template>
       </NCarousel> -->
-      <AppImage class="item-cover" :src="item.covers[0]" object-fit="cover" :preview-disabled="true" :imgProps="{ style: 'width:100%;height:100%;' }" />
+      <!-- <AppImage class="item-cover" :src="item.covers[0]" object-fit="cover" :preview-disabled="true" :imgProps="{ style: 'width:100%;height:100%;' }" /> -->
+      <LazyImg class="item-cover" :url="item.covers[0]" />
+
       <NSpace class="item-carousel-overlay" :wrap-item="false">
         <NSpace class="item-carousel-overlay-type" :wrap-item="false" align="center">{{ item.type }}</NSpace>
         <NSpace class="item-carousel-overlay-footer" vertical :wrap-item="false" :size="[0, 12]">
@@ -26,6 +28,8 @@ import { defineComponent, ref } from 'vue';
 import { NSpace, NCarousel, NTag, NAvatar, NText } from 'naive-ui';
 import AppImage from '@/components/app-image.vue';
 import { useUserStore } from '@/stores/user';
+import { LazyImg } from 'vue-waterfall-plugin-next';
+import 'vue-waterfall-plugin-next/dist/style.css';
 
 export default defineComponent({
   name: 'model-item',
@@ -36,6 +40,7 @@ export default defineComponent({
     // const userStore = useUserStore();
     // const userNickname = ref(userStore.user.nickname);
     return {
+      LazyImg,
       onPressItem() {
         ctx.emit('press', props.item);
       },
@@ -68,23 +73,45 @@ export default defineComponent({
   height: 100%;
 }
 
+.item-cover {
+  width: 100%;
+  height: 100%;
+  transform: scale(1);
+  transition: all 0.2s;
+  object-fit: cover;
+}
+
+.item-cover:hover {
+  transform: scale(1.2);
+}
+
+.item-carousel-overlay-type {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  height: 20px;
+  padding: 0px 12px;
+  font-size: 12px;
+  color: #ffffff;
+  border-radius: 40px;
+  background-color: #00000052;
+}
+
+.item-carousel-overlay-footer {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  padding: 12px;
+  background-color: #00000052;
+}
+
 .item-carousel {
   /* position: absolute;
   left: 0;
   top: 0; */
   width: 100%;
   height: 100%;
-}
-
-.item-cover {
-  width: 100%;
-  height: 100%;
-  transform: scale(1);
-  transition: all 0.2s;
-}
-
-.item-cover:hover {
-  transform: scale(1.2);
 }
 
 .item-body {
@@ -108,26 +135,5 @@ export default defineComponent({
 
 .item-body-row:not(:last-child) .item-body-row-tag {
   margin-right: 0px;
-}
-
-.item-carousel-overlay-type {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  height: 20px;
-  padding: 0px 12px;
-  font-size: 12px;
-  color: #ffffff;
-  border-radius: 40px;
-  background-color: #00000052;
-}
-
-.item-carousel-overlay-footer {
-  position: absolute;
-  left: 0px;
-  right: 0px;
-  bottom: 0px;
-  padding: 12px;
-  background-color: #00000052;
 }
 </style>

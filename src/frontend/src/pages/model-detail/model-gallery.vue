@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <NSpace justify="space-between" style="margin: 96px 0 48px">
+    <NSpace justify="space-between" style="margin: 60px 0 48px">
       <NSpace align="center">
         <NH2 style="margin: 0">Gallery</NH2>
         <NPopselect v-model:value="selectValue" :options="options" trigger="click">
@@ -25,7 +25,7 @@
     </NSpace>
     <template v-if="newList">
       <template v-if="newList.length !== 0">
-        <Waterfall :list="newList" :gutter="24" :width="248" :delay="1000">
+        <Waterfall :list="newList" :gutter="24" :width="249.6" style="min-height: 400px" row-key="id">
           <template #item="{ item, url, index }">
             <GalleryItem :item="item" @press="onPressImages" :key="item.id" />
           </template>
