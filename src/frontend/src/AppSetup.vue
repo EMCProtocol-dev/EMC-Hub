@@ -16,7 +16,16 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import { NLoadingBarProvider, NMessageProvider, NNotificationProvider, NDialogProvider, NGlobalStyle, NThemeEditor, darkTheme, NConfigProvider } from 'naive-ui';
+import {
+  NLoadingBarProvider,
+  NMessageProvider,
+  NNotificationProvider,
+  NDialogProvider,
+  NGlobalStyle,
+  NThemeEditor,
+  darkTheme,
+  NConfigProvider,
+} from 'naive-ui';
 
 // import { useRouter, useRoute } from 'vue-router';
 // import { initRouter, siteSetup } from './store'
@@ -34,9 +43,13 @@ export default defineComponent({
     App,
   },
   setup() {
-    //const theme = ref(window.matchMedia('(prefers-color-scheme: dark)').matches ? darkTheme : null);
-    const theme = null;
+    const isDark = false; //window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const theme = ref(isDark ? darkTheme : null);
+    
     const lightThemeOverrides = {
+      common: {
+        primaryColor: '#6c2cfd',
+      },
       Input: {
         borderFocus: '1px solid #9747ff',
         borderHover: '1px solid #9747ff',
@@ -47,9 +60,6 @@ export default defineComponent({
         placeholderColor: '#9EA8BD',
         // fontSize: '12px',
         // height: '40px',
-      },
-      common: {
-        primaryColor: '#6c2cfd',
       },
       Upload: {
         draggerBorderHover: '1px dashed #9747FF',
@@ -62,11 +72,31 @@ export default defineComponent({
     };
 
     const darkThemeOverrides = {
-      common: {},
-      Pagination: {},
+      common: {
+        primaryColor: '#6c2cfd',
+      },
+      Input: {
+        borderFocus: '1px solid #9747ff',
+        borderHover: '1px solid #9747ff',
+        caretColor: '',
+        boxShadowFocus: '0 0 0 2px rgba(225, 93, 239, 0.2)',
+        borderRadius: '10px',
+        border: '1px solid #e2e6ee',
+        placeholderColor: '#9EA8BD',
+        // fontSize: '12px',
+        // height: '40px',
+      },
+      Upload: {
+        draggerBorderHover: '1px dashed #9747FF',
+      },
+      Tabs: {
+        // tabTextColorActive: '#6c2cfd',
+        // tabTextColorHover: '#6c2cfd',
+        // barColor: '#6c2cfd',
+      },
     };
 
-    const themeOverrides = ref(window.matchMedia('(prefers-color-scheme: dark)').matches ? darkThemeOverrides : lightThemeOverrides);
+    const themeOverrides = ref(isDark ? darkThemeOverrides : lightThemeOverrides);
 
     return { theme, themeOverrides, lightThemeOverrides, darkThemeOverrides };
   },

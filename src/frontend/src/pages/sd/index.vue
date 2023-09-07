@@ -1,8 +1,8 @@
 <template>
   <div class="page">
     <div class="page-forms">
-      <NCard title="Generate image" content-style="padding:0;">
-        <NScrollbar :style="scrollBarStyle">
+      <NCard title="Generate image" content-style="padding:0;" footer-style="padding-top:24px;">
+        <NScrollbar trigger="none" :style="scrollBarStyle">
           <div class="scroll-body">
             <NForm ref="formRef" :model="formData">
               <NGrid :cols="24" :x-gap="24">
@@ -110,26 +110,26 @@
                 </NFormItemGi>
               </NGrid>
             </NForm>
-            <NSpace :wrap-item="false" :wrap="false" align="center" justify="center" :size="[24, 0]">
-              <NButton :block="true" :disabled="result.status === 1" @click="onPressReset" style="flex: 1"
-                >Reset</NButton
-              >
-              <NButton
-                type="primary"
-                :block="true"
-                :loading="result.status === 1"
-                @click="onPressGenerate"
-                style="flex: 1"
-                >Generate image</NButton
-              >
-            </NSpace>
           </div>
         </NScrollbar>
+        <template #footer>
+          <NSpace :wrap-item="false" :wrap="false" align="center" justify="center" :size="[24, 0]">
+            <NButton :block="true" :disabled="result.status === 1" @click="onPressReset" style="flex: 1">Reset</NButton>
+            <NButton
+              type="primary"
+              :block="true"
+              :loading="result.status === 1"
+              @click="onPressGenerate"
+              style="flex: 1"
+              >Generate image</NButton
+            >
+          </NSpace>
+        </template>
       </NCard>
     </div>
     <div class="page-results">
       <NCard title="Result" content-style="padding:0;">
-        <NScrollbar :style="scrollBarStyle">
+        <NScrollbar trigger="none" :style="scrollBarStyle2">
           <div class="scroll-body">
             <template v-if="result.status === 0">
               <div class="result-empty">
@@ -302,6 +302,11 @@ export default defineComponent({
     const message = useMessage();
     const route = useRoute();
     const scrollBarStyle = ref({
+      'max-height': 'calc(100vh - var(--layout-header-height) - 198px)',
+      padding: '0 24px',
+      'box-sizing': 'border-box',
+    });
+    const scrollBarStyle2 = ref({
       'max-height': 'calc(100vh - var(--layout-header-height) - 120px)',
       padding: '0 24px',
       'box-sizing': 'border-box',
@@ -461,11 +466,11 @@ export default defineComponent({
         formData.value.modelHash = _modeHashItems[0].val;
       }
 
+      window.addEventListener('message', handleWindowMessage);
+
       if (window.opener) {
         window.opener.postMessage({ type: 'emchub-txt2img-ready' }, '*');
       }
-      window.addEventListener('message', handleWindowMessage);
-
       ready.value = true;
     });
 
@@ -477,6 +482,7 @@ export default defineComponent({
 
     return {
       scrollBarStyle,
+      scrollBarStyle2,
       samplerOptions,
       modelHashItemsLoading,
       modelHashItems,
