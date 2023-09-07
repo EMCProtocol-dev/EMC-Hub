@@ -495,6 +495,7 @@ export default defineComponent({
       }
 
       window.addEventListener('message', handleWindowMessage);
+<<<<<<< HEAD
 =======
       const _modelHashItems: ModelHashItem[] = [];
       list.forEach(({ modelName, modelVersions }) => {
@@ -510,6 +511,8 @@ export default defineComponent({
       const queryModelHash = (route.params.modelHashCode as string) || '';
       formData.value.modelHash = queryModelHash;
 >>>>>>> 77b72c4 (~)
+=======
+>>>>>>> 3cf5440 (~)
 
       if (window.opener) {
         window.opener.postMessage({ type: 'emchub-txt2img-ready' }, '*');
