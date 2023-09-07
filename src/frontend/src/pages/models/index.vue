@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <NSpace vertical :size="[0, 24]" :wrap-item="false">
-      <NGrid cols="5" :x-gap="24" :y-gap="24" item-responsive>
+      <!-- <NGrid cols="5" :x-gap="24" :y-gap="24" item-responsive>
         <NGridItem span="5 1000:2">
           <NSpace :wrap-item="false" :wrap="false" :size="[24, 0]">
             <template v-for="item in nftList">
@@ -20,7 +20,7 @@
             </NCarousel>
           </div>
         </NGridItem>
-      </NGrid>
+      </NGrid> -->
       <NCard :bordered="false" content-style="padding:0" header-style="padding:20px 20px 0">
         <template #header>
           <div>
@@ -48,7 +48,7 @@
                   </template>
                 </NGrid> -->
             <!--  -->
-            <Waterfall :list="list" :gutter="24" :width="248" :delay="1000" style="min-height: 600px">
+            <Waterfall :list="list" :gutter="24" :width="249.6" style="min-height: 600px" row-key="sn">
               <template #item="{ item, url, index }">
                 <ModelItem :item="item" @press="onPressItem" style="width: auto" />
               </template>
