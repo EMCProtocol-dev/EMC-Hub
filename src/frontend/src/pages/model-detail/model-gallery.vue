@@ -14,7 +14,7 @@
           </NButton>
         </NPopselect>
       </NSpace>
-      <NButton color="#A45EFF" icon-placement="right" style="background: linear-gradient(90deg, #4e74fc 0%, #bb3ef7 100%); color: #fff; padding: 8px 12px; border-radius: 6px" @click="onPressAdd">
+      <NButton color="#A45EFF" icon-placement="right" style="background: linear-gradient(90deg, #9540ff 0%, #bb3ef7 100%); color: #fff; padding: 8px 12px; border-radius: 6px" @click="onPressAdd">
         Add Post
         <template #icon>
           <NIcon>

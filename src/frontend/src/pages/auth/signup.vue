@@ -12,13 +12,7 @@
       <template #label>
         <NText strong>Password</NText>
       </template>
-      <NInput
-        v-model:value="formData.password"
-        type="password"
-        show-password-on="mousedown"
-        placeholder=""
-        @keydown.enter.prevent
-      />
+      <NInput v-model:value="formData.password" type="password" show-password-on="mousedown" placeholder="" @keydown.enter.prevent />
     </NFormItem>
     <NFormItem path="nickname">
       <template #label>
@@ -34,15 +28,7 @@
     </NFormItem>
   </NForm>
   <NSpace vertical align="center" :wrap-item="false">
-    <NButton
-      class="signin-btn"
-      type="primary"
-      strong
-      size="large"
-      :loading="submitting"
-      @click.stop.prevent="onPressSubmit"
-      >Sign up</NButton
-    >
+    <NButton class="signin-btn" type="primary" strong size="large" color="#A45EFF" :loading="submitting" @click.stop.prevent="onPressSubmit">Sign up</NButton>
   </NSpace>
 </template>
 <script lang="ts">

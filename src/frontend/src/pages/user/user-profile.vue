@@ -5,13 +5,13 @@
       <NSpace class="form" vertical>
         <NUpload style="margin: 0 auto; width: 124px" :custom-request="handleUploadImage" :show-file-list="false">
           <div style="position: relative; cursor: pointer">
-            <NAvatar :src="formData.avatar" round :size="124" />
+            <NAvatar :src="formData.avatar" round :size="124" object-fit="cover" />
             <div class="form-upload-icon">
               <img src="@/assets/icon_avatar_upload.png" />
             </div>
           </div>
         </NUpload>
-        <NFormItem path="" label="name" label-style="font-size:12px;" >
+        <NFormItem path="" label="name" label-style="font-size:12px;">
           <NInput v-model:value="formData.nickname" maxlength="20" show-count placeholder="" :style="inputStyle" @keydown.enter.prevent />
         </NFormItem>
         <NFormItem path="" label="description" label-style="font-size:12px;">
@@ -30,7 +30,7 @@
           />
         </NFormItem>
         <NSpace :size="[24, 0]" justify="end" style="margin-top: 20px">
-          <NButton class="form-btn" color="#A45EFF" ghost size="large">Cannel</NButton>
+          <!-- <NButton class="form-btn" color="#A45EFF" ghost size="large">Cannel</NButton> -->
           <NButton class="form-btn" type="primary" color="#A45EFF" size="large" :loading="submitting" @click.stop.prevent="onPressSubmit">Upload</NButton>
         </NSpace>
       </NSpace>
@@ -86,7 +86,7 @@ export default defineComponent({
   },
   setup(props, context) {
     const STORAGE_KEY = 'emchub.user';
-
+    const cache = Utils.getLocalStorage(STORAGE_KEY);
     const http = Http.getInstance();
     const userStore = useUserStore();
     const { upload, presignedHttp } = useMinio();
@@ -100,8 +100,6 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      console.log(userStore.user);
-
       init();
     });
     const init = async () => {
@@ -110,9 +108,9 @@ export default defineComponent({
       });
       if (resp._result !== 0) return;
       const { username, userImage, description } = resp.data;
-      formData.value.nickname = username;
+      formData.value.nickname = username || '-';
       formData.value.avatar = userImage;
-      formData.value.description = description;
+      formData.value.description = description || '-';
     };
 
     const handleUploadImage = async (params: UploadCustomRequestOptions) => {
@@ -162,6 +160,11 @@ export default defineComponent({
       });
       submitting.value = false;
       if (resp._result !== 0) return;
+      cache.user.id = userStore.user.id;
+      cache.user.nickname = nickname;
+      cache.user.avatar = avatar;
+      console.log(cache);
+      Utils.setLocalStorage(STORAGE_KEY, cache);
       message.success('update success');
     };
 

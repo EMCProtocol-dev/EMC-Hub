@@ -16,16 +16,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import {
-  NLoadingBarProvider,
-  NMessageProvider,
-  NNotificationProvider,
-  NDialogProvider,
-  NGlobalStyle,
-  NThemeEditor,
-  darkTheme,
-  NConfigProvider,
-} from 'naive-ui';
+import { NLoadingBarProvider, NMessageProvider, NNotificationProvider, NDialogProvider, NGlobalStyle, NThemeEditor, darkTheme, NConfigProvider } from 'naive-ui';
 
 // import { useRouter, useRoute } from 'vue-router';
 // import { initRouter, siteSetup } from './store'
@@ -45,10 +36,10 @@ export default defineComponent({
   setup() {
     const isDark = false; //window.matchMedia('(prefers-color-scheme: dark)').matches;
     const theme = ref(isDark ? darkTheme : null);
-    
+
     const lightThemeOverrides = {
       common: {
-        primaryColor: '#6c2cfd',
+        primaryColor: '#A45EFF',
       },
       Input: {
         borderFocus: '1px solid #9747ff',
@@ -63,6 +54,11 @@ export default defineComponent({
       },
       Upload: {
         draggerBorderHover: '1px dashed #9747FF',
+      },
+      Button: {
+        borderHover: '1px solid #A45EFF',
+        textColorHover: '#A45EFF',
+        textColorFocus: '#A45EFF',
       },
       Tabs: {
         // tabTextColorActive: '#6c2cfd',
@@ -73,7 +69,7 @@ export default defineComponent({
 
     const darkThemeOverrides = {
       common: {
-        primaryColor: '#6c2cfd',
+        primaryColor: '#A45EFF',
       },
       Input: {
         borderFocus: '1px solid #9747ff',
@@ -88,6 +84,11 @@ export default defineComponent({
       },
       Upload: {
         draggerBorderHover: '1px dashed #9747FF',
+      },
+      Button: {
+        borderHover: '1px solid #A45EFF',
+        textColorHover: '#A45EFF',
+        textColorFocus: '#A45EFF',
       },
       Tabs: {
         // tabTextColorActive: '#6c2cfd',

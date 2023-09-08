@@ -10,25 +10,9 @@
     </NFormItem>
   </NForm>
   <NSpace vertical align="center" :wrap-item="false">
-    <NButton
-      class="signin-btn"
-      type="primary"
-      strong
-      size="large"
-      :loading="submitting"
-      @click.stop.prevent="onPressSubmit"
-      >Sign In</NButton
-    >
+    <NButton class="signin-btn" type="primary" strong size="large" :loading="submitting" @click.stop.prevent="onPressSubmit">Sign In</NButton>
     <NDivider style="width: 40px" />
-    <NButton
-      class="signin-btn"
-      type="primary"
-      strong
-      size="large"
-      :loading="submitting"
-      @click.stop.prevent="onPressSubmit"
-      >Wallet Login</NButton
-    >
+    <NButton class="signin-btn" type="primary" strong size="large" :loading="submitting" @click.stop.prevent="onPressSubmit">Wallet Login</NButton>
   </NSpace>
 </template>
 <script lang="ts">

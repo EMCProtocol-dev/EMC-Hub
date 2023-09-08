@@ -7,25 +7,11 @@
             <NForm ref="formRef" :model="formData">
               <NGrid :cols="24" :x-gap="24">
                 <NFormItemGi :span="24" path="modelHash" label="Checkpoint">
-                  <NSelect
-                    v-model:value="formData.modelHash"
-                    :options="modelHashItems"
-                    :loading="modelHashItemsLoading"
-                    filterable
-                    label-field="label"
-                    value-field="val"
-                  >
-                  </NSelect>
+                  <NSelect v-model:value="formData.modelHash" :options="modelHashItems" :loading="modelHashItemsLoading" filterable label-field="label" value-field="val"> </NSelect>
                 </NFormItemGi>
                 <NFormItemGi :span="24" label="LoRA">
                   <template v-if="modelHashItemsLoading">
-                    <NSpace
-                      align="center"
-                      justify="center"
-                      :wrap-item="false"
-                      :wrap="false"
-                      style="height: 200px; width: 100%"
-                    >
+                    <NSpace align="center" justify="center" :wrap-item="false" :wrap="false" style="height: 200px; width: 100%">
                       <NSpin />
                     </NSpace>
                   </template>
@@ -42,31 +28,13 @@
                   </template>
                 </NFormItemGi>
                 <NFormItemGi :span="24" path="prompt" label="Prompt">
-                  <NInput
-                    type="textarea"
-                    v-model:value="formData.prompt"
-                    placeholder="List the things you want in the image (e.g. bubbles,tank)"
-                    :autosize="true"
-                    style="min-height: 140px"
-                  />
+                  <NInput type="textarea" v-model:value="formData.prompt" placeholder="List the things you want in the image (e.g. bubbles,tank)" :autosize="true" style="min-height: 140px" />
                 </NFormItemGi>
                 <NFormItemGi :span="24" path="negativePrompt" label="Negative Prompt">
-                  <NInput
-                    type="textarea"
-                    v-model:value="formData.negativePrompt"
-                    placeholder="List the things to remove from the image (e.g. fog, fingers)"
-                    :autosize="true"
-                    style="min-height: 80px"
-                  />
+                  <NInput type="textarea" v-model:value="formData.negativePrompt" placeholder="List the things to remove from the image (e.g. fog, fingers)" :autosize="true" style="min-height: 80px" />
                 </NFormItemGi>
                 <NFormItemGi :span="24" path="sampler" label="Sampler">
-                  <NSelect
-                    v-model:value="formData.sampler"
-                    label-field="label"
-                    value-field="val"
-                    placeholder="Select"
-                    :options="samplerOptions"
-                  />
+                  <NSelect v-model:value="formData.sampler" label-field="label" value-field="val" placeholder="Select" :options="samplerOptions" />
                 </NFormItemGi>
                 <NFormItemGi :span="24" path="steps" label="Steps">
                   <NSpace vertical style="width: 100%">
@@ -87,14 +55,7 @@
                   </NSpace>
                 </NFormItemGi>
                 <NFormItemGi :span="24" path="seed" label="Seed">
-                  <NInputNumber
-                    v-model:value="formData.seed"
-                    size="small"
-                    :min="-1"
-                    :max="99999999999"
-                    :step="1"
-                    style="width: 100%"
-                  />
+                  <NInputNumber v-model:value="formData.seed" size="small" :min="-1" :max="99999999999" :step="1" style="width: 100%" />
                 </NFormItemGi>
                 <NFormItemGi :span="12" path="cfgScale" label="CFG Scale">
                   <NSpace vertical style="width: 100%">
@@ -114,15 +75,8 @@
         </NScrollbar>
         <template #footer>
           <NSpace :wrap-item="false" :wrap="false" align="center" justify="center" :size="[24, 0]">
-            <NButton :block="true" :disabled="result.status === 1" @click="onPressReset" style="flex: 1">Reset</NButton>
-            <NButton
-              type="primary"
-              :block="true"
-              :loading="result.status === 1"
-              @click="onPressGenerate"
-              style="flex: 1"
-              >Generate image</NButton
-            >
+            <NButton :block="true" color="#A45EFF" ghost :disabled="result.status === 1" @click="onPressReset" style="flex: 1">Reset</NButton>
+            <NButton type="primary" color="#A45EFF" :block="true" :loading="result.status === 1" @click="onPressGenerate" style="flex: 1">Generate image</NButton>
           </NSpace>
         </template>
       </NCard>
@@ -133,9 +87,7 @@
           <div class="scroll-body">
             <template v-if="result.status === 0">
               <div class="result-empty">
-                <span class="text-color-3">
-                  Please enter some content in the form and click the "Generate image" button to generate an image
-                </span>
+                <span class="text-color-3"> Please enter some content in the form and click the "Generate image" button to generate an image </span>
               </div>
             </template>
             <template v-else-if="result.status === 1">
@@ -177,26 +129,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, onUnmounted, ref, watch, computed } from 'vue';
-import {
-  NIcon,
-  NCard,
-  NGrid,
-  NForm,
-  NFormItemGi,
-  NInput,
-  NButton,
-  NSpace,
-  FormInst,
-  NSlider,
-  NSelect,
-  NScrollbar,
-  NInputNumber,
-  NSpin,
-  NDescriptions,
-  NDescriptionsItem,
-  useMessage,
-  NAlert,
-} from 'naive-ui';
+import { NIcon, NCard, NGrid, NForm, NFormItemGi, NInput, NButton, NSpace, FormInst, NSlider, NSelect, NScrollbar, NInputNumber, NSpin, NDescriptions, NDescriptionsItem, useMessage, NAlert } from 'naive-ui';
 import { CloudDownloadOutline as CloudDownloadOutlineIcon } from '@vicons/ionicons5';
 import { Utils } from '@/tools/utils';
 import { Http } from '@/tools/http';

@@ -11,19 +11,18 @@
       </NUl>
 
       <NUl class="tabs-nav-ul">
-        <NLi class="tabs-nav-li">
+        <NLi class="tabs-nav-li" @click="onPressSignOut">
           <img class="tabs-nav-li-icon" src="@/assets/icon_logout.png" />
           <span>Logout</span>
         </NLi>
       </NUl>
     </NSpace>
     <NSpace class="tabs-pane" :wrap-item="false">
-      <!-- <UserProfile /> -->
       <template v-if="routerSign === 'profile'">
         <UserProfile />
       </template>
       <template v-if="routerSign === 'models'">
-        <UserPosts />
+        <UserModels />
       </template>
       <template v-if="routerSign === 'posts'">
         <UserPosts />
@@ -35,7 +34,10 @@
 import { ref, defineComponent, onMounted, watch, nextTick, computed } from 'vue';
 import { NButton, TabsProps, NTabs, NTabPane, NSpace, NCard, NModal, NGrid, NIcon, NGridItem, NUl, NLi, useMessage } from 'naive-ui';
 import { useRouter, useRoute, onBeforeRouteUpdate } from 'vue-router';
+import { useUserStore } from '@/stores/user';
+
 import UserProfile from './user-profile.vue';
+import UserModels from './user-models.vue';
 import UserPosts from './user-posts.vue';
 
 type tabsFlag = {
@@ -59,10 +61,12 @@ export default defineComponent({
     NUl,
     NLi,
     UserProfile,
+    UserModels,
     UserPosts,
   },
   setup(props, context) {
     const router = useRouter();
+    const userStore = useUserStore();
 
     const tabIcon1 = require('@/assets/icon_profile.png');
     const tabIcon2 = require('@/assets/icon_model.png');
@@ -85,7 +89,15 @@ export default defineComponent({
       router.push({ name: 'user', params: { sign: item } });
     };
 
-    return { tabs, routerSign, onPressItem };
+    return {
+      tabs,
+      routerSign,
+      onPressItem,
+      onPressSignOut() {
+        userStore.signOut();
+        router.push({ name: 'home' });
+      },
+    };
   },
 });
 </script>

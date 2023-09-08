@@ -17,12 +17,7 @@
           <NGridItem span="2 880:1">
             <div class="layout-left">
               <div class="carousel-wrap">
-                <NCarousel
-                  class="carousel"
-                  v-model:current-index="carouselIndex"
-                  :autoplay="true"
-                  :show-arrow="covers.length > 1"
-                >
+                <NCarousel class="carousel" v-model:current-index="carouselIndex" :autoplay="true" :show-arrow="covers.length > 1">
                   <template v-for="cover in covers">
                     <img class="cover" :src="cover.url" />
                   </template>
@@ -79,7 +74,7 @@
                   </template>
                   Run model
                 </NButton>
-                <NButton type="primary" size="large" strong :loading="archiveUrlLoading" @click="onPressArchive">
+                <NButton type="primary" color="#A45EFF" size="large" strong :loading="archiveUrlLoading" @click="onPressArchive">
                   <template #icon>
                     <NIcon>
                       <IconDownload />
@@ -101,31 +96,10 @@
 import { ref, defineComponent, onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
-import {
-  NCard,
-  NH3,
-  NSpace,
-  NSpin,
-  NTag,
-  NCarousel,
-  NDescriptions,
-  NDescriptionsItem,
-  NButton,
-  NIcon,
-  NModal,
-  NGrid,
-  NGridItem,
-  NText,
-  useMessage,
-  NPopselect,
-} from 'naive-ui';
+import { NCard, NH3, NSpace, NSpin, NTag, NCarousel, NDescriptions, NDescriptionsItem, NButton, NIcon, NModal, NGrid, NGridItem, NText, useMessage, NPopselect } from 'naive-ui';
 import { Http } from '@/tools/http';
 import { Utils } from '@/tools/utils';
-import {
-  DownloadSharp as IconDownload,
-  CaretForwardCircleOutline as IconRun,
-  CloseSharp as IconClose,
-} from '@vicons/ionicons5';
+import { DownloadSharp as IconDownload, CaretForwardCircleOutline as IconRun, CloseSharp as IconClose } from '@vicons/ionicons5';
 
 import { navigateToSD } from './utils';
 import * as StableDiffusionMetadata from 'stable-diffusion-image-metadata';

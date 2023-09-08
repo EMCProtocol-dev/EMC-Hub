@@ -4,13 +4,13 @@
       <NSpace class="user" align="center" :wrap-item="false" :wrap="false">
         <template v-if="!user.avatar">
           <NIconWrapper :size="48" :border-radius="16" color="#f1f1f1" icon-color="#666666">
-            <NIcon size="24">
+            <NIcon size="24" @click="onPressUser" style="cursor: pointer">
               <IconPerson />
             </NIcon>
           </NIconWrapper>
         </template>
         <template v-else>
-          <img class="avatar" :src="user.avatar" />
+          <img class="avatar" :src="user.avatar" @click="onPressUser" />
         </template>
         <div class="user-body">
           <div class="user-body-row">
@@ -50,10 +50,11 @@ export default defineComponent({
         router.push({ name: 'auth' });
       },
       onPressUser() {
-        console.info('user');
+        router.push({ name: 'user', params: { sign: 'profile' } });
       },
       onPressSignOut() {
         userStore.signOut();
+        router.push({ name: 'home' });
       },
     };
   },
@@ -73,6 +74,8 @@ export default defineComponent({
   width: 48px;
   height: 48px;
   border-radius: 16px;
+  cursor: pointer;
+  object-fit: cover;
 }
 .user-body-row {
   display: flex;

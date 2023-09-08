@@ -5,7 +5,7 @@
       <NAvatar round :size="64" :src="userInfo.avatar" />
       <NSpace vertical :size="[0, 6]" :wrap-item="false">
         <NEllipsis style="max-width: 240px; font-size: 16px">{{ userInfo.nickname }}</NEllipsis>
-        <!-- <NText depth="3">{{ userInfo }}</NText> -->
+        <!-- <NText depth="3">{{ userNickname }}</NText> -->
       </NSpace>
     </NSpace>
     <NTabs class="custom-tabs" type="line" animated tab-style="marginTop:24px;">
@@ -19,13 +19,20 @@
                   <NCard class="card" :bordered="false" footer-style="background-color:#f5f5f5;padding:12px" @click="onPressItem(item)">
                     <template #cover>
                       <div class="card-cover">
-                        <img class="card-cover-img" :src="item.url" />
-                        <img class="card-cover-delete" src="@/assets/icon_delete.png" style="width: 24px; height: 24px" @click.stop.pervent="onPressDelete(item)" />
+                        <template v-if="item.covers.length > 0">
+                          <img class="card-cover-img" :src="item.covers[0]" />
+                        </template>
+                        <template v-else>
+                          <NSpace justify="center" align="center" style="height: 100%">
+                            <NEmpty />
+                          </NSpace>
+                        </template>
+                        <!-- <img class="card-cover-delete" src="@/assets/icon_delete.png" style="width: 24px; height: 24px" @click.stop.pervent="onPressDelete(item)" /> -->
                       </div>
                     </template>
                     <template #footer>
                       <NSpace justify="space-between" align="center">
-                        <NEllipsis style="max-width: 120px">{{ item.imageTitle }}</NEllipsis>
+                        <NEllipsis style="max-width: 120px">{{ item.name }}</NEllipsis>
                         <NText style="color: #666; font-size: 12px">{{ moment(item.createTime).fromNow() }}</NText>
                       </NSpace>
                     </template>
@@ -42,7 +49,6 @@
               </NGridItem>
             </template>
           </NGrid>
-          <NModal v-model:show="showModal" :mask-closable="false" preset="dialog" title="确认" content="你确认" positive-text="确认" negative-text="算了" @positive-click="onPositiveClick" @negative-click="onNegativeClick" />
         </NTabPane>
       </template>
     </NTabs>
@@ -50,16 +56,18 @@
 </template>
 <script lang="ts">
 import { ref, defineComponent, onMounted, watch, nextTick, computed } from 'vue';
-import { NH2, NEllipsis, NText, NAvatar, NSpace, NCard, NTabs, NModal, NTabPane, NGrid, NIcon, NGridItem, NUl, NLi, useMessage } from 'naive-ui';
+import { NH2, NEmpty, NEllipsis, NText, NAvatar, NSpace, NCard, NTabs, NModal, NTabPane, NGrid, NIcon, NGridItem, NUl, NLi, useMessage } from 'naive-ui';
 import { useUserStore } from '@/stores/user';
 import { useRouter, useRoute } from 'vue-router';
 import { Http } from '@/tools/http';
+import { Utils } from '@/tools/utils';
 import moment from 'moment';
 
 export default defineComponent({
   name: 'user-posts',
   components: {
     NH2,
+    NEmpty,
     NEllipsis,
     NText,
     NAvatar,
@@ -85,7 +93,7 @@ export default defineComponent({
     const showModal = ref(false);
     const imageId = ref('');
 
-    const tabs = ref(['posts']);
+    const tabs = ref(['models']);
     const list = ref<any[]>([]);
 
     onMounted(() => {
@@ -93,20 +101,46 @@ export default defineComponent({
     });
     const init = async () => {
       const resp = await http.get({
-        url: 'https://client.emchub.ai/emchub/api/client/modelImage/selectByUser',
-        data: { pageNo: 1, pageSize: 50 },
+        url: '/emchub/api/client/modelInfo/queryListBySession',
+        data: { pageNo: 1, pageSize: 50, status: 2 },
       });
-      if (resp._result !== 0) return;
-      list.value = resp.pageInfo?.list;
-    };
 
+      if (resp._result !== 0) return;
+      // list.value = resp.pageInfo?.list;
+      const newList: any[] = resp.pageInfo?.list || [];
+      const total = resp.totalNum || 0;
+      list.value = [];
+      newList.forEach((item) => {
+        const tags: any[] = item.tags ? item.tags.split(',') : [];
+        const covers: string[] = [];
+        if (item.modelVersions && item.modelVersions[0] && item.modelVersions[0].previewPicturesUrl) {
+          const lastestVersionImages = Utils.parseJSON(item.modelVersions[0].previewPicturesUrl);
+          lastestVersionImages.forEach((item: any) => {
+            covers.push(item.url);
+          });
+        }
+        list.value.push({
+          id: item.modelId,
+          sn: item.modelSn,
+          tags: tags,
+          name: item.modelName,
+          status: item.status,
+          covers: covers,
+          type: item.type,
+          userId: item.userId,
+          createTime: item.createTime,
+        });
+      });
+
+      console.log(list.value);
+    };
     const onPressDelete = async (item: any) => {
       imageId.value = item.id;
       showModal.value = true;
     };
 
     const onPressItem = (item: any) => {
-      router.push({ name: 'model-images', params: { id: item.id } });
+      router.push({ name: 'model-detail', params: { modelSn: item.sn } });
     };
 
     return {
@@ -118,23 +152,6 @@ export default defineComponent({
       onPressDelete,
       showModal,
       imageId,
-      onNegativeClick() {
-        imageId.value = '';
-        message.success('Cancel');
-        showModal.value = false;
-      },
-      async onPositiveClick() {
-        const resp = await http.post({
-          url: 'https://client.emchub.ai/emchub/api/client/modelImage/deleteByUser',
-          data: { id: imageId.value },
-        });
-        if (resp._result !== 0) return;
-        const indexToRemove = list.value.findIndex((item) => item.id === imageId.value);
-        if (indexToRemove === -1) return;
-        list.value.splice(indexToRemove, 1);
-        message.success('delete success');
-        showModal.value = false;
-      },
     };
   },
 });

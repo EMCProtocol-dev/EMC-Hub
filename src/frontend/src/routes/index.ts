@@ -15,6 +15,13 @@ export default function createAppRouter(routes: any) {
         window.$loadingBar.start();
       }
     }
+    // if (to.meta.auth) {
+    //   if () {
+    //     next({ path: '/home', query: { redirect: to.fullPath } });
+    //   } else {
+    //     next();
+    //   }
+    // }
     next();
   });
 
