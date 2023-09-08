@@ -47,7 +47,6 @@
             :max="6"
             list-type="image-card"
             :custom-request="handleUploadImage"
-            @remove="handleUploadRemove"
           >
             <NUploadDragger style="max-width: 320px">
               <NSpace vertical :wrap-item="false" align="center" justify="center">
@@ -257,17 +256,9 @@ export default defineComponent({
       const url = resp.url || '';
       file.url = url;
       const [parameters, isParameters] = await StableDiffusionMetadata.extract(file.file as File);
+      console.info(parameters);
       formData.value.imagesParameters.push({ id: file.id, raw: parameters });
       onFinish();
-    };
-
-    const handleUploadRemove = ({ file, fileList }: UploadRemoveOptions) => {
-      const list: any[] = [];
-      fileList.forEach((item) => {
-        if (item.id === file.id) return;
-        list.push(item.url);
-      });
-      formData.value.images = list;
     };
 
     const handleSubmit = async () => {
@@ -417,7 +408,6 @@ export default defineComponent({
       formRule,
       formSubmitting,
       handleUploadImage,
-      handleUploadRemove,
       onPressPrev() {
         ctx.emit('prev');
       },
