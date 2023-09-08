@@ -23,3 +23,6 @@ package-lock.json
 
 #deploy config files
 deploy/
+
+# credentials.json files
+*.credentials.json

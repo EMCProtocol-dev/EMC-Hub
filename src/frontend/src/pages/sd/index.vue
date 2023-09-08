@@ -207,7 +207,7 @@ import { sampler as samplerOptions } from './options';
 import { config as formConfigs } from './formConfigs';
 import * as StableDiffusionMetadata from 'stable-diffusion-image-metadata';
 import { sign } from '@/tools/open-api';
-import OpenEmcHubConfig from '@/credentials.emchub.json';
+import OpenEmcHubConfig from '@/emchub-open.credentials.json';
 import { shortHashCodeSha256 } from '../model-detail/utils';
 import LoraItem from './lora-item.vue';
 import type { LoraItem as AsLoraItem, LoraItemCover as AsLoraItemCover } from './lora-item';

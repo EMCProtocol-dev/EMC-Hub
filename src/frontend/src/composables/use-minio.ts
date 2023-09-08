@@ -2,11 +2,13 @@ import { Client as MinioClient } from 'minio';
 import { Axios, AxiosProgressEvent, isCancel } from 'axios';
 import { sign } from '@/tools/open-api';
 import { Http } from '@/tools/http';
+import config from '@/minio.credentials.json';
+const ACCESS_KEY = config.accessKey;
+const SECRET_KEY = config.secretKey;
+
 const HOST = '36.155.7.145';
 const PORT = 9000;
 const SSL = false;
-const ACCESS_KEY = 'vozdBpAulYbtpZDTvSeD';
-const SECRET_KEY = 'thD4BZO84k1vUJVt1a5332ZWNeYqZ3tNFlcr4vcO';
 const BUCKET_NAME = 'hub-archive';
 
 interface FileInfo {
