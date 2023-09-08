@@ -64,11 +64,11 @@
             </NGridItem>
             <NGridItem>
               <NSpace vertical style="flex: 1; overflow-y: auto">
-                <NFormItem path="" label="Model Name">
+                <NFormItem path="" label="Model Name" show-require-mark>
                   <NInput class="form-input" v-model:value="formData.name" disabled placeholder="" size="large" @keydown.enter.prevent />
                 </NFormItem>
 
-                <NFormItem path="" label="Prompt">
+                <NFormItem path="" label="Prompt" show-require-mark>
                   <NInput
                     class="form-input"
                     v-model:value="formData.prompt"
@@ -83,7 +83,7 @@
                     @keydown.enter.prevent
                   />
                 </NFormItem>
-                <NFormItem path="" label="Negative Prompt">
+                <NFormItem path="" label="Negative Prompt" show-require-mark>
                   <NInput
                     class="form-input"
                     v-model:value="formData.negativePrompt"
@@ -102,20 +102,20 @@
                 <NGrid :cols="2" :x-gap="24" :y-gap="0">
                   <NGridItem :span="2">
                     <NSpace :wrap="false" :wrap-item="false" justify="space-between">
-                      <NFormItem class="form-input-short" path="" label="Sampler">
+                      <NFormItem class="form-input-short" path="" label="Sampler" show-require-mark>
                         <NInput class="form-input" v-model:value="formData.sampler" disabled size="large" placeholder="" @keydown.enter.prevent />
                       </NFormItem>
-                      <NFormItem class="form-input-short" path="" label="Steps">
+                      <NFormItem class="form-input-short" path="" label="Steps" show-require-mark>
                         <NInput class="form-input" v-model:value="formData.steps" disabled size="large" placeholder="" @keydown.enter.prevent />
                       </NFormItem>
                     </NSpace>
                   </NGridItem>
                   <NGridItem :span="2">
                     <NSpace :wrap="false" :wrap-item="false" justify="space-between">
-                      <NFormItem class="form-input-short" path="" label="Guidance scale" :show-feedback="false">
+                      <NFormItem class="form-input-short" path="" label="Guidance scale" :show-feedback="false" show-require-mark>
                         <NInput class="form-input" v-model:value="formData.cfgScale" disabled size="large" placeholder="" @keydown.enter.prevent />
                       </NFormItem>
-                      <NFormItem class="form-input-short" path="" label="Seed" :show-feedback="false">
+                      <NFormItem class="form-input-short" path="" label="Seed" :show-feedback="false" show-require-mark>
                         <NInput class="form-input" v-model:value="formData.seed" disabled size="large" placeholder="" @keydown.enter.prevent />
                       </NFormItem>
                     </NSpace>
@@ -225,8 +225,8 @@ export default defineComponent({
     const isVisible = ref(props.showModal);
     const message = useMessage();
     const http = Http.getInstance();
+    const { upload, presignedHttp } = useMinio();
     const userStore = useUserStore();
-    const { upload } = useMinio();
     const formData = ref<FormType>({
       title: '',
       name: '',
@@ -249,47 +249,16 @@ export default defineComponent({
       title: [{ required: true, message: 'Can not be empty', trigger: ['input', 'blur'] }],
     };
 
-    const handlePresignUpload = async (params: PresignOptions) => {
-      const appid = 'emc-hub-a63123cf';
-      const secret = '9c4283f0-3509-11ee-8d81-06c27dd31a5a';
-      const nonce = new Date().getTime();
-      const action = 'sign';
-      const { fileName, fileType, fileHash, fileSize, signType, userId } = params;
-      const body = {
-        fileName: fileName,
-        userId: userId,
-        fileContentType: fileType,
-        fileHash: fileHash,
-        size: fileSize,
-        type: signType,
-      };
-      const signParams: any = { appid, nonce, action, requestBody: JSON.stringify(body) };
-      signParams.sign = sign(signParams, secret);
-      const { _result, data } = await http.postJSON({
-        url: `https://upload.emchub.ai/emc/api/client/userUpload/${action}`,
-        data: signParams,
-      });
-      if (_result !== 0) {
-        return null;
-      }
-      return {
-        postURL: data.postURL,
-        postFormData: data.postFormData,
-        doneURL: data.doneURL,
-        doneBody: data.doneBody,
-      };
-    };
-
     const handleUploadImage = async (params: UploadCustomRequestOptions) => {
       try {
-        const { file, onFinish, onError, onProgress } = params;
-        const fileHash = await fileToMD5(file.file as File);
+        const { file, headers, withCredentials, onFinish, onError, onProgress } = params;
+        const fileHash = await fileToSha256Hex(file.file as File);
         if (!fileHash) {
           onError();
           message.error('file hash error');
           return;
         }
-        const policyData = await handlePresignUpload({
+        const policyData = await presignedHttp({
           fileName: file.name,
           fileType: file.type || '',
           fileHash,
@@ -337,9 +306,11 @@ export default defineComponent({
             return message.error('please upload again');
           }
         } else if (modelType === 'CHECKPOINT') {
-          const modelsHash = modelHashCode.toLowerCase() || '';
-          const imageModelsHash = imageHash.model.toLowerCase() || '';
-          const isModelImage = modelsHash.startsWith(imageModelsHash);
+          const modelsHash = modelHashCode?.toLowerCase() || '';
+          const imageModelsHash = imageHash?.model?.toLowerCase() || '';
+          const isModelImage = modelsHash?.startsWith(imageModelsHash);
+          console.log('model:' + modelsHash, 'image:' + imageModelsHash);
+
           isModel.value = isModelImage;
         }
 
@@ -363,7 +334,7 @@ export default defineComponent({
           height: String(height),
         };
       } catch {
-        message.error('Failed to upload');
+        message.error('the image is not generated , Failed to upload');
       }
     };
 

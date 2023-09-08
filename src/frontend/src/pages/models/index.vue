@@ -70,7 +70,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, onActivated } from 'vue';
-import { NA, NPagination, NSpace, NButton, NGrid, NGridItem, NSpin, NCard, NCarousel, useMessage } from 'naive-ui';
+import { NA, NPagination, NSpace, NButton, NGrid, NGridItem, NSpin, NCard, NCarousel, NText, useMessage } from 'naive-ui';
 import { useRouter } from 'vue-router';
 import { Http } from '@/tools/http';
 import { Utils } from '@/tools/utils';
@@ -103,6 +103,7 @@ export default defineComponent({
     ModelItem,
     Waterfall,
     LazyImg,
+    NText,
   },
   beforeRouteEnter(to, from, next) {
     if (typeof to.meta !== 'object') {

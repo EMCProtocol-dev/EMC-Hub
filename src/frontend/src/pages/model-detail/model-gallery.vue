@@ -27,7 +27,32 @@
       <template v-if="newList.length !== 0">
         <Waterfall :list="newList" :gutter="24" :width="249.6" style="min-height: 400px" row-key="id">
           <template #item="{ item, url, index }">
-            <GalleryItem :item="item" @press="onPressImages" :key="item.id" />
+            <!-- <GalleryItem :item="item" @press="onPressImages" :key="item.id" /> -->
+            <div class="item" @click="onPressImages">
+              <div class="item-carousel-wrap">
+                <NCarousel class="item-carousel" :autoplay="true">
+                  <!-- <template v-for="cover in item.covers"> -->
+                  <template v-if="item.url">
+                    <!-- <AppImage class="item-cover" :src="item.url" object-fit="cover" :preview-disabled="true" :imgProps="{ style: 'width:100%;height:100%;' }" /> -->
+                    <LazyImg class="item-cover" :url="item.url" />
+                  </template>
+                  <template v-else>
+                    <NEmpty style="padding: 96px 0" />
+                  </template>
+                  <!-- </template> -->
+                </NCarousel>
+              </div>
+              <NSpace class="item-body" align="center" :wrap-item="false" :wrap="false">
+                <NSpace align="center" justify="center" :wrap-item="false" style="width: 40px; height: 40px; background-color: #f5f5f5; border-radius: 100%; flex-shrink: 0">
+                  <NIcon size="24"><IconPerson color="#666" /></NIcon>
+                </NSpace>
+                <!-- <NAvatar round size="large" src="" /> -->
+                <NSpace vertical :size="[0, 0]">
+                  <NH4 class="item-body-row">{{ item.userName || 'user' + item.userId }}</NH4>
+                  <NH6 class="item-body-row" style="font-size: 12px; color: #666"> {{ moment(item.createTime).fromNow() }}</NH6>
+                </NSpace>
+              </NSpace>
+            </div>
           </template>
         </Waterfall>
       </template>
@@ -50,12 +75,13 @@ import { ref, defineComponent, onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { Http } from '@/tools/http';
 
-import { NCard, NH2, NH3, NSpace, NSpin, NTag, NCarousel, NDescriptions, NDescriptionsItem, NEmpty, NButton, NIcon, NModal, NGrid, NGridItem, useMessage, NPopselect } from 'naive-ui';
-import { AddSharp as IconAdd, ChevronDownSharp as IconDown } from '@vicons/ionicons5';
-import GalleryItem from './gallery-item.vue';
+import { NCard, NH2, NH3, NH4, NH6, NSpace, NSpin, NTag, NCarousel, NDescriptions, NDescriptionsItem, NEmpty, NButton, NIcon, NModal, NGrid, NGridItem, useMessage, NPopselect } from 'naive-ui';
+import { AddSharp as IconAdd, ChevronDownSharp as IconDown, PersonSharp as IconPerson } from '@vicons/ionicons5';
+
 import GalleryUpload from './gallery-upload.vue';
 import { LazyImg, Waterfall } from 'vue-waterfall-plugin-next';
 import 'vue-waterfall-plugin-next/dist/style.css';
+import moment from 'moment';
 
 export default defineComponent({
   name: 'node-detail',
@@ -66,6 +92,8 @@ export default defineComponent({
     NCard,
     NH2,
     NH3,
+    NH4,
+    NH6,
     NSpace,
     NTag,
     NCarousel,
@@ -82,8 +110,9 @@ export default defineComponent({
     IconAdd,
     IconDown,
     GalleryUpload,
-    GalleryItem,
+    IconPerson,
     Waterfall,
+    LazyImg,
   },
 
   setup(props, ctx) {
@@ -113,6 +142,7 @@ export default defineComponent({
       });
       loading.value = false;
       if (resp._result !== 0) return;
+
       newList.value = resp.pageInfo?.list || [];
       // const newList: any[] = resp.pageInfo?.list || [];
     };
@@ -126,6 +156,7 @@ export default defineComponent({
       selectValue,
       showModal,
       initList,
+      moment,
       options: [
         {
           label: 'NEWEST',
@@ -147,84 +178,43 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* .layout {
-} */
-.layout-loading {
+.item {
   width: 100%;
-  height: 600px;
+  border: solid 1px #f1f1f1;
+  border-radius: 8px;
+  box-shadow: 1px 1px 6px 0 #ccc;
+  cursor: pointer;
 }
 
-.layout-left,
-.layout-right {
-  box-sizing: border-box;
+.item-carousel {
+  width: 100%;
+  height: 100%;
+}
+.item-cover {
+  width: 100%;
+  height: 100%;
+  transform: scale(1);
+  transition: all 0.2s;
 }
 
-.carousel-wrap {
+.item-cover:hover {
+  transform: scale(1.2);
+}
+.item-carousel-wrap {
   width: 100%;
-  padding-top: 100%;
+  /* padding-top: calc(100% * 1.25); */
   position: relative;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  overflow: hidden;
 }
-
-.carousel {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
+.item-body {
+  padding: 10px 16px 16px 16px;
 }
-
-.cover {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.header {
-  margin-bottom: 16px;
-}
-
-.header-row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.header-row:not(:last-child) {
-  margin-bottom: 8px;
-}
-
-.name {
-  font-size: 26px;
-  font-weight: 700;
-}
-
-.with {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 12px 0;
-  border-bottom: dashed 1px #f1f1f1;
-}
-
-.with-label {
-  width: 120px;
-  font-weight: 500;
-}
-
-.with__column {
-  flex-direction: column;
-  align-items: unset;
-}
-
-.with__column .with-label {
-  width: auto;
-  margin-bottom: 4px;
-}
-
-.with-value__area {
-  padding: 4px 8px;
-  border-radius: 4px;
-  background-color: #f1f1f1;
-  min-height: 80px;
+.item-body-row {
+  margin-bottom: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 </style>
