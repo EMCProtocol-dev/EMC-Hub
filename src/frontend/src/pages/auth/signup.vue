@@ -88,7 +88,7 @@ export default defineComponent({
       const resp = await userStore.signup(params);
       submitting.value = false;
       if (resp._result !== 0) {
-        message.warning(resp._desc as string);
+        message.error(resp._desc as string);
         return;
       }
       ctx.emit('signup', params);

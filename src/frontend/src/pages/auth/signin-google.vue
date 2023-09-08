@@ -19,46 +19,64 @@ import { ref, defineComponent } from 'vue';
 import { NSpace, NButton, NIcon, useMessage } from 'naive-ui';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-const firebaseConfig = {
-  apiKey: 'AIzaSyBGpgtnvmOndaXZ0Z_MGd-7ftVq6vAi2mE',
-  authDomain: 'emchubdev.firebaseapp.com',
-  projectId: 'emchubdev',
-  storageBucket: 'emchubdev.appspot.com',
-  messagingSenderId: '444006589364',
-  appId: '1:444006589364:web:e07a9baa798f041373c8e1',
-  measurementId: 'G-46LLXFJXZG',
-};
+import { useUserStore } from '@/stores/user';
+import firebaseConfig from '@/firebase.credentials.json';
 export default defineComponent({
   components: { NButton, NIcon },
   emits: ['signin', 'signinbefore', 'signinafter'],
   setup(props, ctx) {
     const submitting = ref(false);
+    const userStore = useUserStore();
+    const message = useMessage();
     return {
       submitting,
       async onPressSubmit() {
-        const message = useMessage();
         const app = initializeApp(firebaseConfig);
         const auth = getAuth();
         const provider = new GoogleAuthProvider();
+        const params = { token: '' };
+        const result = { _result: 0, _desc: '' };
+        ctx.emit('signinbefore');
+        submitting.value = true;
         try {
-          const result = await signInWithPopup(auth, provider);
+          const googleResult = await signInWithPopup(auth, provider);
           // This gives you a Google Access Token. You can use it to access the Google API.
-          const credential = GoogleAuthProvider.credentialFromResult(result);
-          if (!credential) {
-            message.error('Google auth error');
+          const credential = GoogleAuthProvider.credentialFromResult(googleResult);
+          if (!credential || !credential.accessToken) {
+            result._result = 1;
+            result._desc = 'Google auth error';
             return;
           }
-          const token = credential.accessToken;
-          console.info('Google access token:', token);
           // The signed-in user info.
-          const user = result.user;
-          console.info('User Info:', user);
+          // const user = result.user;
+          // console.info('User Info:', user);
+          params.token = credential.accessToken;
+          const resp = await userStore.signinWithGoogle(params);
+          submitting.value = false;
+          ctx.emit('signinafter');
+          if (resp._result !== 0) {
+            result._result = 1;
+            result._desc = resp._desc;
+            return;
+          }
+          result._result = 0;
         } catch (error: any) {
+          console.error(error);
           const errorCode = error.code;
           const errorMessage = error.message;
-          const email = error.customData.email;
-          const credential = GoogleAuthProvider.credentialFromError(error);
+          // const email = error.customData.email;
+          // const credential = GoogleAuthProvider.credentialFromError(error);
+          result._result = 1;
+          result._desc = `${errorMessage}`;
         }
+        submitting.value = false;
+        ctx.emit('signinafter');
+        if (result._result === 1) {
+          console.info('sign failure', result);
+          message.error(result._desc);
+          return;
+        }
+        ctx.emit('signin', params);
       },
     };
   },

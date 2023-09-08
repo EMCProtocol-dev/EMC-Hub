@@ -58,14 +58,14 @@ export default defineComponent({
     const handleSubmit = async () => {
       const account = formData.value.account;
       const password = formData.value.password;
-      const params = { account, password, type: 'password' as AuthType };
+      const params = { account, password };
       ctx.emit('signinbefore');
       submitting.value = true;
       const resp = await userStore.signin(params);
       submitting.value = false;
       ctx.emit('signinafter');
       if (resp._result !== 0) {
-        message.warning(resp._desc);
+        message.error(resp._desc);
         return;
       }
       ctx.emit('signin', params);

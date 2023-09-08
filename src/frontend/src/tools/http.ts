@@ -154,7 +154,7 @@ class Http {
 
       // if (result._result !== 0) {
       //   if (!options.noAutoHint) {
-      //     window.$message.warning(result._desc);
+      //     window.$message.error(result._desc);
       //   }
       // }
 

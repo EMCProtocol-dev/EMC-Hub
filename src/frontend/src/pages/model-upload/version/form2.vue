@@ -468,11 +468,11 @@ export default defineComponent({
             return;
           }
           if (resp._result !== 0) {
-            message.warning(resp._desc);
+            message.error(resp._desc);
             return;
           }
           if (!versionSn) {
-            message.warning('Not found version sn');
+            message.error('Not found version sn');
             return;
           }
           ctx.emit('submit', { versionSn: versionSn as string });

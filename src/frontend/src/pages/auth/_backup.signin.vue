@@ -68,7 +68,7 @@ export default defineComponent({
       const resp = await userStore.signin({ account, password, principal: '', type: '' });
       submitting.value = false;
       if (resp._result !== 0) {
-        message.warning(resp._desc);
+        message.error(resp._desc);
         return;
       }
       ctx.emit('signin', { account, password });

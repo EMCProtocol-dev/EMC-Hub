@@ -22,8 +22,10 @@ export type SignupParams = {
 export type SigninParams = {
   account: string;
   password?: string;
-  principal?: string;
-  type: AuthType;
+};
+export type GoogleSigninParams = {
+  //google token
+  token: string;
 };
 
 const STORAGE_KEY = 'emchub.user';
@@ -36,20 +38,23 @@ export const useUserStore = defineStore('user', () => {
   });
   const user = ref<User>(defaultUser());
   const http = Http.getInstance();
+  const handleSignResponse = (token: string, _user: User) => {
+    //set pinia user
+    user.value = _user;
+
+    //set http session
+    const session = { token };
+    http.setSession(session);
+
+    //set localstorage
+    const cache = { user: _user };
+    Utils.setLocalStorage(STORAGE_KEY, cache);
+  };
+  const initSignResult = () => {
+    return { _result: 0, _desc: '', user: defaultUser() };
+  };
   return {
     user,
-    getLocalAccount() {
-      const cache = Utils.getLocalStorage(STORAGE_KEY);
-      if (cache) {
-        return {
-          account: cache.account,
-          password: window.atob(cache.password),
-          principal: window.atob(cache.principal),
-          type: cache.type,
-        };
-      }
-      return { account: '', password: '', principal: '', type: '' };
-    },
     initLocalData() {
       const cache = Utils.getLocalStorage(STORAGE_KEY);
       if (cache) {
@@ -67,53 +72,58 @@ export const useUserStore = defineStore('user', () => {
       }
       return { _result: 0 };
     },
-    async signin(params: SigninParams) {
-      const _account = params.account;
-      const _password = params.password || '';
-      // const _principal = params.principal || '';
-      const _type = params.type;
-      const result = { _result: 0, _desc: '', user: defaultUser() };
-      const http = Http.getInstance();
-      const loginParams: any = {};
-      if (_type === 'password') {
-        loginParams.userCode = _account;
-        loginParams.password = _password as string;
-      }
+    async signinWithWallet(params: any) {
+      const result = initSignResult();
+      result._result = 1;
+      result._desc = 'Error';
+      return result;
+    },
+    async signinWithGoogle(params: GoogleSigninParams) {
       http.clearSession();
       const resp = await http.post({
-        url: '/emchub/api/client/user/login',
-        data: loginParams,
+        url: '/emchub/api/client/user/googleLogin',
+        data: { token: params.token },
       });
-      if (resp?._result === 0) {
-        result._result = 0;
-        result._desc = '';
-      } else {
+      const result = initSignResult();
+      if (resp?._result !== 0) {
         result._result = 1;
         result._desc = resp?._desc || '';
       }
-      if (resp?._result === 0) {
-        const session = { token: resp._sid || '' };
+      if (result._result === 0) {
+        const token = resp._sid;
         const respUser = resp.user;
-        //query user info
         const nickname: string = respUser.username || '';
         const userId: number = respUser.userId || 0;
         const avatar: string = respUser.userImage || '';
-        result.user = {
-          id: userId,
-          nickname: nickname || 'EMCHub',
-          avatar: avatar,
-        };
-        const cache = {
-          account: _account,
-          password: window.btoa(_password),
-          // principal: window.btoa(_principal),
-          type: _type,
-          user: result.user,
-        };
-        Utils.setLocalStorage(STORAGE_KEY, cache);
-        user.value = result.user;
-
-        http.setSession(session);
+        const user = { id: userId, nickname: nickname || 'EMCHub', avatar: avatar };
+        result.user = user;
+        handleSignResponse(token, user);
+      }
+      return result;
+    },
+    async signin(params: SigninParams) {
+      http.clearSession();
+      const resp = await http.post({
+        url: '/emchub/api/client/user/login',
+        data: {
+          userCode: params.account,
+          password: params.password || '',
+        },
+      });
+      const result = initSignResult();
+      if (resp?._result !== 0) {
+        result._result = 1;
+        result._desc = resp?._desc || '';
+      }
+      if (result._result === 0) {
+        const token = resp._sid;
+        const respUser = resp.user;
+        const nickname: string = respUser.username || '';
+        const userId: number = respUser.userId || 0;
+        const avatar: string = respUser.userImage || '';
+        const user = { id: userId, nickname: nickname || 'EMCHub', avatar: avatar };
+        result.user = user;
+        handleSignResponse(token, user);
       }
       return result;
     },

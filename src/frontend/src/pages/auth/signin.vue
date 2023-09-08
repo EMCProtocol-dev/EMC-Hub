@@ -1,7 +1,7 @@
 <template>
   <div>
-    <!-- <SignInGoogle />
-    <NDivider>or</NDivider> -->
+    <SignInGoogle @signin="onSignin" @signinbefore="onSigninBefore" @signinafter="onSigninAfter" />
+    <NDivider>or</NDivider>
     <SignInAccount
       ref="signInAccountRef"
       @signin="onSignin"

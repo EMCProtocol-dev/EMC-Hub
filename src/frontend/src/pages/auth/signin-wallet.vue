@@ -53,11 +53,11 @@ export default defineComponent({
       const params = { account, principal, type: 'wallet' as AuthType };
       ctx.emit('signinbefore');
       submitting.value = true;
-      const resp1 = await userStore.signin(params);
+      const resp1 = await userStore.signinWithWallet(params);
       submitting.value = false;
       ctx.emit('signinafter');
       if (resp1._result !== 0) {
-        message.warning(resp1._desc);
+        message.error(resp1._desc);
         return;
       }
       ctx.emit('signin', params);

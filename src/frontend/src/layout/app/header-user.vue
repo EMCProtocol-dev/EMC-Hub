@@ -2,9 +2,16 @@
   <div class="header-user">
     <template v-if="user.id">
       <NSpace class="user" align="center" :wrap-item="false" :wrap="false">
-        <NIconWrapper :size="48" :border-radius="16" color="#f1f1f1" icon-color="#666666">
-          <NIcon size="24"><IconPerson /></NIcon>
-        </NIconWrapper>
+        <template v-if="!user.avatar">
+          <NIconWrapper :size="48" :border-radius="16" color="#f1f1f1" icon-color="#666666">
+            <NIcon size="24">
+              <IconPerson />
+            </NIcon>
+          </NIconWrapper>
+        </template>
+        <template v-else>
+          <img class="avatar" :src="user.avatar" />
+        </template>
         <div class="user-body">
           <div class="user-body-row">
             <NText class="nickname" strong>Hi, {{ user.nickname }}</NText>
@@ -56,12 +63,16 @@ export default defineComponent({
 .header-user {
   max-width: 240px;
 }
-
 .nickname {
   max-width: 8em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
 }
 .user-body-row {
   display: flex;
