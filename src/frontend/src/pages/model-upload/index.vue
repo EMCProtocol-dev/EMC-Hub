@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <NCard :title="title">
-      <template v-if="!hideSteps">
+      <template v-if="mode === 'add'">
         <NSpace justify="center" :wrap-item="false" :size="[0, 24]" style="margin: 24px 0">
           <NSteps :current="(current as number)" :status="currentStatus" style="width: 1200px">
             <NStep title="Edit Info" description="Set the basic information of the model" />
@@ -65,7 +65,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
+import { defineComponent, ref, onMounted, computed } from 'vue';
 import {
   useMessage,
   NSpace,
@@ -113,8 +113,14 @@ export default defineComponent({
 
     const current = ref(1);
     const currentStatus = ref<StepsProps['status']>('process');
-    const title = ref('Upload Model');
-    const hideSteps = ref(false);
+    const title = computed(() => {
+      if (mode.value === 'modify-info') {
+        return 'Modify Model Info';
+      } else if (mode.value === 'modify-version') {
+        return 'Modify Model Version';
+      }
+      return 'Upload Model';
+    });
     const completeVisible = ref(false);
     const completeTitle = ref('');
 
@@ -139,7 +145,6 @@ export default defineComponent({
       current,
       currentStatus,
       title,
-      hideSteps,
       completeVisible,
       completeTitle,
       //Form1 Events
@@ -180,8 +185,11 @@ export default defineComponent({
         current.value = 4;
       },
       onPressDone() {
-        console.info(`window.opener?.postMessage({ type: 'emchub-upload-done' }, '*')`);
-        window.opener?.postMessage({ type: 'emchub-upload-done' }, '*');
+        if (mode.value === 'add') {
+          window.opener?.postMessage({ type: 'emchub-upload-done' }, '*');
+        } else {
+          router.back();
+        }
       },
     };
   },
