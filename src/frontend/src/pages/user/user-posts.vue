@@ -2,7 +2,7 @@
   <NSpace class="page" vertical :size="[24, 0]" :wrap-item="false">
     <NH2>Your posts</NH2>
     <NSpace align="center" :size="[12, 0]" :wrap-item="false">
-      <NAvatar round :size="64" :src="userInfo.avatar" />
+      <NAvatar round object-fit="cover" :size="64" :src="userInfo.avatar" />
       <NSpace vertical :size="[0, 6]" :wrap-item="false">
         <NEllipsis style="max-width: 240px; font-size: 16px">{{ userInfo.nickname }}</NEllipsis>
         <!-- <NText depth="3">{{ userInfo }}</NText> -->

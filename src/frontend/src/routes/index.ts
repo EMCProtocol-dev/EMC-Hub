@@ -1,6 +1,7 @@
 import { nextTick } from 'vue';
 import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router';
 import { routes } from './routes';
+import { Utils } from '../tools/utils';
 
 export default function createAppRouter(routes: any) {
   console.info(`create app router base url is ${__PUBLIC_PATH__}`);
@@ -15,11 +16,13 @@ export default function createAppRouter(routes: any) {
         window.$loadingBar.start();
       }
     }
-    // if (to.meta.auth) {
-    //   if () {
-    //     next({ path: '/home', query: { redirect: to.fullPath } });
-    //   } else {
-    //     next();
+    // const session = Utils.getLocalStorage('emchub.session');
+    // if (!from || to.path !== from.path) {
+    //   if (window.$loadingBar && to.meta.auth && !session) {
+    //     // query: { redirect: to.fullPath }
+    //     next({ path: '/home' });
+    //   } else if (window.$loadingBar) {
+    //     window.$loadingBar.start();
     //   }
     // }
     next();

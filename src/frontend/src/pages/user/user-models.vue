@@ -2,7 +2,7 @@
   <NSpace class="page" vertical :size="[24, 0]" :wrap-item="false">
     <NH2>Your posts</NH2>
     <NSpace align="center" :size="[12, 0]" :wrap-item="false">
-      <NAvatar round :size="64" :src="userInfo.avatar" />
+      <NAvatar round object-fit="cover" :size="64" :src="userInfo.avatar" />
       <NSpace vertical :size="[0, 6]" :wrap-item="false">
         <NEllipsis style="max-width: 240px; font-size: 16px">{{ userInfo.nickname }}</NEllipsis>
         <!-- <NText depth="3">{{ userNickname }}</NText> -->
@@ -16,19 +16,9 @@
             <template v-if="list.length > 0">
               <template v-for="item in list">
                 <NGridItem>
-                  <NCard class="card" :bordered="false" footer-style="background-color:#f5f5f5;padding:12px" @click="onPressItem(item)">
+                  <NCard class="card" :bordered="false" footer-style="background-color:#f5f5f5;padding:12px">
                     <template #cover>
-                      <div class="card-cover">
-                        <template v-if="item.covers.length > 0">
-                          <img class="card-cover-img" :src="item.covers[0]" />
-                        </template>
-                        <template v-else>
-                          <NSpace justify="center" align="center" style="height: 100%">
-                            <NEmpty />
-                          </NSpace>
-                        </template>
-                        <!-- <img class="card-cover-delete" src="@/assets/icon_delete.png" style="width: 24px; height: 24px" @click.stop.pervent="onPressDelete(item)" /> -->
-                      </div>
+                      <ModelStatus :status="item.status" :covers="item.covers" :sn="item.sn" />
                     </template>
                     <template #footer>
                       <NSpace justify="space-between" align="center">
@@ -62,9 +52,10 @@ import { useRouter, useRoute } from 'vue-router';
 import { Http } from '@/tools/http';
 import { Utils } from '@/tools/utils';
 import moment from 'moment';
+import ModelStatus from './model-status.vue';
 
 export default defineComponent({
-  name: 'user-posts',
+  name: 'user-models',
   components: {
     NH2,
     NEmpty,
@@ -81,6 +72,7 @@ export default defineComponent({
     NIcon,
     NUl,
     NLi,
+    ModelStatus,
   },
   setup(props, context) {
     const http = Http.getInstance();
@@ -102,7 +94,7 @@ export default defineComponent({
     const init = async () => {
       const resp = await http.get({
         url: '/emchub/api/client/modelInfo/queryListBySession',
-        data: { pageNo: 1, pageSize: 50, status: 2 },
+        data: { pageNo: 1, pageSize: 50, userId: 8 },
       });
 
       if (resp._result !== 0) return;
@@ -139,16 +131,11 @@ export default defineComponent({
       showModal.value = true;
     };
 
-    const onPressItem = (item: any) => {
-      router.push({ name: 'model-detail', params: { modelSn: item.sn } });
-    };
-
     return {
       userInfo,
       tabs,
       list,
       moment,
-      onPressItem,
       onPressDelete,
       showModal,
       imageId,
