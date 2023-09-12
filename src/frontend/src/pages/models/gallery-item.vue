@@ -2,25 +2,12 @@
   <div class="item" @click="onPressItem">
     <div class="item-carousel-wrap">
       <NCarousel class="item-carousel" :autoplay="true">
-        <template v-for="cover in item.covers">
-          <AppImage class="item-cover" :src="cover" object-fit="cover" :preview-disabled="true" :imgProps="{ style: 'width:100%;height:100%;' }" />
-          <!-- <img class="item-cover" :src="cover" /> -->
-        </template>
+        <AppImage class="item-cover" :src="item.url" object-fit="cover" :preview-disabled="true" :imgProps="{ style: 'width:100%;height:100%;' }" />
       </NCarousel>
     </div>
     <div class="item-body">
       <div class="item-body-row">
-        <NH4 style="margin-bottom: 0">{{ item.name }}</NH4>
-      </div>
-      <!-- <div class="item-body-row">
-                  <NTag type="success"> {{ item.status }} </NTag>
-                </div> -->
-      <div class="item-body-row">
-        <template v-for="tag in item.tags">
-          <NTag class="item-body-row-tag" round size="small" :bordered="false" :color="{ color: '#8f7df8', textColor: '#f1f1f1' }">
-            {{ tag }}
-          </NTag>
-        </template>
+        <NH4 style="margin-bottom: 0"> {{ item.imageTitle }}</NH4>
       </div>
     </div>
   </div>
@@ -37,10 +24,11 @@ export default defineComponent({
   props: { item: { type: Object, default: () => ({}) } },
   emits: ['press'],
   setup(props, ctx) {
+    const onPressItem = () => {
+      ctx.emit('press', props.item);
+    };
     return {
-      onPressItem() {
-        ctx.emit('press', props.item);
-      },
+      onPressItem,
     };
   },
 });

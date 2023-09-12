@@ -1,31 +1,13 @@
 <template>
   <div class="page">
-    <NSpace vertical :size="[0, 24]" :wrap-item="false">
-      <!-- <NGrid cols="5" :x-gap="24" :y-gap="24" item-responsive>
-        <NGridItem span="5 1000:2">
-          <NSpace :wrap-item="false" :wrap="false" :size="[24, 0]">
-            <template v-for="item in nftList">
-              <NFTItem :item="item" style="flex: 1; width: 0" />
-            </template>
-          </NSpace>
-        </NGridItem>
-        <NGridItem span="5 1000:3">
-          <div class="grid-item-content">
-            <NCarousel class="carousel" autoplay>
-              <template v-for="item in bannerList">
-                <NA :href="item.link" target="_blank">
-                  <img class="carousel-img" :src="item.cover" />
-                </NA>
-              </template>
-            </NCarousel>
-          </div>
-        </NGridItem>
-      </NGrid> -->
-      <NCard :bordered="false" content-style="padding:0" header-style="padding:20px 20px 0">
+    <NSpace class="section" vertical :size="[24, 0]" :wrap-item="false">
+      <ModelGallery />
+    </NSpace>
+    <NSpace class="section" vertical :size="[0, 24]" :wrap-item="false">
+      <NCard :bordered="false" content-style="padding:0" header-style="padding:24px 24px 0">
         <template #header>
           <div>
             <span>Recommended models</span>
-            <!-- <div style="font-size: 14px; font-weight: 400">Total {{ itemCount }}</div> -->
           </div>
         </template>
         <template #header-extra>
@@ -40,14 +22,6 @@
             </NSpace>
           </template>
           <template v-else>
-            <!-- <NGrid cols="2 600:3 800:4 1000:5" :x-gap="24" :y-gap="24" item-responsive>
-              <template v-for="item in list">
-                <NGridItem>
-                <ModelItem :item="item" @press="onPressItem" style="width: auto" />
-            </NGridItem>
-                  </template>
-                </NGrid> -->
-            <!-- <ModelItem :item="item" @press="onPressItem" style="width: auto" :key="item.modelId" /> -->
             <Waterfall :list="list" :gutter="24" :width="249.6" style="min-height: 600px" row-key="id">
               <template #item="{ item, url, index }">
                 <NSpace class="item-carousel-wrap" :wrap-item="false" @click="onPressItem(item)">
@@ -78,9 +52,9 @@ import { useUserStore } from '@/stores/user';
 import { Waterfall, LazyImg } from 'vue-waterfall-plugin-next';
 import 'vue-waterfall-plugin-next/dist/style.css';
 import NFTItem from './nft-item.vue';
-import type { Item as NftItemDef } from './nft-item';
+import ModelGallery from './model-gallery.vue';
 
-import ModelItem from './model-item.vue';
+import type { Item as NftItemDef } from './nft-item';
 
 type BannerItem = {
   cover: string;
@@ -100,10 +74,10 @@ export default defineComponent({
     NCard,
     NCarousel,
     NFTItem,
-    ModelItem,
     Waterfall,
     LazyImg,
     NText,
+    ModelGallery,
   },
   beforeRouteEnter(to, from, next) {
     if (typeof to.meta !== 'object') {
@@ -121,9 +95,6 @@ export default defineComponent({
     const userStore = useUserStore();
     const message = useMessage();
     const router = useRouter();
-
-    const bannerList = ref<BannerItem[]>([]);
-    const nftList = ref<NftItemDef[]>([]);
 
     const list = ref<any[]>([]);
     const loading = ref(true);
@@ -175,26 +146,11 @@ export default defineComponent({
     };
 
     onActivated(async () => {
-      // if (route.meta.isBack) {
-      // } else {
-      // }
-      const resp = await http.get({ url: 'https://ma.emchub.ai/config.json' });
-      bannerList.value = resp.banners;
-      nftList.value = resp.nfts.map((item: any) => ({
-        link: item.link,
-        cover: item.cover,
-        publisherName: item.name,
-        publisherAvatar: item.avatar,
-        numericals: item.data,
-      }));
-
       initList();
     });
 
     return {
       nickname: computed(() => userStore.user.nickname),
-      nftList,
-      bannerList,
       list,
       loading,
       pageNo,
@@ -204,6 +160,9 @@ export default defineComponent({
       itemCount,
       initList,
       updateList,
+      onPressItem(item: any) {
+        router.push({ name: 'model-detail', params: { modelSn: item.sn } });
+      },
       onPressUpload() {
         if (!userStore.user.id) {
           message.error('Please sign in first');
@@ -212,9 +171,6 @@ export default defineComponent({
         const host = window.location.origin; //process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'https://models.emchub.ai';
         window.open(`${host}/#/model-upload`, `emchub-upload-${new Date().getTime()}`);
         // router.push({ name: 'model-upload' });
-      },
-      onPressItem(item: any) {
-        router.push({ name: 'model-detail', params: { modelSn: item.sn } });
       },
     };
   },

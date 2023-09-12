@@ -42,7 +42,13 @@
               </NGridItem>
             </template>
           </NGrid>
-          <NModal v-model:show="showModal" :mask-closable="false" preset="dialog" title="确认" content="你确认" positive-text="确认" negative-text="算了" @positive-click="onPositiveClick" @negative-click="onNegativeClick" />
+          <NModal v-model:show="showModal" :mask-closable="false" preset="dialog" title="Tip">
+            <NText> This action will permanently delete the fle. Are yousure you want to continue? </NText>
+            <NSpace :size="[12, 0]" justify="end">
+              <NButton type="primary" ghost color="#A45EFF" @click="onNegativeClick">Cancel</NButton>
+              <NButton type="primary" color="#A45EFF" @click="onPositiveClick">Confirm</NButton>
+            </NSpace>
+          </NModal>
         </NTabPane>
       </template>
     </NTabs>
@@ -50,7 +56,7 @@
 </template>
 <script lang="ts">
 import { ref, defineComponent, onMounted, watch, nextTick, computed } from 'vue';
-import { NH2, NEllipsis, NText, NAvatar, NSpace, NCard, NTabs, NModal, NTabPane, NGrid, NIcon, NGridItem, NUl, NLi, useMessage } from 'naive-ui';
+import { NH2, NEllipsis, NText, NAvatar, NSpace, NCard, NTabs, NModal, NTabPane, NGrid, NIcon, NGridItem, NUl, NLi, useMessage, NButton } from 'naive-ui';
 import { useUserStore } from '@/stores/user';
 import { useRouter, useRoute } from 'vue-router';
 import { Http } from '@/tools/http';
@@ -66,6 +72,7 @@ export default defineComponent({
     NSpace,
     NCard,
     NModal,
+    NButton,
     NTabs,
     NTabPane,
     NGrid,
@@ -120,7 +127,6 @@ export default defineComponent({
       imageId,
       onNegativeClick() {
         imageId.value = '';
-        message.success('Cancel');
         showModal.value = false;
       },
       async onPositiveClick() {

@@ -112,9 +112,9 @@ export default defineComponent({
           image: setup1,
         },
         {
-          title: 'Choose a LORA model',
+          title: 'Choose a style',
           content: `
-          Select a LORA style you like.
+          You could change the Checkpoint model if you need,and modify the LoRA models based on your personal interests.
             `,
           image: setup2,
         },

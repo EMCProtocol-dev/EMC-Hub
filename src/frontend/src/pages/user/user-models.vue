@@ -46,7 +46,7 @@
 </template>
 <script lang="ts">
 import { ref, defineComponent, onMounted, watch, nextTick, computed } from 'vue';
-import { NH2, NEmpty, NEllipsis, NText, NAvatar, NSpace, NCard, NTabs, NModal, NTabPane, NGrid, NIcon, NGridItem, NUl, NLi, useMessage } from 'naive-ui';
+import { NH2, NEllipsis, NText, NAvatar, NSpace, NCard, NTabs, NTabPane, NGrid, NIcon, NGridItem, useMessage } from 'naive-ui';
 import { useUserStore } from '@/stores/user';
 import { useRouter, useRoute } from 'vue-router';
 import { Http } from '@/tools/http';
@@ -58,20 +58,16 @@ export default defineComponent({
   name: 'user-models',
   components: {
     NH2,
-    NEmpty,
     NEllipsis,
     NText,
     NAvatar,
     NSpace,
     NCard,
-    NModal,
     NTabs,
     NTabPane,
     NGrid,
     NGridItem,
     NIcon,
-    NUl,
-    NLi,
     ModelStatus,
   },
   setup(props, context) {
@@ -123,12 +119,6 @@ export default defineComponent({
           createTime: item.createTime,
         });
       });
-
-      console.log(list.value);
-    };
-    const onPressDelete = async (item: any) => {
-      imageId.value = item.id;
-      showModal.value = true;
     };
 
     return {
@@ -136,7 +126,6 @@ export default defineComponent({
       tabs,
       list,
       moment,
-      onPressDelete,
       showModal,
       imageId,
     };
