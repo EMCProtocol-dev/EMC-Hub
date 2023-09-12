@@ -11,7 +11,7 @@
             </div>
           </div>
         </NUpload>
-        <NFormItem path="" label="name" label-style="font-size:12px;">
+        <NFormItem path="" label="nick name" label-style="font-size:12px;">
           <NInput v-model:value="formData.nickname" maxlength="20" show-count placeholder="" :style="inputStyle" @keydown.enter.prevent />
         </NFormItem>
         <NFormItem path="" label="description" label-style="font-size:12px;">
@@ -31,7 +31,7 @@
         </NFormItem>
         <NSpace :size="[24, 0]" justify="end" style="margin-top: 20px">
           <!-- <NButton class="form-btn" color="#A45EFF" ghost size="large">Cannel</NButton> -->
-          <NButton class="form-btn" type="primary" color="#A45EFF" size="large" :loading="submitting" @click.stop.prevent="onPressSubmit">Upload</NButton>
+          <NButton class="form-btn" type="primary" color="#A45EFF" size="large" :loading="submitting" @click.stop.prevent="onPressSubmit">Update</NButton>
         </NSpace>
       </NSpace>
     </NForm>

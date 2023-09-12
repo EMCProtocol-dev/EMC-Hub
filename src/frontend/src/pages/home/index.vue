@@ -112,9 +112,9 @@ export default defineComponent({
           image: setup1,
         },
         {
-          title: 'Choose a node',
+          title: 'Choose a LORA model',
           content: `
-            Choose the appropriate node based on your specific needs and consider factors such as price, location, efficiency, stability, and security on the EMC computing power network.
+          Select a LORA style you like.
             `,
           image: setup2,
         },

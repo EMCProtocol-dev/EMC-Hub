@@ -23,7 +23,7 @@
                     <template #footer>
                       <NSpace justify="space-between" align="center">
                         <NEllipsis style="max-width: 120px">{{ item.name }}</NEllipsis>
-                        <NText style="color: #666; font-size: 12px" @click="onPressEdit(item)">{{ moment(item.createTime).fromNow() }}</NText>
+                        <NText style="color: #666; font-size: 12px">{{ moment(item.createTime).fromNow() }}</NText>
                       </NSpace>
                     </template>
                   </NCard>
@@ -94,7 +94,7 @@ export default defineComponent({
     const init = async () => {
       const resp = await http.get({
         url: '/emchub/api/client/modelInfo/queryListBySession',
-        data: { pageNo: 1, pageSize: 50},
+        data: { pageNo: 1, pageSize: 50 },
       });
 
       if (resp._result !== 0) return;
@@ -139,9 +139,6 @@ export default defineComponent({
       onPressDelete,
       showModal,
       imageId,
-      onPressEdit(item:any){
-        router.push({name:'model-upload',params:{modelSn:item.sn}})
-      },
     };
   },
 });

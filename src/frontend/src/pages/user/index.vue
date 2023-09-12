@@ -3,7 +3,7 @@
     <NSpace class="tabs-nav" vertical :wrap-item="false">
       <NUl class="tabs-nav-ul">
         <template v-for="item in tabs">
-          <NLi :class="['tabs-nav-li', routerSign === item.sign ? 'tabs-nav-li-active' : '']" @click="onPressItem(item.sign)">
+          <NLi :class="['tabs-nav-li', pageName === item.id ? 'tabs-nav-li-active' : '']" @click="onPressItem(item.id)">
             <img class="tabs-nav-li-icon" :src="item.icon" />
             <span>{{ item.name }} </span>
           </NLi>
@@ -18,13 +18,13 @@
       </NUl>
     </NSpace>
     <NSpace class="tabs-pane" :wrap-item="false">
-      <template v-if="routerSign === 'profile'">
+      <template v-if="pageName === 'profile'">
         <UserProfile />
       </template>
-      <template v-if="routerSign === 'models'">
+      <template v-if="pageName === 'models'">
         <UserModels />
       </template>
-      <template v-if="routerSign === 'posts'">
+      <template v-if="pageName === 'posts'">
         <UserPosts />
       </template>
     </NSpace>
@@ -41,7 +41,7 @@ import UserModels from './user-models.vue';
 import UserPosts from './user-posts.vue';
 
 type tabsFlag = {
-  sign: string;
+  id: string;
   name: string;
   icon: any;
 };
@@ -68,30 +68,27 @@ export default defineComponent({
     const router = useRouter();
     const userStore = useUserStore();
 
+    const pageName = ref('profile');
+
     const tabIcon1 = require('@/assets/icon_profile.png');
     const tabIcon2 = require('@/assets/icon_model.png');
     const tabIcon3 = require('@/assets/icon_upload.png');
     const tabIcon4 = require('@/assets/icon_wallet.png');
 
     const tabs = ref<tabsFlag[]>([
-      { sign: 'profile', name: 'Your profile', icon: tabIcon1 },
-      { sign: 'models', name: 'My models', icon: tabIcon2 },
-      { sign: 'posts', name: 'My posts', icon: tabIcon3 },
+      { id: 'profile', name: 'Your profile', icon: tabIcon1 },
+      { id: 'models', name: 'My models', icon: tabIcon2 },
+      { id: 'posts', name: 'My posts', icon: tabIcon3 },
       // { sign: 'wallet', name: 'My wallet', icon: tabIcon4 },
     ]);
-    const routerSign = ref('');
-
-    onMounted(() => {
-      routerSign.value = router.currentRoute.value.params.sign as string;
-    });
 
     const onPressItem = (item: any) => {
-      router.push({ name: 'user', params: { sign: item } });
+      pageName.value = item;
     };
 
     return {
       tabs,
-      routerSign,
+      pageName,
       onPressItem,
       onPressSignOut() {
         userStore.signOut();

@@ -55,7 +55,7 @@ export const routes = [
       },
       {
         name: 'user',
-        path: 'user/:sign',
+        path: 'user',
         component: () => import('@/pages/user/index.vue'),
         meta: { auth: true },
       },

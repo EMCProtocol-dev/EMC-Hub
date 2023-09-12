@@ -2,6 +2,7 @@
   <div class="card-cover" vertical :size="[24, 0]" :wrap-item="false" @click="onPressItem(status)">
     <template v-if="covers">
       <img class="card-cover-img" :src="covers" />
+      <img class="card-cover-edit" src="@/assets/icon_edit.png" style="width: 24px; height: 24px" @click.stop.pervent="onPressEdit" />
     </template>
     <template v-else>
       <NSpace justify="center" align="center" style="height: 100%">
@@ -71,19 +72,15 @@ export default defineComponent({
     const { status, covers, sn }: any = props;
 
     const onPressItem = (status: any) => {
-      if (status === 0) {
-        message.info('comming soon');
-      } else if (status === 1) {
-        message.info('comming soon');
-      } else if (status === 2) {
+      if (status === 2) {
         router.push({ name: 'model-detail', params: { modelSn: sn } });
-      } else if (status === 3) {
-        message.info('comming soon');
-      } else if (status === 4) {
-        message.info('comming soon');
       }
     };
-    return { status, covers: covers[0], onPressItem };
+
+    const onPressEdit = () => {
+      router.push({ name: 'model-upload', params: { modelSn: sn } });
+    };
+    return { status, covers: covers[0], onPressItem, onPressEdit };
   },
 });
 </script>
@@ -107,10 +104,16 @@ export default defineComponent({
   left: 0;
   right: 0;
   background-color: #00000080;
-  cursor: pointer;
 }
 
 .card-cover:hover .card-cover-img {
   transform: scale(1.2);
+}
+
+.card-cover-edit {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  cursor: pointer;
 }
 </style>

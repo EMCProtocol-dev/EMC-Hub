@@ -292,7 +292,6 @@ export default defineComponent({
         const { modelHashCode, modelName, modelType, alias } = props.modelInfo;
 
         let isModelImage = false;
-        // TODO: LORA模型判断
         if (modelType === 'LORA') {
           const inputString = pf.prompt || '';
           const loraTags = inputString.match(/<lora:[^>]+>/g);
