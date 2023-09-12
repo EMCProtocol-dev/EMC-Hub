@@ -28,7 +28,7 @@
         <Waterfall :list="newList" :gutter="24" :width="249.6" style="min-height: 400px" row-key="id">
           <template #item="{ item, url, index }">
             <!-- <GalleryItem :item="item" @press="onPressImages" :key="item.id" /> -->
-            <div class="item" @click="onPressImages">
+            <div class="item" @click="onPressImages(item)">
               <div class="item-carousel-wrap">
                 <NCarousel class="item-carousel" :autoplay="true">
                   <!-- <template v-for="cover in item.covers"> -->

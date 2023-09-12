@@ -83,7 +83,7 @@
                     @keydown.enter.prevent
                   />
                 </NFormItem>
-                <NFormItem path="" label="Negative Prompt" show-require-mark>
+                <NFormItem path="" label="Negative Prompt">
                   <NInput
                     class="form-input"
                     v-model:value="formData.negativePrompt"
@@ -291,20 +291,18 @@ export default defineComponent({
         const imageHash: any = pf.hashes;
         const { modelHashCode, modelName, modelType, alias } = props.modelInfo;
 
+        let isModelImage = false;
+        // TODO: LORA模型判断
         if (modelType === 'LORA') {
           const inputString = pf.prompt || '';
-          const regex = /<lora:(.*?):/;
-          const match = regex.exec(inputString);
-          if (match && match.length > 1) {
-            const extractedValue = match[1];
-            if (extractedValue !== alias) {
-              return message.error('The picture is not of the model,please upload again');
-            } else {
-              isModel.value = true;
+          const loraTags = inputString.match(/<lora:[^>]+>/g);
+          loraTags?.forEach((item) => {
+            const matches = item.match(/<lora:([^:]+):/) || [];
+            if (matches[1] === alias) {
+              return (isModelImage = true);
             }
-          } else {
-            return message.error('please upload again');
-          }
+          });
+          isModel.value = isModelImage;
         } else if (modelType === 'CHECKPOINT') {
           const modelsHash = modelHashCode?.toLowerCase() || '';
           const imageModelsHash = imageHash?.model?.toLowerCase() || '';
