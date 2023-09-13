@@ -85,7 +85,7 @@ export default defineComponent({
       imageList,
       onPressRefresh,
       onPressItem(item: any) {
-        router.push({ name: 'model-detail', params: { modelSn: item.sn } });
+        router.push({ name: 'model-images', params: { id: item.id } });
       },
     };
   },

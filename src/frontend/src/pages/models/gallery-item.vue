@@ -7,7 +7,7 @@
     </div>
     <div class="item-body">
       <div class="item-body-row">
-        <NH4 style="margin-bottom: 0"> {{ item.imageTitle }}</NH4>
+        <NEllipsis style="max-width: 160px; margin-bottom: 0"> {{ item.imageTitle }}</NEllipsis>
       </div>
     </div>
   </div>
@@ -15,12 +15,12 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import { NSpace, NCarousel, NTag, NH4 } from 'naive-ui';
+import { NSpace, NEllipsis, NCarousel, NTag } from 'naive-ui';
 import AppImage from '@/components/app-image.vue';
 
 export default defineComponent({
-  name: 'model-item',
-  components: { NSpace, NCarousel, NTag, NH4, AppImage },
+  name: 'gallery-item',
+  components: { NSpace, NCarousel, NTag, NEllipsis, AppImage },
   props: { item: { type: Object, default: () => ({}) } },
   emits: ['press'],
   setup(props, ctx) {
