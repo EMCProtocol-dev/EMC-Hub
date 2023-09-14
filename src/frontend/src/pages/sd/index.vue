@@ -124,7 +124,7 @@
         </NScrollbar>
       </NCard>
     </div>
-    <NButton @click="onPressPost">1234</NButton>
+    <!-- <NButton @click="onPressPost"></NButton> -->
   </div>
 </template>
 
