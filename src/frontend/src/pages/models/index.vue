@@ -22,7 +22,7 @@
             </NSpace>
           </template>
           <template v-else>
-            <Waterfall :list="list" :gutter="24" :width="249.6" style="min-height: 600px" row-key="id">
+            <Waterfall :list="list" :gutter="24" :width="249.6" style="min-height: 600px">
               <template #item="{ item, url, index }">
                 <NSpace class="item-carousel-wrap" :wrap-item="false" @click="onPressItem(item)">
                   <LazyImg class="item-cover" :url="item.covers[0]" />
@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onActivated } from 'vue';
+import { defineComponent, ref, computed, onActivated, onMounted } from 'vue';
 import { NA, NPagination, NSpace, NButton, NGrid, NGridItem, NSpin, NCard, NCarousel, NText, useMessage } from 'naive-ui';
 import { useRouter } from 'vue-router';
 import { Http } from '@/tools/http';
@@ -55,11 +55,6 @@ import NFTItem from './nft-item.vue';
 import ModelGallery from './model-gallery.vue';
 
 import type { Item as NftItemDef } from './nft-item';
-
-type BannerItem = {
-  cover: string;
-  link: string;
-};
 
 export default defineComponent({
   name: 'models',
@@ -83,7 +78,7 @@ export default defineComponent({
     if (typeof to.meta !== 'object') {
       to.meta = {};
     }
-    if (from.name === 'node-detail') {
+    if (from.name === 'model-detail') {
       to.meta.isBack = true;
     } else {
       to.meta.isBack = false;
@@ -95,6 +90,7 @@ export default defineComponent({
     const userStore = useUserStore();
     const message = useMessage();
     const router = useRouter();
+    const http = Http.getInstance();
 
     const list = ref<any[]>([]);
     const loading = ref(true);
@@ -103,7 +99,6 @@ export default defineComponent({
     const queryParams = ref<any>({});
     const pageCount = ref(1);
     const itemCount = ref(0);
-    const http = Http.getInstance();
 
     const updateList = async () => {
       loading.value = true;
@@ -145,9 +140,13 @@ export default defineComponent({
       return updateList();
     };
 
-    onActivated(async () => {
+    onMounted(() => {
       initList();
     });
+
+    // onActivated(async () => {
+    //   initList();
+    // });
 
     return {
       nickname: computed(() => userStore.user.nickname),
@@ -160,6 +159,7 @@ export default defineComponent({
       itemCount,
       initList,
       updateList,
+
       onPressItem(item: any) {
         router.push({ name: 'model-detail', params: { modelSn: item.sn } });
       },

@@ -1,42 +1,37 @@
 <template>
-  <div class="page">
-    <NSpace vertical :size="[24, 0]" :wrap-item="false">
-      <NCard :bordered="false" content-style="padding:24px" header-style="padding:24px 24px 0" style="min-height: 400px">
-        <template #header>
-          <div>
-            <span>Recommended posts</span>
-          </div>
+  <NSpace vertical :size="[24, 0]" :wrap-item="false">
+    <NCard :bordered="false" content-style="padding:24px" header-style="padding:24px 24px 0" style="min-height: 400px">
+      <template #header>
+        <div>
+          <span>Recommended posts</span>
+        </div>
+      </template>
+      <template #header-extra>
+        <NButton type="primary" color="#A45EFF" ghost strong :loading="loading" @click="onPressRefresh">Click to refresh</NButton>
+      </template>
+      <NGrid cols="2 600:3 800:4 1000:5" :x-gap="24" :y-gap="24" item-responsive>
+        <template v-for="item in imageList">
+          <NGridItem>
+            <GalleryItem :item="item" @press="onPressItem" style="width: auto" />
+          </NGridItem>
         </template>
-        <template #header-extra>
-          <NButton type="primary" color="#A45EFF" ghost strong :loading="loading" @click="onPressRefresh">Click to refresh</NButton>
-        </template>
-        <NGrid cols="2 600:3 800:4 1000:5" :x-gap="24" :y-gap="24" item-responsive>
-          <template v-for="item in imageList">
-            <NGridItem>
-              <GalleryItem :item="item" @press="onPressItem" style="width: auto" />
-            </NGridItem>
-          </template>
-        </NGrid>
-      </NCard>
-    </NSpace>
-  </div>
+      </NGrid>
+    </NCard>
+    <ModelImage :showModal="showModal" @cancel="cancel" :id="imageId" />
+  </NSpace>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onActivated } from 'vue';
+import { defineComponent, ref, computed, onMounted, onActivated } from 'vue';
 import { NSpace, NButton, NGrid, NGridItem, NSpin, NCard, NCarousel, NText, useMessage } from 'naive-ui';
 import { useRouter } from 'vue-router';
 import { Http } from '@/tools/http';
 
 import GalleryItem from './gallery-item.vue';
-
-type BannerItem = {
-  cover: string;
-  link: string;
-};
+import ModelImage from '../model-image/index.vue';
 
 export default defineComponent({
-  name: 'models',
+  name: 'models-gallery',
   components: {
     NSpace,
     NButton,
@@ -45,8 +40,9 @@ export default defineComponent({
     NSpin,
     NCard,
     NCarousel,
-    GalleryItem,
     NText,
+    GalleryItem,
+    ModelImage,
   },
 
   setup() {
@@ -58,7 +54,10 @@ export default defineComponent({
     const galleryTotal = ref(0);
     const galleryPageNo = ref(1);
 
-    onActivated(async () => {
+    const showModal = ref(false);
+    const imageId = ref('');
+
+    onMounted(() => {
       galleryList(1);
     });
 
@@ -84,8 +83,15 @@ export default defineComponent({
       loading,
       imageList,
       onPressRefresh,
+      showModal,
+      imageId,
       onPressItem(item: any) {
-        router.push({ name: 'model-images', params: { id: item.id } });
+        // router.push({ name: 'model-images', params: { id: item.id } });
+        imageId.value = item.id;
+        showModal.value = true;
+      },
+      cancel() {
+        showModal.value = false;
       },
     };
   },

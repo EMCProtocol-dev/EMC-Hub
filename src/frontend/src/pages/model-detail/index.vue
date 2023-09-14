@@ -107,7 +107,7 @@ import { useMinio } from '@/composables/use-minio';
 import ModelGallery from './model-gallery.vue';
 
 export default defineComponent({
-  name: 'node-detail',
+  name: 'model-detail',
   components: {
     NCard,
     NH3,

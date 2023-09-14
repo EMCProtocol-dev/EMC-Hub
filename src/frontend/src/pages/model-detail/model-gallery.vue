@@ -65,7 +65,7 @@
     <template v-else>
       <NSpin size="medium" />
     </template>
-
+    <ModelImage :showModal="showImage" @cancel="cancelImage" :id="imageId" />
     <GalleryUpload :showModal="showModal" :modelInfo="modelInfo" @cancel="cancel" :initList="initList" />
   </div>
 </template>
@@ -75,35 +75,29 @@ import { ref, defineComponent, onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { Http } from '@/tools/http';
 
-import { NCard, NH2, NH3, NH4, NH6, NSpace, NSpin, NTag, NCarousel, NDescriptions, NDescriptionsItem, NEmpty, NButton, NIcon, NModal, NGrid, NGridItem, useMessage, NPopselect } from 'naive-ui';
+import { NH2, NH4, NH6, NSpace, NSpin, NCarousel, NEmpty, NButton, NIcon, NModal, useMessage, NPopselect } from 'naive-ui';
 import { AddSharp as IconAdd, ChevronDownSharp as IconDown, PersonSharp as IconPerson } from '@vicons/ionicons5';
+import moment from 'moment';
 
 import GalleryUpload from './gallery-upload.vue';
 import { LazyImg, Waterfall } from 'vue-waterfall-plugin-next';
 import 'vue-waterfall-plugin-next/dist/style.css';
-import moment from 'moment';
+import ModelImage from '../model-image/index.vue';
 
 export default defineComponent({
-  name: 'node-detail',
+  name: 'model-detail-gallery',
   props: {
     modelInfo: { type: Object, default: {} },
   },
   components: {
-    NCard,
     NH2,
-    NH3,
     NH4,
     NH6,
     NSpace,
-    NTag,
     NCarousel,
-    NDescriptions,
-    NDescriptionsItem,
     NButton,
     NIcon,
     NModal,
-    NGrid,
-    NGridItem,
     NPopselect,
     NSpin,
     NEmpty,
@@ -113,6 +107,7 @@ export default defineComponent({
     IconPerson,
     Waterfall,
     LazyImg,
+    ModelImage,
   },
 
   setup(props, ctx) {
@@ -123,6 +118,9 @@ export default defineComponent({
 
     const selectValue = ref('NEWEST');
     const showModal = ref(false);
+    const showImage = ref(false);
+    const imageId = ref('');
+
     const list = ref<any[]>([]);
     const newList = ref<any[]>([]);
 
@@ -155,6 +153,8 @@ export default defineComponent({
       newList,
       selectValue,
       showModal,
+      showImage,
+      imageId,
       initList,
       moment,
       options: [
@@ -169,8 +169,13 @@ export default defineComponent({
       cancel() {
         showModal.value = false;
       },
+      cancelImage() {
+        showImage.value = false;
+      },
       onPressImages(item: any) {
-        router.push({ name: 'model-images', params: { id: item.id } });
+        // router.push({ name: 'model-images', params: { id: item.id } });
+        imageId.value = item.id;
+        showImage.value = true;
       },
     };
   },

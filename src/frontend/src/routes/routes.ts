@@ -41,14 +41,6 @@ export const routes = [
         component: () => import('@/pages/sd/index.vue'),
       },
       {
-        name: 'nodes',
-        path: 'nodes',
-        component: () => import('@/pages/nodes/index.vue'),
-        meta: {
-          keepAlive: true,
-        },
-      },
-      {
         name: 'cloud',
         path: 'cloud',
         component: () => import('@/pages/cloud/index.vue'),
@@ -60,10 +52,5 @@ export const routes = [
         meta: { auth: true },
       },
     ],
-  },
-  {
-    name: 'model-images',
-    path: '/images/:id',
-    component: () => import('@/pages/model-image/index.vue'),
   },
 ];

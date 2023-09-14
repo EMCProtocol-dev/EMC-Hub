@@ -124,6 +124,7 @@
         </NScrollbar>
       </NCard>
     </div>
+    <NButton @click="onPressPost">1234</NButton>
   </div>
 </template>
 
@@ -519,6 +520,28 @@ export default defineComponent({
         result.value.image = url;
         const [parameters, isParameters] = await StableDiffusionMetadata.extract(url);
         result.value.imageParameters = parameters;
+      },
+      async onPressPost() {
+        const insertData = {
+          //   modelSn: props.modelInfo.modelSn,
+          //   modelName: name,
+          //   imageTitle: title,
+          //   resolution: `${width}*${height}`,
+          //   description: description,
+          //   prompt: prompt,
+          //   negativePrompt: negativePrompt,
+          //   url: images,
+          //   sampler: sampler,
+          //   steps: steps,
+          //   scale: cfgScale,
+          //   seed: seed,
+          //   raw: parametersValue.value,
+        };
+
+        const resp = await http.postJSON({
+          url: 'https://client.emchub.ai/emchub/api/client/modelImage/insert',
+          data: insertData,
+        });
       },
     };
   },
