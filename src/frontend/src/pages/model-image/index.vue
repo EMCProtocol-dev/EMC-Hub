@@ -98,7 +98,7 @@
                     </div>
                   </div>
                 </NScrollbar>
-                <NSpace align="center" justify="space-around" :size="[24, 24]" style="margin-top: 12px">
+                <NSpace align="center" justify="space-around" :size="[24, 24]">
                   <NButton color="#F5F5F5" text-color="#000" size="large" strong @click="onPressCopy">
                     <template #icon>
                       <NIcon>

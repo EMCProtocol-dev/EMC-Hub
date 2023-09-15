@@ -7,6 +7,9 @@
             <NForm ref="formRef" :model="formData">
               <NGrid :cols="24" :x-gap="24">
                 <NFormItemGi :span="24" path="modelHash" label="Checkpoint">
+                  <!-- <template v-for="item in modelHashItems">
+                    <img :src="item.covers" alt="" />
+                  </template> -->
                   <NSelect v-model:value="formData.modelHash" :options="modelHashItems" :loading="modelHashItemsLoading" filterable label-field="label" value-field="val"> </NSelect>
                 </NFormItemGi>
                 <NFormItemGi :span="24" label="LoRA">
@@ -96,26 +99,35 @@
               </div>
             </template>
             <template v-else-if="result.status === 2">
-              <div class="result-img-wrapper">
-                <img class="result-img" :src="result.image" />
-                <div class="result-img-tools">
-                  <NButton tertiary circle @click="onPressDownload">
-                    <template #icon>
-                      <NIcon size="14">
-                        <CloudDownloadOutlineIcon />
-                      </NIcon>
-                    </template>
-                  </NButton>
+              <NSpace :wrap-item="false">
+                <div style="flex: 1">
+                  <NSpace class="result-img-wrapper" justify="center">
+                    <img class="result-img" :src="result.image" />
+                  </NSpace>
+                  <NDescriptions label-placement="top" :column="1">
+                    <NDescriptionsItem>
+                      <template #label>
+                        <span>Image Parameters</span>
+                      </template>
+                      <span style="display: inline-block; white-space: pre-wrap">{{ result.imageParameters }}</span>
+                    </NDescriptionsItem>
+                  </NDescriptions>
                 </div>
-              </div>
-              <NDescriptions label-placement="top" :column="1">
-                <NDescriptionsItem>
-                  <template #label>
-                    <span>Image Parameters</span>
-                  </template>
-                  <span style="display: inline-block; white-space: pre-wrap">{{ result.imageParameters }}</span>
-                </NDescriptionsItem>
-              </NDescriptions>
+                <NSpace class="result-img-tools" vertical :size="[0, 24]">
+                  <NSpace class="result-img-tools-item" :size="[0, 8]" vertical align="center" @click="onPressPost">
+                    <NSpace class="result-img-tools-btn" align="center" justify="center" :wrap-item="false">
+                      <img src="@/assets/icon_send.png" width="24" height="24" />
+                    </NSpace>
+                    <span style="font-size: 12px">Send a post</span>
+                  </NSpace>
+                  <!-- <NSpace class="result-img-tools-item" :size="[0, 8]" vertical align="center" @click="onPressDownload">
+                    <NSpace class="result-img-tools-btn" align="center" justify="center" :wrap-item="false">
+                      <img src="@/assets/icon_download.png" width="24" height="24" />
+                    </NSpace>
+                    <span style="font-size: 12px">Download</span>
+                  </NSpace> -->
+                </NSpace>
+              </NSpace>
             </template>
             <template v-else-if="result.status === 3">
               <NAlert :title="'Execution Failure'" type="error"> {{ result.errorMessage }} </NAlert>
@@ -124,13 +136,13 @@
         </NScrollbar>
       </NCard>
     </div>
-    <!-- <NButton @click="onPressPost"></NButton> -->
+    <SendPost :showModal="showModal" :insert="insert" @cancel="cancel" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, onUnmounted, ref, watch, computed } from 'vue';
-import { NIcon, NCard, NGrid, NForm, NFormItemGi, NInput, NButton, NSpace, FormInst, NSlider, NSelect, NScrollbar, NInputNumber, NSpin, NDescriptions, NDescriptionsItem, useMessage, NAlert } from 'naive-ui';
+import { NIcon, NCard, NGrid, NText, NForm, NFormItemGi, NInput, NButton, NSpace, FormInst, NSlider, NSelect, NScrollbar, NInputNumber, NSpin, NDescriptions, NDescriptionsItem, useMessage, NAlert } from 'naive-ui';
 import { CloudDownloadOutline as CloudDownloadOutlineIcon } from '@vicons/ionicons5';
 import { Utils } from '@/tools/utils';
 import { Http } from '@/tools/http';
@@ -145,6 +157,8 @@ import OpenEmcHubConfig from '@/emchub-open.credentials.json';
 import { shortHashCodeSha256 } from '../model-detail/utils';
 import LoraItem from './lora-item.vue';
 import type { LoraItem as AsLoraItem, LoraItemCover as AsLoraItemCover } from './lora-item';
+import SendPost from './send-post.vue';
+
 interface FormDataType {
   modelHash: string;
 
@@ -181,6 +195,23 @@ type SelectItem = {
   label: string;
   val: string;
   raw: string;
+  covers: string;
+  modelSn: string;
+  modelName: string;
+};
+
+type InsertItem = {
+  modelSn: string;
+  modelName: string;
+  resolution: string;
+  prompt: string;
+  negativePrompt: string;
+  url: string;
+  sampler: string;
+  steps: string;
+  scale: string;
+  seed: string;
+  raw: string;
 };
 
 const defaultFormData = (data?: any) => {
@@ -216,6 +247,7 @@ export default defineComponent({
     NIcon,
     NCard,
     NGrid,
+    NText,
     NForm,
     NFormItemGi,
     NInput,
@@ -231,6 +263,7 @@ export default defineComponent({
     NAlert,
     CloudDownloadOutlineIcon,
     LoraItem,
+    SendPost,
   },
   setup(props, ctx) {
     const message = useMessage();
@@ -248,10 +281,25 @@ export default defineComponent({
     const ready = ref(false);
     const modelHashItemsLoading = ref(true);
     const modelHashItems = ref<SelectItem[]>([]);
+    const modelItem = ref<SelectItem | null>(null);
+    const insert = ref({
+      modelSn: '',
+      modelName: '',
+      resolution: '',
+      prompt: '',
+      negativePrompt: '',
+      url: '',
+      sampler: '',
+      steps: '',
+      scale: '',
+      seed: '',
+      raw: '',
+    });
     const loraItems = ref<AsLoraItem[]>([]);
     const formRef = ref<FormInst | null>(null);
     const formData = ref<FormDataType>(defaultFormData());
     const result = ref<Result>({ errorCode: 0, errorMessage: '', image: '', imageParameters: '', status: 0 });
+    const showModal = ref(false);
     const http = Http.getInstance();
 
     const queryTask = async (sn: string): Promise<Resp365> => {
@@ -367,14 +415,19 @@ export default defineComponent({
       const _loraItems: AsLoraItem[] = [];
       const queryModelHash = (route.params.modelHashCode as string) || '';
 
-      list.forEach(({ type, modelName, modelVersions }) => {
+      list.forEach(({ type, modelName, modelSn, modelVersions }) => {
         modelVersions.forEach(({ modelVersion, hashCodeSha256, alias, previewPicturesUrl }) => {
           const shortHash = shortHashCodeSha256(hashCodeSha256);
+          const picturesUrl = JSON.parse(previewPicturesUrl);
+
           if (type === 'CHECKPOINT') {
             _modeHashItems.push({
               label: `${modelName}:${modelVersion}`,
               val: shortHash,
               raw: hashCodeSha256,
+              covers: picturesUrl[0].url,
+              modelSn: modelSn,
+              modelName: modelName,
             });
             if (queryModelHash === shortHash) {
               formData.value.modelHash = shortHash;
@@ -420,14 +473,18 @@ export default defineComponent({
       samplerOptions,
       modelHashItemsLoading,
       modelHashItems,
+      modelItem,
       loraItems,
       formRef,
       formData,
       result,
+      insert,
+      showModal,
       onPressReset() {
         formData.value = defaultFormData();
       },
       onPressDownload() {
+        console.log(result.value);
         downloadBase64(result.value.image);
       },
       onPressLoraItem(item: AsLoraItem) {
@@ -443,6 +500,7 @@ export default defineComponent({
         const insideBody = {};
         const modelHashItem = modelHashItems.value.find((item) => item.val === formData.value.modelHash);
         const modelHash = modelHashItem?.raw;
+        modelItem.value = modelHashItem || null;
         const body = {
           modelHash: modelHash,
           generativeParameters: '',
@@ -520,28 +578,37 @@ export default defineComponent({
         result.value.image = url;
         const [parameters, isParameters] = await StableDiffusionMetadata.extract(url);
         result.value.imageParameters = parameters;
+        // modelSn.value
+      },
+      cancel() {
+        showModal.value = false;
       },
       async onPressPost() {
-        const insertData = {
-          //   modelSn: props.modelInfo.modelSn,
-          //   modelName: name,
-          //   imageTitle: title,
-          //   resolution: `${width}*${height}`,
-          //   description: description,
-          //   prompt: prompt,
-          //   negativePrompt: negativePrompt,
-          //   url: images,
-          //   sampler: sampler,
-          //   steps: steps,
-          //   scale: cfgScale,
-          //   seed: seed,
-          //   raw: parametersValue.value,
-        };
+        const { image, imageParameters } = result.value;
+        const pf = StableDiffusionMetadata.parse(imageParameters);
+        const { size, prompt, negativePrompt, sampler, steps, cfgScale, seed } = pf;
 
-        const resp = await http.postJSON({
-          url: 'https://client.emchub.ai/emchub/api/client/modelImage/insert',
-          data: insertData,
-        });
+        insert.value = {
+          //   imageTitle: title,
+          //   description: description,
+          modelSn: modelItem.value?.modelSn || '',
+          modelName: modelItem.value?.modelName || '',
+          resolution: size || '',
+          prompt: prompt || '',
+          negativePrompt: negativePrompt || '',
+          url: image || '',
+          sampler: sampler || '',
+          steps: steps || '',
+          scale: cfgScale || '',
+          seed: seed || '',
+          raw: imageParameters || '',
+        };
+        showModal.value = true;
+
+        // const resp = await http.postJSON({
+        //   url: 'https://client.emchub.ai/emchub/api/client/modelImage/insert',
+        //   data: insertData,
+        // });
       },
     };
   },
@@ -573,24 +640,35 @@ export default defineComponent({
   justify-content: center;
 }
 .result-img-wrapper {
-  width: 60%;
-  min-width: 300px;
-  position: relative;
-}
-.result-img {
   width: 100%;
   min-width: 300px;
+  border: 1px solid #e5e4e9;
+  border-radius: 8px;
+}
+.result-img {
+  height: 100%;
+  min-width: 300px;
+  margin: 0 auto;
 }
 
 .result-img-tools {
-  position: absolute;
-  z-index: 1;
-  right: 0;
-  top: 0;
+  flex-shrink: 0;
   padding: 4px;
-  display: none;
 }
-.result-img-wrapper:hover .result-img-tools {
-  display: inline-block;
+.result-img-tools-btn {
+  width: 52px;
+  height: 52px;
+  padding: 10px;
+  border: 1px solid #dab1fb;
+  border-radius: 50%;
+  text-align: center;
+  box-sizing: border-box;
+}
+.result-img-tools-item {
+  cursor: pointer;
+}
+.result-img-tools-item:hover .result-img-tools-btn {
+  border: 1px solid #9e22ff;
+  box-shadow: 0px 3px 10px 0px #7939cb99;
 }
 </style>
