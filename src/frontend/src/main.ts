@@ -26,14 +26,12 @@ app.use(pinia);
 app.mount('#app');
 
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register('/service-worker.js')
-      .then((registration) => {
-        console.log('service-worker registered: ', registration);
-      })
-      .catch((registrationError) => {
-        console.log('service-worker registration failed: ', registrationError);
-      });
+  window.addEventListener('load', async () => {
+    const registerList: ReadonlyArray<ServiceWorkerRegistration> = await navigator.serviceWorker.getRegistrations();
+    console.info(`serviceWorker.getRegistrations`, registerList.length);
+    registerList.forEach(async (registration) => {
+      const r = await registration.unregister();
+      console.info('registration.unregister', registration, r);
+    });
   });
 }
