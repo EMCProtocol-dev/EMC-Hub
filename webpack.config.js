@@ -4,6 +4,7 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const WorkboxPlugin = require('workbox-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -120,6 +121,9 @@ module.exports = {
       __VUE_OPTIONS_API__: true,
       __VUE_PROD_DEVTOOLS__: false,
       __PUBLIC_PATH__: JSON.stringify(''),
+    }),
+    new WorkboxPlugin.InjectManifest({
+      swSrc: path.join(__dirname, path.join('src', frontendDirectory, 'public', 'service-worker.js')),
     }),
   ],
   // proxy /api to port 4943 during development.

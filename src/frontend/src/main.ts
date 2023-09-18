@@ -24,3 +24,16 @@ app.use(router);
 app.use(pinia);
 
 app.mount('#app');
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/service-worker.js')
+      .then((registration) => {
+        console.log('service-worker registered: ', registration);
+      })
+      .catch((registrationError) => {
+        console.log('service-worker registration failed: ', registrationError);
+      });
+  });
+}
