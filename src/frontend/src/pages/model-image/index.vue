@@ -143,7 +143,7 @@ import { useIsMobile, useIsTablet, useIsSmallDesktop, useIsDesktop } from '@/com
 import { NLayout, NModal, NSpace, NGrid, NGridItem, NCard, NScrollbar, NSpin, NCarousel, NTag, NButton, NIcon, NAvatar, NH4, NH3, useMessage, NH6 } from 'naive-ui';
 import { StarOutline as IconStar, CloseCircleOutline as IconClose, CopyOutline as IconCopy, PlayCircleOutline as IconPlay, PersonSharp as IconPerson } from '@vicons/ionicons5';
 import * as StableDiffusionMetadata from 'stable-diffusion-image-metadata';
-
+import { navigateToSD } from '@/pages/model-detail/utils';
 type contentType = {
   style: { 'max-height': string };
 };
@@ -239,7 +239,6 @@ export default defineComponent({
       },
       async onPressRun() {
         // message.info('comming soon');
-        let sdWindow: WindowProxy | null;
         let parameters = '';
         if (imageInfo.value.raw) {
           parameters = imageInfo.value.raw;
@@ -250,23 +249,11 @@ export default defineComponent({
 
         console.info('image parameters :\n', parameters);
 
-        if (parameters) {
-          const handleMessage = (event: MessageEvent) => {
-            const request: any = event.data as any;
-            if (request.type === 'emchub-txt2img-ready') {
-              sdWindow?.postMessage({ type: 'emchub-txt2img-parameters', data: parameters }, '*');
-            }
-            window.removeEventListener('message', handleMessage);
-          };
-          window.addEventListener('message', handleMessage);
-        } else {
+        if (!parameters) {
           console.warn(`${imageInfo.value.url} can not parse parameters`);
-        }
+        } 
 
-        const host = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : window.location.origin;
-
-        sdWindow = window.open(`${host}/#/sd/${imageInfo.value.hashs}`);
-
+        navigateToSD(imageInfo.value.hashs, parameters);
         // router.push({ name: 'sd', params: { modelHashCode: ''} });
       },
     };
