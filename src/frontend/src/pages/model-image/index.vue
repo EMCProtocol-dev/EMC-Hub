@@ -2,24 +2,31 @@
   <NModal v-model:show="isVisible" :close-on-esc="false" :block-scroll="false" :on-mask-click="onPressBack" :on-esc="onPressBack">
     <NSpace align="center" justify="center" :wrap-item="false" style="background-color: #f9f9f9; border-radius: 12px">
       <NSpace class="content" :wrap-item="false">
-        <NCard :bordered="false" content-style="padding:0;height:100%" style="width: 100%; height: 100%; position: relative">
+        <NCard :bordered="false" content-style="padding:0; height:100%" style="width: 100%; position: relative">
           <NIcon class="icon-close" size="36" @click="onPressBack">
             <IconClose color="#999" />
           </NIcon>
-          <NGrid cols="1 976:2" item-responsive x-gap="24">
+          <NGrid cols="1 976:2" item-responsive x-gap="24" style="height: 100%">
             <NGridItem>
               <div class="layout-left">
                 <div class="carousel-wrap">
                   <NCarousel class="carousel" :autoplay="true">
                     <!-- <template v-for="cover in covers"> -->
-                    <img class="cover" :src="imageInfo.url" />
+                    <template v-if="imageInfo.url">
+                      <img class="cover" :src="imageInfo.url" />
+                    </template>
+                    <template v-else>
+                      <NSpace align="center" justify="center" style="width: 100%; height: 100%">
+                        <NSpin />
+                      </NSpace>
+                    </template>
                     <!-- </template> -->
                   </NCarousel>
                 </div>
               </div>
             </NGridItem>
             <NGridItem>
-              <div class="layout-right" style="padding-top: 42px">
+              <div class="layout-right" style="padding: 42px 0 62px">
                 <NScrollbar :style="contentStyle.style">
                   <div style="padding-right: 20px">
                     <div class="header">
@@ -98,7 +105,7 @@
                     </div>
                   </div>
                 </NScrollbar>
-                <NSpace align="center" justify="space-around" :size="[24, 24]">
+                <NSpace class="card-button" align="center" justify="space-around" :size="[24, 24]">
                   <NButton color="#F5F5F5" text-color="#000" size="large" strong @click="onPressCopy">
                     <template #icon>
                       <NIcon>
@@ -156,7 +163,8 @@ export default defineComponent({
     const route = useRoute();
     const isMobile = useIsMobile();
     const isTablet = useIsTablet();
-    const isVisible = ref(props.showModal);
+    const isVisible = ref(false);
+    const imageId = ref('');
 
     const imageInfo = ref({
       imageTitle: '',
@@ -206,14 +214,15 @@ export default defineComponent({
       imageInfo.value.hashs = hashs.model;
     };
     const onPressBack = () => {
+      imageId.value = '';
       context.emit('cancel');
     };
     watch(
       () => props.showModal,
       (newVal: boolean) => {
         isVisible.value = newVal;
-        const id = props.id as string;
-        init(id);
+        imageId.value = props.id as string;
+        init(imageId.value);
       }
     );
     return {
@@ -277,11 +286,6 @@ export default defineComponent({
   box-sizing: border-box;
 }
 
-.layout-loading {
-  width: 100%;
-  height: 600px;
-}
-
 .layout-left,
 .layout-right {
   box-sizing: border-box;
@@ -293,7 +297,6 @@ export default defineComponent({
 .carousel-wrap {
   width: 100%;
   height: 100%;
-  /* padding-top: 100%; */
   position: relative;
   border-radius: 10px;
   border: 1px solid #f9f9f9;
@@ -380,5 +383,11 @@ export default defineComponent({
   top: 0;
   right: 20px;
   cursor: pointer;
+}
+.card-button {
+  width: 50%;
+  position: absolute;
+  bottom: 0;
+  right: 0;
 }
 </style>

@@ -86,7 +86,6 @@ export default defineComponent({
       showModal,
       imageId,
       onPressItem(item: any) {
-        // router.push({ name: 'model-images', params: { id: item.id } });
         imageId.value = item.id;
         showModal.value = true;
       },
