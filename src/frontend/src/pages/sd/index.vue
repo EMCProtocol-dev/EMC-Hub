@@ -99,6 +99,15 @@
               </div>
             </template>
             <template v-else-if="result.status === 2">
+              <NSpace class="result-img-tools" :size="[24, 0]" justify="end">
+                <!-- <NButton color="#E5E4E9" size="medium" ghost strong style="padding: 20px 12px; border-radius: 6px" @click="onPressDownload">
+                  <img src="@/assets/icon_download.png" width="16" height="16" />
+                </NButton> -->
+                <NButton type="primary" color="#A45EFF" size="large" strong @click="onPressPost">
+                  <img src="@/assets/icon_send.png" width="16" height="16" style="margin-right: 12px" />
+                  <span> Send a post </span>
+                </NButton>
+              </NSpace>
               <NSpace :wrap-item="false">
                 <div style="flex: 1">
                   <NSpace class="result-img-wrapper" justify="center">
@@ -113,20 +122,6 @@
                     </NDescriptionsItem>
                   </NDescriptions>
                 </div>
-                <NSpace class="result-img-tools" vertical :size="[0, 24]">
-                  <NSpace class="result-img-tools-item" :size="[0, 8]" vertical align="center" @click="onPressPost">
-                    <NSpace class="result-img-tools-btn" align="center" justify="center" :wrap-item="false">
-                      <img src="@/assets/icon_send.png" width="24" height="24" />
-                    </NSpace>
-                    <span style="font-size: 12px">Send a post</span>
-                  </NSpace>
-                  <!-- <NSpace class="result-img-tools-item" :size="[0, 8]" vertical align="center" @click="onPressDownload">
-                    <NSpace class="result-img-tools-btn" align="center" justify="center" :wrap-item="false">
-                      <img src="@/assets/icon_download.png" width="24" height="24" />
-                    </NSpace>
-                    <span style="font-size: 12px">Download</span>
-                  </NSpace> -->
-                </NSpace>
               </NSpace>
             </template>
             <template v-else-if="result.status === 3">
@@ -649,26 +644,5 @@ export default defineComponent({
   height: 100%;
   min-width: 300px;
   margin: 0 auto;
-}
-
-.result-img-tools {
-  flex-shrink: 0;
-  padding: 4px;
-}
-.result-img-tools-btn {
-  width: 52px;
-  height: 52px;
-  padding: 10px;
-  border: 1px solid #dab1fb;
-  border-radius: 50%;
-  text-align: center;
-  box-sizing: border-box;
-}
-.result-img-tools-item {
-  cursor: pointer;
-}
-.result-img-tools-item:hover .result-img-tools-btn {
-  border: 1px solid #9e22ff;
-  box-shadow: 0px 3px 10px 0px #7939cb99;
 }
 </style>

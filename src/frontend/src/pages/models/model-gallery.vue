@@ -9,7 +9,7 @@
       <template #header-extra>
         <NButton type="primary" color="#A45EFF" ghost strong :loading="loading" @click="onPressRefresh">Click to refresh</NButton>
       </template>
-      <NGrid cols="2 600:3 800:4 1000:5" :x-gap="24" :y-gap="24" item-responsive>
+      <NGrid cols="1 400:2 600:3 800:4 1000:5" :x-gap="24" :y-gap="24" item-responsive>
         <template v-for="item in imageList">
           <NGridItem>
             <GalleryItem :item="item" @press="onPressItem" style="width: auto" />

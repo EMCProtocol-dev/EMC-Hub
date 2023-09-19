@@ -44,7 +44,7 @@
                 <NFormItem path="title" label="Image title" show-require-mark>
                   <NInput class="form-input" v-model:value="formData.title" size="large" placeholder="" @keydown.enter.prevent />
                 </NFormItem>
-                <NFormItem path="" label="About your image" :show-feedback="false">
+                <NFormItem path="" label="About your image">
                   <NInput
                     class="form-input"
                     v-model:value="formData.description"

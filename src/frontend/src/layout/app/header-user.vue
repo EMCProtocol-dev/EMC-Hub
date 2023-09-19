@@ -36,7 +36,7 @@ import { defineComponent, computed } from 'vue';
 import { NButton, NSpace, NIconWrapper, NText, NDivider, NIcon } from 'naive-ui';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
-import { PersonSharp as IconPerson, ExitSharp as IconExit } from '@vicons/ionicons5';
+import { PersonSharp as IconPerson, ExitOutline as IconExit } from '@vicons/ionicons5';
 
 export default defineComponent({
   components: { NButton, NSpace, NIconWrapper, NText, NDivider, NIcon, IconPerson, IconExit },
