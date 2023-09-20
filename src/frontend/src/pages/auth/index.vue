@@ -1,9 +1,5 @@
 <template>
-  <NLayout
-    position="absolute"
-    style="background-color: blueviolet"
-    content-style="display:flex;align-items:center;justify-content:center;"
-  >
+  <NLayout position="absolute" style="background-color: blueviolet" content-style="display:flex;align-items:center;justify-content:center;">
     <div class="content" :style="{ 'background-color': bgColor }">
       <NGrid cols="5" item-responsive>
         <NGridItem span="0 720:3">
@@ -29,12 +25,7 @@
                 <div class="sign-subtitle">Welcome #AI</div>
               </div>
 
-              <SignIn
-                ref="signinRef"
-                @signin="onSignInSuccess"
-                @signinbefore="signinLoading = true"
-                @signinafter="signinLoading = false"
-              />
+              <SignIn ref="signinRef" @signin="onSignInSuccess" @signinbefore="signinLoading = true" @signinafter="signinLoading = false" />
             </template>
             <template v-else-if="action === 'signup'">
               <div class="sign-header">
@@ -43,11 +34,7 @@
                   <NA class="sign-signup" @click="onPressSignUpToggle">Sign In</NA>
                 </NSpace>
               </div>
-              <SignUp
-                @signup="onSignUpSuccess"
-                @signupbefore="signupLoading = true"
-                @signupafter="signupLoading = false"
-              />
+              <SignUp @signup="onSignUpSuccess" @signupbefore="signupLoading = true" @signupafter="signupLoading = false" />
             </template>
           </div>
         </NGridItem>
@@ -104,9 +91,9 @@ export default defineComponent({
       }),
       bgColor: computed(() => {
         if (action.value === 'signup') {
-          return 'rgb(228, 216, 232)';
+          return '#EDF2FF';
         } else {
-          return 'rgb(228, 216, 232)';
+          return '#EDF2FF';
         }
       }),
       bgImg: computed(() => {

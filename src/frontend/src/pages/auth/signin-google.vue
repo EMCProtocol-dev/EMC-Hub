@@ -1,10 +1,10 @@
 <template>
   <NButton class="signin-btn" type="primary" strong size="large" color="#A45EFF" :loading="submitting" @click.stop.prevent="onPressSubmit" style="width: 100%; font-weight: bold !important">
     <template #icon>
-      <NIcon size="28"><img src="@/assets/icon-google.svg" /></NIcon>
+      <NIcon size="24"><img src="@/assets/icon_google.png" /></NIcon>
     </template>
-    Google</NButton
-  >
+    <span style="margin-left: 8px">Google</span>
+  </NButton>
 </template>
 <script lang="ts">
 import { ref, defineComponent } from 'vue';

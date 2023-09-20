@@ -52,9 +52,9 @@
                       </div>
                     </div>
                     <div class="body">
-                      <NH3>{{ imageInfo.imageTitle || '-' }}</NH3>
-                      <div class="body-description">
-                        <div class="with with__column">
+                      <NH3 style="margin-bottom: 0px">{{ imageInfo.imageTitle || '-' }}</NH3>
+                      <div class="with with__column">
+                        <div class="body-description">
                           <div class="with-label">About your image:</div>
                           <div class="with-value with-value__area">
                             {{ imageInfo.description || '-' }}
@@ -251,7 +251,7 @@ export default defineComponent({
 
         if (!parameters) {
           console.warn(`${imageInfo.value.url} can not parse parameters`);
-        } 
+        }
 
         navigateToSD(imageInfo.value.hashs, parameters);
         // router.push({ name: 'sd', params: { modelHashCode: ''} });
@@ -362,7 +362,7 @@ export default defineComponent({
 .body-description {
   border-radius: 10px;
   border: 1px solid #c7cddb;
-  padding: 0 12px;
+  padding: 12px;
 }
 
 .icon-close {

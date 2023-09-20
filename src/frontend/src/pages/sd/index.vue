@@ -85,7 +85,7 @@
       </NCard>
     </div>
     <div class="page-results">
-      <NCard title="Result" content-style="padding:0;">
+      <NCard title="Result" content-style="padding:0;" header-style="padding:20px 24px 0;">
         <NScrollbar trigger="none" :style="scrollBarStyle2">
           <div class="scroll-body">
             <template v-if="result.status === 0">
@@ -624,7 +624,7 @@ export default defineComponent({
   flex: 1;
 }
 .scroll-body {
-  padding: 24px 0;
+  padding-bottom: 24px;
   min-height: calc(100vh - var(--layout-header-height) - 168px);
 }
 
@@ -637,8 +637,10 @@ export default defineComponent({
 .result-img-wrapper {
   width: 100%;
   min-width: 300px;
+  margin: 16px 0 28px;
   border: 1px solid #e5e4e9;
   border-radius: 8px;
+  box-sizing: border-box;
 }
 .result-img {
   height: 100%;
