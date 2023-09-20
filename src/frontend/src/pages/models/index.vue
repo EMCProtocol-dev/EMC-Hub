@@ -206,7 +206,7 @@ export default defineComponent({
   position: relative;
   width: 100%;
   border-radius: 6px;
-  box-shadow: 1px 1px 6px 0 #ccc;
+  box-shadow: 1px 1px 6px 0 #cccccc50;
   cursor: pointer;
   box-sizing: border-box;
   overflow: hidden;

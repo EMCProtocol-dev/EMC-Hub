@@ -187,7 +187,7 @@ export default defineComponent({
   width: 100%;
   border: solid 1px #f1f1f1;
   border-radius: 8px;
-  box-shadow: 1px 1px 6px 0 #ccc;
+  box-shadow: 1px 1px 6px 0 #cccccc50;
   cursor: pointer;
 }
 

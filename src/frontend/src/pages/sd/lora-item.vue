@@ -4,13 +4,7 @@
       <NCarousel class="item-carousel" :autoplay="true">
         <template v-if="item.covers.length > 0">
           <template v-for="cover in item.covers">
-            <AppImage
-              class="item-cover"
-              :src="cover.url"
-              object-fit="cover"
-              :preview-disabled="true"
-              :imgProps="{ style: 'width:100%;height:100%;' }"
-            />
+            <AppImage class="item-cover" :src="cover.url" object-fit="cover" :preview-disabled="true" :imgProps="{ style: 'width:100%;height:100%;' }" />
           </template>
         </template>
         <template v-else>
@@ -54,7 +48,7 @@ export default defineComponent({
   width: 100%;
   border: solid 1px #f1f1f1;
   border-radius: 8px;
-  box-shadow: 1px 1px 6px 0 #ccc;
+  box-shadow: 1px 1px 6px 0 #cccccc50;
   cursor: pointer;
 }
 
