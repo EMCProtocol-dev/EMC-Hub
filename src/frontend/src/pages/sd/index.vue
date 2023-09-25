@@ -141,6 +141,7 @@ import { NIcon, NCard, NGrid, NText, NForm, NFormItemGi, NInput, NButton, NSpace
 import { CloudDownloadOutline as CloudDownloadOutlineIcon } from '@vicons/ionicons5';
 import { Utils } from '@/tools/utils';
 import { Http } from '@/tools/http';
+import { useUserStore } from '@/stores/user';
 import { downloadBase64 } from '@/tools/download';
 import { getImageMime } from 'base64-image-mime';
 import { useRoute } from 'vue-router';
@@ -263,6 +264,8 @@ export default defineComponent({
   setup(props, ctx) {
     const message = useMessage();
     const route = useRoute();
+    const userStore = useUserStore();
+
     const scrollBarStyle = ref({
       'max-height': 'calc(100vh - var(--layout-header-height) - 198px)',
       padding: '0 24px',
@@ -579,6 +582,10 @@ export default defineComponent({
         showModal.value = false;
       },
       async onPressPost() {
+        if (userStore.user.id === '') {
+          message.warning('please log in first');
+          return;
+        }
         const { image, imageParameters } = result.value;
         const pf = StableDiffusionMetadata.parse(imageParameters);
         const { size, prompt, negativePrompt, sampler, steps, cfgScale, seed } = pf;

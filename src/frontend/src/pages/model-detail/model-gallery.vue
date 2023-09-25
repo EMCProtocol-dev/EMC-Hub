@@ -74,6 +74,7 @@
 import { ref, defineComponent, onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { Http } from '@/tools/http';
+import { useUserStore } from '@/stores/user';
 
 import { NH2, NH4, NH6, NSpace, NSpin, NCarousel, NEmpty, NButton, NIcon, NModal, useMessage, NPopselect } from 'naive-ui';
 import { AddSharp as IconAdd, ChevronDownSharp as IconDown, PersonSharp as IconPerson } from '@vicons/ionicons5';
@@ -115,6 +116,7 @@ export default defineComponent({
     const message = useMessage();
     const router = useRouter();
     const http = Http.getInstance();
+    const userStore = useUserStore();
 
     const selectValue = ref('NEWEST');
     const showModal = ref(false);
@@ -164,6 +166,10 @@ export default defineComponent({
         },
       ],
       onPressAdd() {
+        if (userStore.user.id === '') {
+          message.warning('please log in first');
+          return;
+        }
         showModal.value = true;
       },
       cancel() {

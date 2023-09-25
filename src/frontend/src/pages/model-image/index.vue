@@ -1,47 +1,45 @@
 <template>
   <NModal v-model:show="isVisible" :close-on-esc="false" :block-scroll="false" :on-mask-click="onPressBack" :on-esc="onPressBack">
-    <NSpace align="center" justify="center" :wrap-item="false" style="background-color: #f9f9f9; border-radius: 12px">
-      <NSpace class="content" :wrap-item="false">
-        <NCard :bordered="false" content-style="padding:0; height:100%" style="width: 100%; position: relative">
-          <NIcon class="icon-close" size="36" @click="onPressBack">
-            <IconClose color="#999" />
-          </NIcon>
-          <NGrid cols="1 976:2" item-responsive x-gap="24" style="height: 100%">
-            <NGridItem>
-              <div class="layout-left">
-                <div class="carousel-wrap">
-                  <NCarousel class="carousel" :autoplay="true">
-                    <!-- <template v-for="cover in covers"> -->
-                    <template v-if="imageInfo.url">
-                      <img class="cover" :src="imageInfo.url" />
-                    </template>
-                    <template v-else>
-                      <NSpace align="center" justify="center" style="width: 100%; height: 100%">
-                        <NSpin />
-                      </NSpace>
-                    </template>
-                    <!-- </template> -->
-                  </NCarousel>
-                </div>
-              </div>
-            </NGridItem>
-            <NGridItem>
-              <div class="layout-right" style="padding: 42px 0 62px">
-                <NScrollbar :style="contentStyle.style">
-                  <div style="padding-right: 20px">
-                    <div class="header">
-                      <div class="header-row">
-                        <NSpace align="center" justify="center" :wrap-item="false" style="width: 40px; height: 40px; background-color: #f5f5f5; border-radius: 100%; flex-shrink: 0">
-                          <NIcon size="24">
-                            <IconPerson color="#666" />
-                          </NIcon>
-                        </NSpace>
-                        <!-- <NAvatar round size="large" src="" /> -->
-                        <NSpace vertical :size="[0, 0]">
-                          <NH4 class="item-body-row">{{ imageInfo.userName || 'user' + imageInfo.userId }}</NH4>
-                          <NH6 class="item-body-row" style="font-size: 12px; color: #666">{{ moment(imageInfo.createTime).fromNow() }}</NH6>
-                        </NSpace>
-                        <!-- <NButton ghost round color="#A45EFF">
+    <NSpace class="content" :wrap-item="false">
+      <NIcon class="icon-close" size="36" @click="onPressBack">
+        <IconClose color="#999" />
+      </NIcon>
+      <NGrid cols="1 1020:2" item-responsive x-gap="24" style="height: 100%">
+        <NGridItem>
+          <NCard class="layout-left" :bordered="false" content-style="padding:0">
+            <div class="carousel-wrap">
+              <NCarousel class="carousel" :autoplay="true">
+                <!-- <template v-for="cover in covers"> -->
+                <template v-if="imageInfo.url">
+                  <img class="cover" :src="imageInfo.url" />
+                </template>
+                <template v-else>
+                  <NSpace align="center" justify="center" style="width: 100%; height: 100%">
+                    <NSpin />
+                  </NSpace>
+                </template>
+                <!-- </template> -->
+              </NCarousel>
+            </div>
+          </NCard>
+        </NGridItem>
+        <NGridItem>
+          <NCard class="layout-right" :bordered="false" style="padding: 42px 0 62px" content-style="padding:0">
+            <NScrollbar :style="contentStyle.style">
+              <div style="padding-right: 20px">
+                <div class="header">
+                  <div class="header-row">
+                    <NSpace align="center" justify="center" :wrap-item="false" style="width: 40px; height: 40px; background-color: #f5f5f5; border-radius: 100%; flex-shrink: 0">
+                      <NIcon size="24">
+                        <IconPerson color="#666" />
+                      </NIcon>
+                    </NSpace>
+                    <!-- <NAvatar round size="large" src="" /> -->
+                    <NSpace vertical :size="[0, 0]">
+                      <NH4 class="item-body-row">{{ imageInfo.userName || 'user' + imageInfo.userId }}</NH4>
+                      <NH6 class="item-body-row" style="font-size: 12px; color: #666">{{ moment(imageInfo.createTime).fromNow() }}</NH6>
+                    </NSpace>
+                    <!-- <NButton ghost round color="#A45EFF">
                       <template #icon>
                         <NIcon>
                           <IconStar color="#A45EFF" />
@@ -49,85 +47,83 @@
                       </template>
                       Follow
                     </NButton> -->
+                  </div>
+                </div>
+                <div class="body">
+                  <NH3 style="margin-bottom: 0px">{{ imageInfo.imageTitle || '-' }}</NH3>
+                  <div class="with with__column">
+                    <div class="body-description">
+                      <div class="with-label">About your image:</div>
+                      <div class="with-value with-value__area">
+                        {{ imageInfo.description || '-' }}
                       </div>
-                    </div>
-                    <div class="body">
-                      <NH3 style="margin-bottom: 0px">{{ imageInfo.imageTitle || '-' }}</NH3>
-                      <div class="with with__column">
-                        <div class="body-description">
-                          <div class="with-label">About your image:</div>
-                          <div class="with-value with-value__area">
-                            {{ imageInfo.description || '-' }}
-                          </div>
-                        </div>
-                      </div>
-                      <div class="with with__column">
-                        <div class="with-label">Resources Used</div>
-                        <NSpace class="with-value with-value__area" justify="space-between" align="center">
-                          <span>{{ imageInfo.modelName }}</span>
-                          <NSpace class="tags" :wrap-item="false" :size="[8, 8]">
-                            <!-- <template v-for="tag in tags"> -->
-                            <!-- <NTag round size="small" :bordered="false" :color="{ color: '#8f7df8', textColor: '#f1f1f1' }"> {{ imageInfo.type || '-' }}</NTag> -->
-                            <!-- </template> -->
-                          </NSpace>
-                        </NSpace>
-                      </div>
-                      <div class="with with__column">
-                        <div class="with-label">Prompt details</div>
-                        <div class="with-value with-value__area">
-                          {{ imageInfo.prompt || '-' }}
-                        </div>
-                      </div>
-                      <div class="with with__column">
-                        <div class="with-label">Negative prompt</div>
-                        <div class="with-value with-value__area">{{ imageInfo.negativePrompt || '-' }}</div>
-                      </div>
-                      <NSpace class="with with__column" :wrap="false" :wrap-item="false">
-                        <div style="flex: 1">
-                          <div class="with-label">Sampler</div>
-                          <div class="with-value with-value__area">{{ imageInfo.sampler || '-' }}</div>
-                        </div>
-                        <div style="flex: 1">
-                          <div class="with-label">Steps</div>
-                          <div class="with-value with-value__area">{{ imageInfo.steps || '-' }}</div>
-                        </div>
-                      </NSpace>
-                      <NSpace class="with with__column" :wrap="false" :wrap-item="false">
-                        <div style="flex: 1">
-                          <div class="with-label">CFG scale</div>
-                          <div class="with-value with-value__area">{{ imageInfo.scale || '-' }}</div>
-                        </div>
-                        <div style="flex: 1">
-                          <div class="with-label">Seed</div>
-                          <div class="with-value with-value__area">{{ imageInfo.seed || '-' }}</div>
-                        </div>
-                      </NSpace>
                     </div>
                   </div>
-                </NScrollbar>
-                <NSpace class="card-button" align="center" justify="space-around" :size="[24, 24]">
-                  <NButton color="#F5F5F5" text-color="#000" size="large" strong @click="onPressCopy">
-                    <template #icon>
-                      <NIcon>
-                        <IconCopy />
-                      </NIcon>
-                    </template>
-                    Copy Generation Data
-                  </NButton>
-                  <NButton color="#A45EFF" size="large" strong @click="onPressRun">
-                    <template #icon>
-                      <NIcon>
-                        <IconPlay />
-                      </NIcon>
-                    </template>
-                    Generate with this model
-                  </NButton>
-                </NSpace>
+                  <div class="with with__column">
+                    <div class="with-label">Resources Used</div>
+                    <NSpace class="with-value with-value__area" justify="space-between" align="center">
+                      <span>{{ imageInfo.modelName }}</span>
+                      <NSpace class="tags" :wrap-item="false" :size="[8, 8]">
+                        <!-- <template v-for="tag in tags"> -->
+                        <!-- <NTag round size="small" :bordered="false" :color="{ color: '#8f7df8', textColor: '#f1f1f1' }"> {{ imageInfo.type || '-' }}</NTag> -->
+                        <!-- </template> -->
+                      </NSpace>
+                    </NSpace>
+                  </div>
+                  <div class="with with__column">
+                    <div class="with-label">Prompt details</div>
+                    <div class="with-value with-value__area">
+                      {{ imageInfo.prompt || '-' }}
+                    </div>
+                  </div>
+                  <div class="with with__column">
+                    <div class="with-label">Negative prompt</div>
+                    <div class="with-value with-value__area">{{ imageInfo.negativePrompt || '-' }}</div>
+                  </div>
+                  <NSpace class="with with__column" :wrap="false" :wrap-item="false">
+                    <div style="flex: 1">
+                      <div class="with-label">Sampler</div>
+                      <div class="with-value with-value__area">{{ imageInfo.sampler || '-' }}</div>
+                    </div>
+                    <div style="flex: 1">
+                      <div class="with-label">Steps</div>
+                      <div class="with-value with-value__area">{{ imageInfo.steps || '-' }}</div>
+                    </div>
+                  </NSpace>
+                  <NSpace class="with with__column" :wrap="false" :wrap-item="false">
+                    <div style="flex: 1">
+                      <div class="with-label">CFG scale</div>
+                      <div class="with-value with-value__area">{{ imageInfo.scale || '-' }}</div>
+                    </div>
+                    <div style="flex: 1">
+                      <div class="with-label">Seed</div>
+                      <div class="with-value with-value__area">{{ imageInfo.seed || '-' }}</div>
+                    </div>
+                  </NSpace>
+                </div>
               </div>
-            </NGridItem>
-          </NGrid>
-        </NCard>
-      </NSpace>
+            </NScrollbar>
+            <NSpace class="card-button" align="center" justify="space-around" :size="[24, 24]">
+              <NButton color="#F5F5F5" text-color="#000" size="large" strong @click="onPressCopy">
+                <template #icon>
+                  <NIcon>
+                    <IconCopy />
+                  </NIcon>
+                </template>
+                Copy Generation Data
+              </NButton>
+              <NButton color="#A45EFF" size="large" strong @click="onPressRun">
+                <template #icon>
+                  <NIcon>
+                    <IconPlay />
+                  </NIcon>
+                </template>
+                Generate with this model
+              </NButton>
+            </NSpace>
+          </NCard>
+        </NGridItem>
+      </NGrid>
     </NSpace>
   </NModal>
 </template>
@@ -266,7 +262,7 @@ export default defineComponent({
   width: 1440px;
   height: 100%;
   min-height: calc(100vh - 96px);
-  padding: 24px 0 24px 24px;
+  padding: 24px;
   margin: 0px auto;
   background-color: #fff;
   border-radius: 20px;
@@ -286,8 +282,9 @@ export default defineComponent({
   height: 100%;
   position: relative;
   border-radius: 10px;
-  border: 1px solid #f9f9f9;
   overflow: hidden;
+  border: 1px solid #f9f9f9;
+  box-sizing: border-box;
 }
 
 .carousel {
@@ -367,12 +364,13 @@ export default defineComponent({
 
 .icon-close {
   position: absolute;
-  top: 0;
+  top: 20px;
   right: 20px;
   cursor: pointer;
+  z-index: 1;
 }
 .card-button {
-  width: 50%;
+  width: 100%;
   position: absolute;
   bottom: 0;
   right: 0;
