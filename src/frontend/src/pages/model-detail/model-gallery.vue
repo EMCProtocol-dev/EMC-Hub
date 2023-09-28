@@ -49,7 +49,7 @@
                 <!-- <NAvatar round size="large" src="" /> -->
                 <NSpace vertical :size="[0, 0]">
                   <NH4 class="item-body-row">{{ item.userName || 'user' + item.userId }}</NH4>
-                  <NH6 class="item-body-row" style="font-size: 12px; color: #666"> {{ moment(item.createTime).fromNow() }}</NH6>
+                  <!-- <NH6 class="item-body-row" style="font-size: 12px; color: #666"> {{ moment(item.createTime).fromNow() }}</NH6> -->
                 </NSpace>
               </NSpace>
             </div>
@@ -220,7 +220,7 @@ export default defineComponent({
   overflow: hidden;
 }
 .item-body {
-  padding: 10px 16px 16px 16px;
+  padding: 16px;
 }
 .item-body-row {
   margin-bottom: 0;
