@@ -58,7 +58,6 @@ import { ref, defineComponent, onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { Http } from '@/tools/http';
 import copy from 'copy-to-clipboard';
-import moment from 'moment';
 import { useIsMobile, useIsTablet, useIsSmallDesktop, useIsDesktop } from '@/composables/use-screen';
 
 import { NLayout, NModal, NSpace, NGrid, NForm, NFormItemGi, NGridItem, NInput, NCard, NScrollbar, NSpin, NCarousel, NTag, NButton, NIcon, NAvatar, NH4, NH3, useMessage, NH6 } from 'naive-ui';
@@ -121,7 +120,6 @@ export default defineComponent({
     return {
       isVisible,
       onPressBack,
-      moment,
       isMobile,
       isTablet,
       formData,

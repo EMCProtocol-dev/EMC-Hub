@@ -148,6 +148,9 @@ export default defineComponent({
 <style scoped>
 .page {
   width: 100%;
+  padding: 24px;
+  border-radius: 20px;
+  background-color: #fff;
 }
 .card {
   border-radius: 6px;

@@ -11,10 +11,10 @@
             </div>
           </div>
         </NUpload>
-        <NFormItem path="" label="nick name" label-style="font-size:12px;">
+        <NFormItem path="" label="Nick name" label-style="font-size:12px;">
           <NInput v-model:value="formData.nickname" maxlength="20" show-count placeholder="" :style="inputStyle" @keydown.enter.prevent />
         </NFormItem>
-        <NFormItem path="" label="description" label-style="font-size:12px;">
+        <NFormItem path="" label="Description" label-style="font-size:12px;">
           <NInput
             v-model:value="formData.description"
             type="textarea"
@@ -186,6 +186,9 @@ export default defineComponent({
 <style scoped>
 .page {
   width: 100%;
+  padding: 24px;
+  border-radius: 20px;
+  background-color: #fff;
 }
 .form {
   width: 400px;
