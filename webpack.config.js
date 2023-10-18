@@ -122,10 +122,12 @@ module.exports = {
       __VUE_PROD_DEVTOOLS__: false,
       __PUBLIC_PATH__: JSON.stringify(''),
     }),
-    new WorkboxPlugin.InjectManifest({
-      swSrc: path.join(__dirname, path.join('src', frontendDirectory, 'public', 'service-worker.js')),
-      maximumFileSizeToCacheInBytes: 4194304,
-    }),
+    !isDevelopment
+      ? new WorkboxPlugin.InjectManifest({
+          swSrc: path.join(__dirname, path.join('src', frontendDirectory, 'public', 'service-worker.js')),
+          maximumFileSizeToCacheInBytes: 4194304,
+        })
+      : undefined,
   ],
   // proxy /api to port 4943 during development.
   // if you edit dfx.json to define a project-specific local network, change the port to match.
