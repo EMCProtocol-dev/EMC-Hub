@@ -9,13 +9,21 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "lib": ["ESNext", "DOM"],
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
     "skipLibCheck": true,
     "noImplicitAny": false,
     "paths": {
-      "@/*": ["./src/frontend/src/*"]
+      "@/*": [
+        "./src/frontend/src/*"
+      ]
     },
-    "typeRoots": ["node_modules/@types", "./src/frontend/src/types"]
+    "typeRoots": [
+      "node_modules/@types",
+      "./src/frontend/src/types"
+    ]
   },
   "include": [
     "./src/frontend/src/**/*.ts",
@@ -24,5 +32,7 @@
     "./src/frontend/src/**/*.vue",
     "./src/frontend/src/**/**/*.vue"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

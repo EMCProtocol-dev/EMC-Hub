@@ -1,0 +1,231 @@
+<template>
+    <n-modal class="pay-box" v-model:show="isVisible" :mask-closable='false' :block-scroll="false" :on-close="cancel"
+        :on-mask-click="cancel" :onEsc="cancel">
+        <n-card style="width: 600px" :bordered="false" size="huge" role="dialog" aria-modal="true">
+            <div class="pay-content" v-show="step === 1">
+                <img class="icon-close" src="@/assets/icon_close.svg" style="width: 24px; height: 24px" @click="cancel" />
+                <div class="pay-title">Actual Payment :</div>
+                <div class="pay-price">US＄{{ payInfo ? payInfo.price : 0 }}</div>
+                <div class="pay-title">Switch chain</div>
+                <n-select :disabled="payLoading" size="large" :to="false" class="pay-select" v-model:value="paymentMethod"
+                    key="value" :options="paymentMethodList" :render-label="renderLabel" />
+                <div class="pay-loading" v-if="payLoading">
+                    <img src="@/assets/icon_loading.svg" alt="">
+                    pay...
+                </div>
+                <component :is="paymentMethod" @onSuccess="onSuccess" />
+            </div>
+            <div class="pay-content" v-show="step === 2">
+                success
+            </div>
+            <div class="pay-content" v-show="step === 3">
+                error
+            </div>
+        </n-card>
+    </n-modal>
+</template>
+
+<script lang="ts">
+import { ref, defineComponent, onMounted, watch, nextTick, computed, VNodeChild, h } from 'vue';
+import { NCard, NModal, NSpace, NSelect, NIcon } from 'naive-ui';
+import Icp from './web3login/icp.vue'
+import Ar from './web3login/ar.vue'
+import { Agent } from '@dfinity/agent';
+import { InitWallet } from "./wallet/wallet"
+import { getAmount } from './wallet/utils'
+
+type PaymentMethodListLabelType = 'Arbitrum' | 'ICP'
+type PaymentMethodListValueType = 'ar' | 'icp'
+type PaymentMethodListType = {
+    label: PaymentMethodListLabelType,
+    value: PaymentMethodListValueType,
+    icon: string,
+}
+
+export default defineComponent({
+    name: 'icp-pay',
+    components: {
+        NCard,
+        NModal,
+        NSpace,
+        NSelect,
+        NIcon,
+        Icp,
+        Ar
+    },
+    emits: ['cancel'],
+    props: {
+        showPay: { type: Boolean, default: false },
+        payInfo: { type: Object }
+    },
+    setup(props, context) {
+        const isVisible = ref<boolean>(props.showPay);
+        // 1-登录 2-付款
+        const step = ref<1 | 2 | 3>(1)
+        // 支付中
+        const payLoading = ref<boolean>(false);
+        // 支付方式
+        const paymentMethod = ref<PaymentMethodListValueType>('icp')
+        const paymentMethodList = ref<PaymentMethodListType[]>([
+            {
+                label: "Arbitrum",
+                value: 'ar',
+                icon: require('@/assets/icon_ar.svg'),
+            },
+            {
+                label: 'ICP',
+                value: 'icp',
+                icon: require('@/assets/icon_ic.svg'),
+            },
+        ])
+
+        const cancel = () => {
+            if (payLoading.value) {
+                window.$message.error('Please wait for payment...')
+                return false
+            }
+            context.emit('cancel');
+        }
+
+        const renderLabel = (option: PaymentMethodListType): VNodeChild => {
+            return [
+                h(
+                    'img',
+                    {
+                        src: option.icon,
+                        style: {
+                            width: '25px',
+                            height: '25px',
+                            marginRight: '5px'
+                        }
+                    },
+
+                ),
+                option.label as string
+            ]
+        }
+
+        // 登录成功
+        const onSuccess = async (agent: Agent) => {
+            if (agent) {
+                payLoading.value = true
+                // 开始支付
+                const principal = (await agent.getPrincipal()).toString();
+                console.log('pid', principal)
+                let res = await InitWallet(principal)
+                let _balance = getAmount(res.balance)
+                let _address = res.address
+                console.log('当前钱包', _balance, _address)
+                // step.value = 2
+            }
+        }
+
+        watch(
+            () => props.showPay,
+            (n) => {
+                isVisible.value = n;
+            },
+            { deep: true }
+        );
+
+        return {
+            isVisible,
+            context,
+            paymentMethod,
+            paymentMethodList,
+            step,
+            payLoading,
+            onSuccess,
+            renderLabel,
+            cancel
+        };
+    },
+});
+</script>
+
+<style scoped>
+.pay-box {
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.24);
+    box-shadow: 0px 8px 20px 0px rgba(121, 97, 155, 0.88);
+    backdrop-filter: blur(8px);
+}
+
+.pay-box /deep/ .n-card__content {
+    background: #fff;
+    padding: 0;
+    margin: 16px;
+}
+
+.pay-content {
+    padding: 36px;
+    position: relative;
+}
+
+.pay-content .icon-close {
+    width: 36px;
+    height: 36px;
+    position: absolute;
+    right: 12px;
+    top: 15px;
+    cursor: pointer;
+}
+
+.pay-title {
+    color: #333;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 28px;
+    margin-bottom: 16px;
+}
+
+.pay-price {
+    color: #545454;
+    font-family: Roboto;
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 40px;
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+.pay-select /deep/ .n-base-selection-input__content {
+    display: flex;
+    align-items: center;
+}
+
+.pay-select /deep/ .n-base-select-option__content {
+    display: flex;
+    align-items: center;
+}
+
+.close {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.pay-loading {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(255, 255, 255, .8);
+    display: flex;
+    z-index: 9;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.pay-loading img {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 5px;
+}
+</style>

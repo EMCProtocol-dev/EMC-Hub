@@ -16,20 +16,39 @@
         </div>
       </NSpace>
       <NSpace>
-        <template v-for="item in list"> </template>
+        <template v-for="item in list">
+          <div class="record-item">
+            <div class="hot" v-if="item.hot">
+              <img src="@/assets/icon_hot.svg" alt="">
+              <p>MOST POPULAR</p>
+            </div>
+            <p class="name">{{ item.name }}</p>
+            <span>
+              ＄
+              <p class="price">{{ item.price }}</p>
+              <p class="original">{{ item.original }}</p>
+            </span>
+            <p class="points">{{ item.points }} points</p>
+            <p class="btn" @click="onPay(item)">Pay now!</p>
+          </div>
+        </template>
       </NSpace>
 
-      <NSpace class="footer" vertical>
-        <NText>PCI compliant payments powered by Paddle and PayPal</NText>
-      </NSpace>
+      <div class="footer">
+        <strong>🔒 Secure Payments</strong>
+        <p>Choose the subscription plan that's right for you</p>
+      </div>
     </NSpace>
   </NSpace>
+
+  <IcpPay :showPay="showPay" :payInfo="payInfo" @cancel="closePay" />
 </template>
 
 <script lang="ts">
 import { ref, defineComponent, onMounted, watch, nextTick, computed } from 'vue';
-import { NButton, NH2, NSpace, NCard, NUpload, NModal, NAvatar, NText, NForm, NFormItem, NInput, NGrid, NGridItem, NIcon, NUl, NLi, UploadCustomRequestOptions, useMessage } from 'naive-ui';
+import { NButton, NH2, NSpace, NCard, NUpload, NAvatar, NText, NForm, NFormItem, NInput, NGrid, NGridItem, NIcon, NUl, NLi, UploadCustomRequestOptions, useMessage, NModal } from 'naive-ui';
 import { Http } from '@/tools/http';
+import IcpPay from '@/components/pay-points.vue';
 
 import { useUserStore } from '@/stores/user';
 import { Utils } from '@/tools/utils';
@@ -53,14 +72,34 @@ export default defineComponent({
     NIcon,
     NUl,
     NLi,
+    IcpPay,
   },
   setup(props, context) {
     const list = ref([
-      { name: 'AI BEGINNER', price: 0.99, points: 100 },
-      { name: 'AI HOBBYIST', price: 7.99, points: 1000 },
-      { name: 'AI ARTIST', price: 19.99, points: 2500 },
+      { name: 'AI BEGINNER', price: 0.01, original: 0.1, points: 10, hot: false },
+      { name: 'AI HOBBYIST', price: 7.99, original: 10.00, points: 1000, hot: true },
+      { name: 'AI ARTIST', price: 19.99, original: 25.00, points: 2500, hot: false },
     ]);
-    return { list };
+    const showPay = ref(false)
+    const payInfo = ref()
+
+    const onPay = (item) => {
+      showPay.value = true
+      payInfo.value = item
+    }
+
+    const closePay = () => {
+      showPay.value = false
+      payInfo.value = undefined
+    }
+
+    return {
+      list,
+      showPay,
+      payInfo,
+      onPay,
+      closePay
+    };
   },
 });
 </script>
@@ -68,11 +107,13 @@ export default defineComponent({
 .page {
   width: 100%;
 }
+
 .header {
   width: 100%;
   height: 120px;
   position: relative;
 }
+
 .header-background {
   position: absolute;
   top: 0;
@@ -83,6 +124,7 @@ export default defineComponent({
   height: 100%;
   z-index: 1;
 }
+
 .header-content {
   position: absolute;
   top: 0;
@@ -96,15 +138,18 @@ export default defineComponent({
   box-sizing: border-box;
   z-index: 2;
 }
+
 .header-title {
   font-size: 28px;
   color: #fff;
 }
+
 .header-star {
   width: 24px;
   height: 20px;
   margin: 0 0 4px 12px;
 }
+
 .header-rocket {
   position: absolute;
   top: -58px;
@@ -113,6 +158,7 @@ export default defineComponent({
   height: 196px;
   z-index: 2;
 }
+
 .section {
   width: 100%;
   height: 100%;
@@ -121,6 +167,7 @@ export default defineComponent({
   border-radius: 20px;
   box-sizing: border-box;
 }
+
 .record-button {
   background: linear-gradient(91.87deg, #8921c4 -0.05%, #5653f1 98.54%);
   width: 120px;
@@ -130,6 +177,7 @@ export default defineComponent({
   box-sizing: border-box;
   padding: 1px;
 }
+
 .record-button-mask {
   width: 100%;
   height: 100%;
@@ -137,5 +185,168 @@ export default defineComponent({
   background-color: #fff;
   text-align: center;
   border-radius: 5px;
+  cursor: pointer;
+}
+
+.record-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 298px;
+  width: 264px;
+  background: #F5F5F5;
+  border-radius: 16px;
+  border: 2px solid transparent;
+  transition: .3s;
+  position: relative;
+  top: 0
+}
+
+.record-item:hover {
+  border: 2px solid #FE60EE;
+  background: linear-gradient(270deg, #F8E8FF 0%, #EBEDFF 100%);
+  transition: .3s;
+  top: -26px
+}
+
+.record-item .hot {
+  position: absolute;
+  left: -9px;
+  top: -18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.record-item .hot p {
+  margin: 0;
+  color: #FFF;
+  font-family: Montserrat;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  right: 0;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.record-item .name {
+  color: #8E33D6;
+  font-family: Montserrat;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 18px;
+  margin: 0;
+}
+
+.record-item span {
+  display: flex;
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 14px;
+  color: #6C2CFD;
+  align-items: flex-end;
+  margin-top: 32px;
+}
+
+.record-item .price {
+  color: #6C2CFD;
+  font-family: Roboto;
+  font-size: 40px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 40px;
+  margin: 0;
+}
+
+.record-item .original {
+  margin: 0 0 0 8px;
+  color: #D41C1C;
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 14px;
+  text-decoration: line-through;
+}
+
+.record-item .points {
+  margin: 0;
+  color: #F415C3;
+  font-family: Roboto;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+  margin-bottom: 0;
+  margin-top: 28px;
+}
+
+.record-item .btn {
+  width: 148px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 30px;
+  border: 1px solid #8851FD;
+  background: #FFF;
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: #8951FD;
+  transition: .3s;
+  margin-bottom: 0;
+  margin-top: 28px;
+}
+
+.record-item .btn:hover {
+  background: linear-gradient(90deg, #8550FC 0%, #C160FD 100%);
+  border-color: transparent;
+  color: #FFF;
+  transition: .3s;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 58px;
+  margin-bottom: 60px;
+}
+
+.footer strong {
+  color: #252B30;
+  text-align: center;
+  font-family: Roboto;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 28px;
+}
+
+.footer p {
+  margin: 0;
+  color: #6C7176;
+  text-align: center;
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
 }
 </style>

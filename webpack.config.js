@@ -124,9 +124,9 @@ module.exports = {
     }),
     !isDevelopment
       ? new WorkboxPlugin.InjectManifest({
-          swSrc: path.join(__dirname, path.join('src', frontendDirectory, 'public', 'service-worker.js')),
-          maximumFileSizeToCacheInBytes: 4194304,
-        })
+        swSrc: path.join(__dirname, path.join('src', frontendDirectory, 'public', 'service-worker.js')),
+        maximumFileSizeToCacheInBytes: 4194304,
+      })
       : undefined,
   ],
   // proxy /api to port 4943 during development.
