@@ -7,31 +7,18 @@ import {
 import type { Identity } from "@dfinity/agent";
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { AuthClient } from "@dfinity/auth-client";
-import { IDL } from "@dfinity/candid";
 import { err, ok } from "neverthrow";
 
-// 获取 ii 的弹窗尺寸
 export const getIIFrame = (): string => {
   const width = window.innerWidth;
   const height = window.innerHeight;
   const w = 768;
   const h = 630;
-  const left = Math.floor((width - w) / 2);
-  const top = Math.floor((height - h) / 2);
-  return `toolbar=0,location=0,menubar=0,width=${w},height=${h},left=${left},top=${top}`;
+  return `toolbar=0,location=0,menubar=0,width=${w},height=${h},left=${Math.floor(
+    (width - w) / 2
+  )},top=${(height - h) / 2}`;
 };
 
-// 设置类型
-type InternetIdentityConfig = {
-  whitelist: Array<string>;
-  host: string;
-  providerUrl: string;
-  dev: boolean;
-  derivationOrigin?: string;
-  windowOpenerFeatures?: string;
-};
-
-// 自定义 II 登录对象
 export class CustomInternetIdentity {
   public meta = {
     features: [],
@@ -40,29 +27,31 @@ export class CustomInternetIdentity {
     name: "Internet Identity",
   };
 
-  #config: InternetIdentityConfig;
+  #config: {
+    whitelist: Array<string>;
+    host: string;
+    providerUrl: string;
+    dev: boolean;
+    derivationOrigin?: string;
+    windowOpenerFeatures?: string;
+  };
   #identity?: Identity;
   #principal?: string;
   #client?: AuthClient;
 
-  get principal(): string | undefined {
+  get principal() {
     return this.#principal;
   }
 
-  get client(): AuthClient | undefined {
+  get identity() {
+    return this.#identity;
+  }
+
+  get client() {
     return this.#client;
   }
 
-  constructor(
-    userConfig: {
-      whitelist?: string[];
-      host?: string;
-      providerUrl?: string;
-      dev?: boolean;
-      derivationOrigin?: string;
-      windowOpenerFeatures?: string;
-    } = {}
-  ) {
+  constructor(userConfig = {}) {
     this.#config = {
       whitelist: [],
       host: window.location.origin,
@@ -73,21 +62,20 @@ export class CustomInternetIdentity {
     };
   }
 
-  set config(config: InternetIdentityConfig) {
+  set config(config) {
     this.#config = { ...this.#config, ...config };
   }
 
-  get config(): InternetIdentityConfig {
+  get config() {
     return this.#config;
   }
 
-  // 初始化
   async init() {
     try {
       this.#client = await AuthClient.create();
       const isConnected = await this.isConnected();
       if (isConnected) {
-        this.#identity = this.#client.getIdentity(); // 获取的登录的身份
+        this.#identity = this.#client.getIdentity();
         this.#principal = this.#identity?.getPrincipal().toString();
       }
       return ok({ isConnected });
@@ -97,27 +85,24 @@ export class CustomInternetIdentity {
     }
   }
 
-  // 是否登录了
   async isConnected(): Promise<boolean> {
     try {
-      if (!this.#client) return false;
-      return await this.#client.isAuthenticated(); // 是否已经链接了
+      if (!this.#client) {
+        return false;
+      }
+      return await this.#client!.isAuthenticated();
     } catch (e) {
       console.error(e);
       return false;
     }
   }
 
-  // 创建 actor
-  async createActor<Service>(
-    canisterId: string,
-    idlFactory: IDL.InterfaceFactory
-  ) {
+  async createActor<Service>(canisterId, idlFactory) {
     try {
-      // TO DO: pass identity?
+      // TODO: pass identity?
       const agent = new HttpAgent({
         ...this.#config,
-        identity: this.#identity, // 用身份创建 agent
+        identity: this.#identity,
       });
 
       if (this.#config.dev) {
@@ -142,13 +127,19 @@ export class CustomInternetIdentity {
     }
   }
 
-  // 登录
   async connect() {
     try {
+      if (this.#client == undefined) {
+        this.#client = await AuthClient.create({
+          idleOptions: { disableIdle: true },
+        });
+      }
+
       await new Promise<void>((resolve, reject) => {
         this.#client?.login({
           // TO DO: local
           identityProvider: this.#config.providerUrl,
+          maxTimeToLive: BigInt(72 * 3600000000000),
           onSuccess: resolve,
           onError: (e) => {
             reject(e);
@@ -172,10 +163,10 @@ export class CustomInternetIdentity {
     }
   }
 
-  // 退出登录
   async disconnect() {
     try {
       await this.#client?.logout();
+      this.#client = undefined;
       return ok(true);
     } catch (e) {
       console.error(e);

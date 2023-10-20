@@ -3,7 +3,7 @@
         :on-mask-click="cancel" :onEsc="cancel">
         <n-card style="width: 600px" :bordered="false" size="huge" role="dialog" aria-modal="true">
             <div class="pay-content" v-show="step === 1">
-                <img class="icon-close" src="@/assets/icon_close.svg" style="width: 24px; height: 24px" @click="cancel" />
+                <img class="icon-close" src="@/assets/icon_close.svg" @click="cancel" />
                 <div class="pay-title">Actual Payment :</div>
                 <div class="pay-price">US＄{{ payInfo ? payInfo.price : 0 }}</div>
                 <div class="pay-title">Switch chain</div>
@@ -16,10 +16,28 @@
                 <component :is="paymentMethod" @onSuccess="onSuccess" />
             </div>
             <div class="pay-content" v-show="step === 2">
-                success
+                <img class="icon-close" src="@/assets/icon_close.svg" @click="cancel" />
+                <div class="pay-res">
+                    <div class="icon-pay-success">
+                        <img src="@/assets/icon_pay_success.svg" />
+                    </div>
+                    <p class="pay-title-success">Well done</p>
+                    <p class="pay-tip">You've just paid ＄{{ payInfo ? payInfo.price : 0 }}</p>
+                    <div @click="cancel" class="pay-success-btn">continue</div>
+                    <img class="pay-res-bg" src="@/assets/icon_pay_success_bg.svg" />
+                </div>
             </div>
             <div class="pay-content" v-show="step === 3">
-                error
+                <img class="icon-close" src="@/assets/icon_close.svg" @click="cancel" />
+                <div class="pay-res">
+                    <div class="icon-pay-error">
+                        <img src="@/assets/icon_pay_error.svg" />
+                    </div>
+                    <p class="pay-title-error">Ooops</p>
+                    <p class="pay-tip">Something went wrong,let's tryone more again</p>
+                    <div @click="step = 1" class="pay-error-btn">TRY again</div>
+                    <img class="pay-res-bg" src="@/assets/icon_pay_error_bg.svg" />
+                </div>
             </div>
         </n-card>
     </n-modal>
@@ -31,8 +49,9 @@ import { NCard, NModal, NSpace, NSelect, NIcon } from 'naive-ui';
 import Icp from './web3login/icp.vue'
 import Ar from './web3login/ar.vue'
 import { Agent } from '@dfinity/agent';
-import { InitWallet } from "./wallet/wallet"
-import { getAmount } from './wallet/utils'
+import { InitWallet, transferICP, LoadTransaction } from "./wallet/wallet"
+import { getAmount, getAmount2Bigint, get_account_id } from './wallet/utils'
+import { getWalletBalance, transfer } from './canisters/cycle/apis'
 
 type PaymentMethodListLabelType = 'Arbitrum' | 'ICP'
 type PaymentMethodListValueType = 'ar' | 'icp'
@@ -64,6 +83,8 @@ export default defineComponent({
         const step = ref<1 | 2 | 3>(1)
         // 支付中
         const payLoading = ref<boolean>(false);
+        // 收款Account id
+        const collection_accountId = '6a0d6a60de13978f691c38f3ddec3e992e5f05bdd74b866214774550d60df3a3'
         // 支付方式
         const paymentMethod = ref<PaymentMethodListValueType>('icp')
         const paymentMethodList = ref<PaymentMethodListType[]>([
@@ -110,13 +131,40 @@ export default defineComponent({
             if (agent) {
                 payLoading.value = true
                 // 开始支付
+                console.log('agent', agent)
                 const principal = (await agent.getPrincipal()).toString();
                 console.log('pid', principal)
+                const accountId = get_account_id(principal)
+                console.log('用户account id', accountId)
                 let res = await InitWallet(principal)
                 let _balance = getAmount(res.balance)
                 let _address = res.address
                 console.log('当前钱包', _balance, _address)
-                // step.value = 2
+                const price = props.payInfo?.price
+                console.log('转账金额', price)
+                const amountInMicroICP = getAmount2Bigint(price)
+
+                let cyclesBalance = await getWalletBalance(agent, await agent.getPrincipal())
+                console.log('cycles 余额', cyclesBalance)
+
+                return
+                transferICP(collection_accountId, BigInt(amountInMicroICP), {}, agent)
+                    .then((res) => {
+                        console.log('区块高度', res)
+                        step.value = 2
+
+                        // 加载交易记录
+                        LoadTransaction(accountId).then(res => {
+                            console.log(res)
+                        })
+                    })
+                    .catch((err) => {
+                        console.log(err)
+                        step.value = 3
+                    }).finally(() => {
+                        payLoading.value = false
+                    })
+
             }
         }
 
@@ -124,6 +172,7 @@ export default defineComponent({
             () => props.showPay,
             (n) => {
                 isVisible.value = n;
+                step.value = 1
             },
             { deep: true }
         );
@@ -227,5 +276,107 @@ export default defineComponent({
     width: 40px;
     height: 40px;
     margin-bottom: 5px;
+}
+
+.pay-res {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 80px 0;
+    position: relative;
+}
+
+.icon-pay-success {
+    width: 86px;
+    height: 86px;
+    background: rgba(205, 181, 255, .1);
+    border-radius: 50%;
+}
+
+.icon-pay-success img {
+    width: 100%;
+    height: 100%;
+}
+
+.icon-pay-error {
+    width: 86px;
+    height: 86px;
+    background: rgba(255, 251, 251, 1);
+    border-radius: 50%;
+}
+
+.pay-title-error {
+    color: #FC4844;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 28px;
+    margin-bottom: 0;
+    margin-top: 25px;
+}
+
+.pay-title-success {
+    color: #8851FD;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 28px;
+    margin-bottom: 0;
+    margin-top: 25px;
+}
+
+.pay-tip {
+    color: #999;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px;
+    margin-bottom: 0;
+    margin-top: 25px;
+}
+
+.pay-success-btn {
+    width: 178px;
+    height: 48px;
+    border-radius: 30px;
+    background: linear-gradient(39deg, #8550FC 22.39%, #C160FD 80.25%);
+    color: #FFF;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 22px;
+    cursor: pointer;
+    position: relative;
+    z-index: 9;
+}
+
+.pay-error-btn {
+    width: 178px;
+    height: 48px;
+    border-radius: 30px;
+    background: linear-gradient(0deg, #FC4844 0%, #F59695 100%);
+    color: #FFF;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 22px;
+    cursor: pointer;
+    position: relative;
+    z-index: 9;
+}
+
+.pay-res-bg {
+    position: absolute;
+    bottom: -36px;
+    left: -36px;
+    width: calc(100% + 72px);
 }
 </style>

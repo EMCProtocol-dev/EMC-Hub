@@ -71,7 +71,7 @@ export default defineComponent({
             autoConnect: false,
             host: location.origin,
             customDomain: '',
-            whitelist: [],
+            whitelist: ['ryjl3-tyaaa-aaaaa-aaaba-cai', 'aanaa-xaaaa-aaaah-aaeiq-cai'],
         };
 
         const client: Client = createClient({
@@ -87,29 +87,30 @@ export default defineComponent({
         // 初始化成功
         client.on('init', async (e) => {
             client.disconnect()
-
         });
 
         // 监听登录成功
         client.on('connect', async (e) => {
-            loginLoading.value = false
-            let identity;
-            if (e.activeProvider.meta.id === 'astrox') {
-                identity = window.ic.astrox.identity;
-            } else if (e.activeProvider.meta.id === 'icx') {
-                identity = window.icx._identity;
-            } else {
-                identity = e.activeProvider.identity;
-            }
-            agent.value = handleIdentityAgent(identity)
-            afterLogin()
+            setTimeout(() => {
+                loginLoading.value = false
+                let identity;
+                if (e.activeProvider.meta.id === 'astrox') {
+                    identity = window.ic.astrox.identity;
+                } else if (e.activeProvider.meta.id === 'icx') {
+                    identity = window.icx._identity;
+                } else {
+                    identity = e.activeProvider.identity;
+                }
+                agent.value = handleIdentityAgent(identity)
+                afterLogin()
+            }, 1000)
         });
 
         const login = async (way: 'ii' | 'astrox' | 'plug') => {
             loginLoading.value = true
 
             if (way === 'plug') {
-                let res = await handlePlugAgent([], "manual");
+                let res = await handlePlugAgent(['ryjl3-tyaaa-aaaaa-aaaba-cai', 'aanaa-xaaaa-aaaah-aaeiq-cai'], "manual");
                 if (agent) {
                     agent.value = res
                     afterLogin()

@@ -200,7 +200,8 @@ export default defineComponent({
   border: 2px solid transparent;
   transition: .3s;
   position: relative;
-  top: 0
+  top: 0;
+  margin-top: 70px;
 }
 
 .record-item:hover {
