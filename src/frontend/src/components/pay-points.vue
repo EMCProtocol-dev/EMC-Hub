@@ -147,7 +147,6 @@ export default defineComponent({
                 let cyclesBalance = await getWalletBalance(agent, await agent.getPrincipal())
                 console.log('cycles 余额', cyclesBalance)
 
-                return
                 transferICP(collection_accountId, BigInt(amountInMicroICP), {}, agent)
                     .then((res) => {
                         console.log('区块高度', res)
