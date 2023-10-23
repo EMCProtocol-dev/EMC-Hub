@@ -4,14 +4,14 @@
         <n-card style="width: 600px" :bordered="false" size="huge" role="dialog" aria-modal="true">
             <div class="pay-content" v-show="step === 1">
                 <img class="icon-close" src="@/assets/icon_close.svg" @click="cancel" />
-                <div class="pay-title">Actual Payment :</div>
-                <div class="pay-price">US＄{{ payInfo ? payInfo.price : 0 }}</div>
+                <div class="pay-title">Order:</div>
+                <div class="pay-price">＄{{ payInfo ? payInfo.price : 0 }}</div>
                 <div class="pay-title">Switch chain</div>
                 <n-select :disabled="payLoading" size="large" :to="false" class="pay-select" v-model:value="paymentMethod"
                     key="value" :options="paymentMethodList" :render-label="renderLabel" />
                 <div class="pay-loading" v-if="payLoading">
                     <img src="@/assets/icon_loading.svg" alt="">
-                    pay...
+                    loading...
                 </div>
                 <component :is="paymentMethod" @onSuccess="onSuccess" />
             </div>
