@@ -6,9 +6,26 @@
                 <img class="icon-close" src="@/assets/icon_close.svg" @click="cancel" />
                 <div class="pay-title">Order:</div>
                 <div class="pay-price">＄{{ payInfo ? payInfo.price : 0 }}</div>
-                <div class="pay-title">Switch chain</div>
+                <!-- <div class="pay-title">Switch chain</div>
                 <n-select :disabled="payLoading" size="large" :to="false" class="pay-select" v-model:value="paymentMethod"
-                    key="value" :options="paymentMethodList" :render-label="renderLabel" />
+                    key="value" :options="paymentMethodList" :render-label="renderLabel" /> -->
+                <div class="pay-method">
+                    <div class="pay-method-item">
+                        <img src="@/assets/icon_emc.svg" />
+                        <p class="pay-method-title">EMC</p>
+                        <p class="pay-method-price">640EMC</p>
+                    </div>
+                    <div class="pay-method-item">
+                        <img src="@/assets/icon_usdt.svg" />
+                        <p class="pay-method-title">USDT</p>
+                        <p class="pay-method-price">7.99USDT</p>
+                    </div>
+                    <div class="pay-method-item" :class="paymentMethod === 'icp' ? 'current' : ''">
+                        <img src="@/assets/icon_ic.svg" />
+                        <p class="pay-method-title">ICP</p>
+                        <p class="pay-method-price">640ICP</p>
+                    </div>
+                </div>
                 <div class="pay-loading" v-if="payLoading">
                     <img src="@/assets/icon_loading.svg" alt="">
                     loading...
@@ -377,5 +394,68 @@ export default defineComponent({
     bottom: -36px;
     left: -36px;
     width: calc(100% + 72px);
+}
+
+.pay-method {
+    display: flex;
+    justify-content: center;
+}
+
+.pay-method-item {
+    display: flex;
+    flex-direction: column;
+    width: 112px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    border: 1px solid #E5E4E9;
+    margin-right: 35px;
+    cursor: pointer;
+    overflow: hidden;
+    /* padding: 8px; */
+}
+
+.pay-method-item:last-child {
+    margin-right: 0;
+}
+
+.pay-method-item img {
+    width: 24px;
+    height: 24px;
+    padding-left: 8px;
+    padding-top: 8px;
+}
+
+.pay-method-title {
+    margin-top: 6px;
+    margin-bottom: 0;
+    color: #545454;
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 14px;
+    padding-left: 8px;
+}
+
+.pay-method-price {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    color: #999;
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 14px;
+    margin: 8px 0 0 0;
+    padding-left: 8px;
+}
+
+.pay-method-item.current {
+    border: 1px solid #6C2CFD;
+}
+
+.pay-method-item.current .pay-method-price {
+    background: #6C2CFD;
+    color: #FFF;
 }
 </style>
