@@ -35,6 +35,22 @@
                 </NSpace>
               </template>
             </Waterfall>
+            <!-- https://github.com/shershen08/vue-masonry -->
+            <!-- <div style="width: 100%; margin: auto; padding: 0 12px">
+              <div v-masonry transition-duration="0.3s" i tem-selector=".item">
+                <div v-masonry-tile class="item-carousel" v-for="(item, index) in list">
+                  <NSpace class="item-carousel-wrap" :wrap-item="false" @click="onPressItem(item)">
+                    <img class="item-cover" :src="item.covers[0]" alt="" />
+                    <NSpace class="item-carousel-overlay" :wrap-item="false">
+                      <NSpace class="item-carousel-overlay-type" :wrap-item="false" align="center">{{ item.type }}</NSpace>
+                      <NSpace class="item-carousel-overlay-footer" vertical :wrap-item="false" :size="[0, 12]">
+                        <NText style="color: #fff">{{ item.name }}</NText>
+                      </NSpace>
+                    </NSpace>
+                  </NSpace>
+                </div>
+              </div>
+            </div> -->
           </template>
         </NSpace>
       </NCard>
@@ -202,9 +218,13 @@ export default defineComponent({
   object-fit: cover;
 }
 
+.item-carousel {
+  padding: 12px;
+}
 .item-carousel-wrap {
   position: relative;
-  width: 100%;
+  /* width: 100%; */
+  width: 249.6px;
   border-radius: 6px;
   box-shadow: 1px 1px 6px 0 #cccccc50;
   cursor: pointer;

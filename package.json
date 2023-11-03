@@ -48,7 +48,9 @@
     "stable-diffusion-image-metadata": "^1.0.13",
     "vue": "^3.3.2",
     "vue-router": "^4.2.0",
-    "vue-waterfall-plugin-next": "^2.2.3"
+    "vue-waterfall-plugin-next": "^2.2.3",
+    "vue-masonry": "^0.16.0"
+
   },
   "devDependencies": {
     "@types/minio": "^7.1.1",

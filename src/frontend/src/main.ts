@@ -2,6 +2,8 @@ import { createApp } from 'vue';
 import AppSetup from './AppSetup.vue';
 import { router } from './routes/index';
 import { Utils } from './tools/utils';
+// import { VueMasonryPlugin } from 'vue-masonry';
+
 import moment from 'moment';
 
 import { pinia } from './stores/index';
@@ -22,6 +24,7 @@ app.config.globalProperties.$filters = {
 
 app.use(router);
 app.use(pinia);
+// app.use(VueMasonryPlugin);
 
 app.mount('#app');
 

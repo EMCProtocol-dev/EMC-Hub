@@ -32,18 +32,28 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
+import { defineComponent, computed, onMounted } from 'vue';
 import { NButton, NSpace, NIconWrapper, NText, NDivider, NIcon } from 'naive-ui';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 import { PersonSharp as IconPerson, ExitOutline as IconExit } from '@vicons/ionicons5';
+import { Http } from '@/tools/http';
 
 export default defineComponent({
   components: { NButton, NSpace, NIconWrapper, NText, NDivider, NIcon, IconPerson, IconExit },
   setup(props, context) {
     const router = useRouter();
     const userStore = useUserStore();
+    const http = Http.getInstance();
 
+    onMounted(async () => {
+      const resp = await http.get({
+        url: 'emchub/api/client/user/selectByUser',
+      });
+      if (resp._result === -1) {
+        userStore.signOut();
+      }
+    });
     return {
       user: computed(() => userStore.user),
       onPressSignIn() {
