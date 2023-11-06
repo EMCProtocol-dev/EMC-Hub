@@ -71,7 +71,13 @@ const { href, route, navigate, isActive, isExactActive } = useLink({
 const isInternalLink = computed(() => {
   if (props.external) return false;
   if (props.internal) return true;
-  if (route.value.fullPath.startsWith('/#')) return false;
+  if (
+    route.value.fullPath.startsWith('/#') ||
+    route.value.fullPath.startsWith('/https:') ||
+    route.value.fullPath.startsWith('/http:')
+  )
+    return false;
+
   return route.value.matched.length > 0 && route.value.name !== 'Error';
 });
 
