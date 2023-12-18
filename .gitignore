@@ -22,3 +22,6 @@ dist/
 
 #deploy config files
 deploy/
+
+# credentials.json files
+*.credentials.json
