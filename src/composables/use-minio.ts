@@ -45,10 +45,6 @@ interface UploadOptions {
   onProgress?: (e: AxiosProgressEvent) => void;
 }
 
-function wait(t: number) {
-  return new Promise((resolve) => setTimeout(resolve, t));
-}
-
 type PresignHttpOptions = {
   fileName: string;
   fileType: string;
@@ -74,8 +70,8 @@ export function useMinio() {
   };
 
   const presignedHttp = async (params: PresignHttpOptions) => {
-    const appid = 'emc-hub-a63123cf';
-    const secret = '9c4283f0-3509-11ee-8d81-06c27dd31a5a';
+    const appid = config.httpAppId;
+    const secret = config.httpSecret;
     const nonce = new Date().getTime();
     const action = 'sign';
     const { fileName, fileType, fileHash, fileSize, signType, userId } = params;
