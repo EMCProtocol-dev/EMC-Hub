@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@aws-crypto/sha256-browser": "^5.0.0",
+    "@browsery/util": "^0.4.0",
     "@metamask/sdk": "^0.14.1",
     "@vicons/ionicons5": "^0.12.0",
     "@vueuse/core": "^10.3.0",
@@ -63,6 +64,7 @@
     "process": "0.11.10",
     "stream-browserify": "3.0.0",
     "stream-http": "^3.2.0",
+    "timers-browserify": "^2.0.12",
     "typescript": "^5.0.2",
     "util": "^0.12.5",
     "vite": "^4.3.9",

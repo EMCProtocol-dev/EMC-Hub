@@ -35,7 +35,7 @@
             <tr>
               <td>Generate</td>
               <td>{{ ` ${item.points} points` }}</td>
-              <td>{{ moment(item.createTime).format('YYYY-MM-DD HH:mm:ss') }}</td>
+              <td>{{ item.createTime }}</td>
             </tr>
           </template>
         </tbody>
@@ -46,12 +46,27 @@
 
 <script lang="ts">
 import { ref, defineComponent, onMounted, watch, nextTick, computed } from 'vue';
-import { NButton, NH2, NSpace, NCard, NUpload, NModal, NAvatar, NForm, NFormItem, NInput, NGrid, NGridItem, NIcon, NUl, NLi, NTable, NSpin, useMessage } from 'naive-ui';
-import { Http } from '@/tools/http';
+import {
+  NButton,
+  NH2,
+  NSpace,
+  NCard,
+  NUpload,
+  NModal,
+  NAvatar,
+  NForm,
+  NFormItem,
+  NInput,
+  NGrid,
+  NGridItem,
+  NIcon,
+  NUl,
+  NLi,
+  NTable,
+  NSpin,
+  useMessage,
+} from 'naive-ui';
 import moment from 'moment';
-
-import { useUserStore } from '@/stores/user';
-import { Utils } from '@/tools/utils';
 
 export default defineComponent({
   name: 'user-profile',
@@ -79,12 +94,12 @@ export default defineComponent({
       {
         how: 'Generate',
         points: '-20',
-        createTime: '1693967228000',
+        createTime: moment(1693967228000).format('YYYY-MM-DD HH:mm:ss'),
       },
       {
         how: 'Generate',
         points: '-20',
-        createTime: '1693967228000',
+        createTime: moment(1693967228000).format('YYYY-MM-DD HH:mm:ss'),
       },
     ]);
 
@@ -97,7 +112,7 @@ export default defineComponent({
       }, 1000);
     };
 
-    return { moment, list, onPressRefresh, loading };
+    return { list, onPressRefresh, loading };
   },
 });
 </script>

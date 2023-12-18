@@ -20,7 +20,9 @@ export default defineConfig((options) => {
         { find: 'process', replacement: 'process/browser' },
         { find: 'stream', replacement: 'stream-browserify' },
         { find: 'zlib', replacement: 'browserify-zlib' },
-        { find: 'util', replacement: 'util' },
+        { find: 'util', replacement: '@browsery/util' },
+        { find: 'timers', replacement: 'timers-browserify' },
+        { find: 'path', replacement: 'path-browserify' },
       ],
     },
     server: {
