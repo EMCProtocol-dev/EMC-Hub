@@ -21,10 +21,7 @@
                   </div>
                 </template>
                 <template v-for="items in item.children">
-                  <div
-                    :class="['tabs-nav-children', pageName === items.id ? 'tabs-nav-li-active' : '']"
-                    @click="onPressItem(items.id)"
-                  >
+                  <div :class="['tabs-nav-children', pageName === items.id ? 'tabs-nav-li-active' : '']" @click="onPressItem(items.id)">
                     <span>{{ items.name }} </span>
                   </div>
                 </template>
@@ -62,23 +59,7 @@
 </template>
 <script lang="ts">
 import { ref, defineComponent, onMounted, watch, nextTick, computed } from 'vue';
-import {
-  NButton,
-  TabsProps,
-  NTabs,
-  NTabPane,
-  NSpace,
-  NCard,
-  NModal,
-  NGrid,
-  NIcon,
-  NGridItem,
-  NUl,
-  NLi,
-  NCollapse,
-  NCollapseItem,
-  useMessage,
-} from 'naive-ui';
+import { NButton, TabsProps, NTabs, NTabPane, NSpace, NCard, NModal, NGrid, NIcon, NGridItem, NUl, NLi, NCollapse, NCollapseItem, useMessage } from 'naive-ui';
 import type { CollapseProps } from 'naive-ui';
 import { useRouter, useRoute, onBeforeRouteUpdate } from 'vue-router';
 import { useUserStore } from '@/stores/user';

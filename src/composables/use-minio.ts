@@ -80,12 +80,12 @@ export function useMinio() {
     const action = 'sign';
     const { fileName, fileType, fileHash, fileSize, signType, userId } = params;
     const body = {
-      userId: userId,
+      userId: userId, //用户id，第三方用户标识
       fileName: fileName,
       fileContentType: fileType,
       fileHash: fileHash,
       size: fileSize,
-      type: signType,
+      type: signType, //指定目标桶 0 media 1 archive
     };
     const signParams: any = { appid, nonce, action, requestBody: JSON.stringify(body) };
     signParams.sign = await sign(signParams, secret);
@@ -133,8 +133,8 @@ export function useMinio() {
     }
 
     const formData = new FormData();
-    Object.keys(policyData.postFormData).forEach((k: string) => {
-      formData.append(k, policyData.postFormData[k]);
+    Object.entries(policyData.postFormData).forEach(([k, v]) => {
+      formData.append(k, v);
     });
     formData.append('file', file.file as File);
     const axios: Axios = new Axios({ timeout: 60 * 60 * 1000 });

@@ -48,7 +48,7 @@ export default defineComponent({
 
     onMounted(async () => {
       const resp = await http.get({
-        url: 'emchub/api/client/user/selectByUser',
+        url: '/emchub/api/client/user/selectByUser',
       });
       if (resp._result === -1) {
         userStore.signOut();

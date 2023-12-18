@@ -41,7 +41,7 @@
     </NSpace>
   </NSpace>
 
-  <IcpPay :showPay="showPay" :payInfo="payInfo" @cancel="closePay" />
+  <PayPoint v-model:visible="showPay" :payInfo="payInfo" />
 </template>
 
 <script lang="ts">
@@ -66,13 +66,11 @@ import {
   useMessage,
   NModal,
 } from 'naive-ui';
+import PayPoint from '@/components/pay-points/index.vue';
 import { Http } from '@/tools/http';
-import IcpPay from '@/components/pay-points.vue';
-
-import { useUserStore } from '@/stores/user';
-import { Utils } from '@/tools/utils';
 
 type Item = {
+  id: number;
   name: string;
   price: number;
   original: number;
@@ -99,14 +97,11 @@ export default defineComponent({
     NIcon,
     NUl,
     NLi,
-    IcpPay,
+    PayPoint,
   },
   setup(props, context) {
-    const list = ref<Item[]>([
-      { name: 'AI BEGINNER', price: 0.01, original: 0.1, points: 10, hot: false },
-      { name: 'AI HOBBYIST', price: 7.99, original: 10.0, points: 1000, hot: true },
-      { name: 'AI ARTIST', price: 19.99, original: 25.0, points: 2500, hot: false },
-    ]);
+    const list = ref<Item[]>([]);
+    const http = Http.getInstance();
     const showPay = ref(false);
     const payInfo = ref();
 
@@ -119,6 +114,16 @@ export default defineComponent({
       showPay.value = false;
       payInfo.value = undefined;
     };
+
+    onMounted(async () => {
+      const resp = await http.get({
+        url: '/emchub/api/client/chargeConfig/queryList',
+      });
+      list.value = [];
+      (resp.data || []).forEach((item: any, index: number) => {
+        list.value.push({ id: item.id, name: item.name, price: item.fee, original: item.originalFee, points: item.point, hot: index === 1 });
+      });
+    });
 
     return {
       list,
