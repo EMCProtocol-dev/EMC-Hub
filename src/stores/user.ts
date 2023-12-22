@@ -40,23 +40,25 @@ export const useUserStore = defineStore('user', () => {
   });
   const user = ref<User>(defaultUser());
   const http = Http.getInstance();
-  const handleSignResponse = (token: string, _user: User) => {
+  const setUser = (_user: User) => {
     //set pinia user
     user.value = _user;
-
-    //set http session
-    const session = { token };
-    http.setSession(session);
-
     //set localstorage
     const cache = { user: _user };
     Utils.setLocalStorage(STORAGE_KEY, cache);
+  };
+  const handleSignResponse = (token: string, _user: User) => {
+    setUser(_user);
+    //set http session
+    const session = { token };
+    http.setSession(session);
   };
   const initSignResult = () => {
     return { _result: 0, _desc: '', user: defaultUser() };
   };
   return {
     user,
+    setUser,
     initLocalData() {
       const cache = Utils.getLocalStorage(STORAGE_KEY);
       if (cache) {

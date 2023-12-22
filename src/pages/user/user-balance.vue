@@ -14,9 +14,9 @@
             <span style="font-size: 40px">{{ balance }}&nbsp;</span>
             <span style="font-size: 26px">points left</span>
           </div>
-          <div class="points-button">
+          <!-- <div class="points-button">
             <span>Top-up</span>
-          </div>
+          </div> -->
         </NSpace>
       </div>
     </div>

@@ -103,7 +103,6 @@ export default defineComponent({
   },
   setup(props, context) {
     const STORAGE_KEY = 'emchub.user';
-    const cache = Utils.getLocalStorage(STORAGE_KEY);
     const http = Http.getInstance();
     const userStore = useUserStore();
     const { upload, presignedHttp } = useMinio();
@@ -165,7 +164,7 @@ export default defineComponent({
     };
 
     const onPressSubmit = async () => {
-      const { nickname, avatar, description } = formData.value;
+      const { id, nickname, avatar, description } = formData.value;
       submitting.value = true;
       const resp = await http.post({
         url: 'emchub/api/client/user/updateUserInfo',
@@ -173,13 +172,16 @@ export default defineComponent({
       });
       submitting.value = false;
       if (resp._result !== 0) return;
-      cache.user.id = userStore.user.id;
-      cache.user.nickname = nickname;
-      cache.user.avatar = avatar;
-      cache.user.description = description;
+      const user = {
+        id,
+        nickname,
+        avatar,
+        description,
+      };
+      userStore.setUser(user);
 
-      console.log(cache);
-      Utils.setLocalStorage(STORAGE_KEY, cache);
+      // console.log(cache);
+      // Utils.setLocalStorage(STORAGE_KEY, cache);
       message.success('Update success');
     };
 
