@@ -22,7 +22,7 @@
     </div>
     <NSpace class="section" vertical :wrap-item="false">
       <NH2>Transactions</NH2>
-      <NSpin :show="loading" :size="20">
+      <NSpin :show="loading" :size="20" style="min-height: 200px">
         <NTable :bordered="false" :single-line="false">
           <thead>
             <tr>
