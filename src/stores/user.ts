@@ -8,6 +8,7 @@ interface User {
   id: string | number;
   nickname: string;
   avatar: string;
+  description: string;
 }
 
 export type AuthType = 'password' | 'wallet';
@@ -35,6 +36,7 @@ export const useUserStore = defineStore('user', () => {
     id: '',
     nickname: '',
     avatar: '',
+    description: '',
   });
   const user = ref<User>(defaultUser());
   const http = Http.getInstance();

@@ -11,7 +11,7 @@
             </template>
           </NSpin>
           <div style="color: #fff; width: 100%; text-align: center">
-            <span style="font-size: 40px">1000 </span>
+            <span style="font-size: 40px">{{ balance }}&nbsp;</span>
             <span style="font-size: 26px">points left</span>
           </div>
           <div class="points-button">
@@ -22,24 +22,29 @@
     </div>
     <NSpace class="section" vertical :wrap-item="false">
       <NH2>Transactions</NH2>
-      <NTable :bordered="false" :single-line="false">
-        <thead>
-          <tr>
-            <th>How</th>
-            <th>Points</th>
-            <th>Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template v-for="item in list">
+      <NSpin :show="loading" :size="20">
+        <NTable :bordered="false" :single-line="false">
+          <thead>
             <tr>
-              <td>Generate</td>
-              <td>{{ ` ${item.points} points` }}</td>
-              <td>{{ item.createTime }}</td>
+              <th>How</th>
+              <th>Points</th>
+              <th>Time</th>
             </tr>
-          </template>
-        </tbody>
-      </NTable>
+          </thead>
+          <tbody>
+            <template v-for="item in list">
+              <tr>
+                <td>{{ item.how }}</td>
+                <td>{{ ` ${item.points} points` }}</td>
+                <td>{{ item.createTime }}</td>
+              </tr>
+            </template>
+          </tbody>
+        </NTable>
+      </NSpin>
+      <NSpace justify="end">
+        <NPagination v-model:page="pageNo" :page-count="Math.ceil(total / pageSize)" />
+      </NSpace>
     </NSpace>
   </NSpace>
 </template>
@@ -64,12 +69,17 @@ import {
   NLi,
   NTable,
   NSpin,
+  NPagination,
+  NSkeleton,
   useMessage,
 } from 'naive-ui';
 import moment from 'moment';
+import { Http } from '@/tools/http';
+
+import { init } from 'echarts';
 
 export default defineComponent({
-  name: 'user-profile',
+  name: 'user-balance',
   components: {
     NButton,
     NH2,
@@ -88,31 +98,83 @@ export default defineComponent({
     NUl,
     NLi,
     NTable,
+    NPagination,
+    NSkeleton,
   },
   setup(props, context) {
-    const list = ref([
-      {
-        how: 'Generate',
-        points: '-20',
-        createTime: moment(1693967228000).format('YYYY-MM-DD HH:mm:ss'),
-      },
-      {
-        how: 'Generate',
-        points: '-20',
-        createTime: moment(1693967228000).format('YYYY-MM-DD HH:mm:ss'),
-      },
-    ]);
+    const http = Http.getInstance();
 
     const loading = ref(false);
-    const onPressRefresh = () => {
+    const list = ref([]);
+    const total = ref(0);
+    const balance = ref(0);
+    const pageNo = ref(1);
+    const pageSize = ref(10);
+
+    onMounted(() => {
+      init();
+      initList();
+    });
+
+    const init = async () => {
       loading.value = true;
-      //  const Http = new Http();
-      setTimeout(() => {
-        loading.value = false;
-      }, 1000);
+      const resp = await http.get({
+        url: '/emchub/api/client/wallet/info',
+      });
+      if (resp._result !== 0) return;
+      balance.value = resp.data?.balance;
+      loading.value = false;
     };
 
-    return { list, onPressRefresh, loading };
+    const initList = async () => {
+      const resp = await http.get({
+        url: '/emchub/api/client/wallet/log_list',
+        data: { page: pageNo.value, size: pageSize.value },
+      });
+      if (resp._result !== 0) return;
+
+      total.value = resp.pageInfo?.total;
+
+      const newList = resp.pageInfo?.list;
+      const listType = [
+        {
+          value: '+',
+          type: 'Manual balance adjustment',
+        },
+        {
+          value: '-',
+          type: 'Manual balance adjustment',
+        },
+        {
+          value: '+',
+          type: 'Recharge',
+        },
+        {
+          value: '-',
+          type: 'Consume',
+        },
+      ];
+      list.value = newList?.map((item: any) => ({
+        how: listType[item.type].type,
+        points: listType[item.type].value + item.amount,
+        createTime: moment(item.create_time).format('YYYY-MM-DD HH:mm:ss'),
+      }));
+    };
+    console.log(list.value);
+
+    watch(
+      () => pageNo.value,
+      () => {
+        initList();
+      }
+    );
+
+    const onPressRefresh = () => {
+      init();
+      initList();
+    };
+
+    return { balance, list, total, pageNo, pageSize, loading, onPressRefresh };
   },
 });
 </script>

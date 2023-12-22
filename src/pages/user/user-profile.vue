@@ -12,14 +12,7 @@
           </div>
         </NUpload>
         <NFormItem path="" label="Nick name" label-style="font-size:12px;">
-          <NInput
-            v-model:value="formData.nickname"
-            maxlength="20"
-            show-count
-            placeholder=""
-            :style="inputStyle"
-            @keydown.enter.prevent
-          />
+          <NInput v-model:value="formData.nickname" maxlength="20" show-count placeholder="" :style="inputStyle" @keydown.enter.prevent />
         </NFormItem>
         <NFormItem path="" label="Description" label-style="font-size:12px;">
           <NInput
@@ -38,15 +31,7 @@
         </NFormItem>
         <NSpace :size="[24, 0]" justify="end" style="margin-top: 20px">
           <!-- <NButton class="form-btn" color="#A45EFF" ghost size="large">Cannel</NButton> -->
-          <NButton
-            class="form-btn"
-            type="primary"
-            color="#A45EFF"
-            size="large"
-            :loading="submitting"
-            @click.stop.prevent="onPressSubmit"
-            >Update</NButton
-          >
+          <NButton class="form-btn" type="primary" color="#A45EFF" size="large" :loading="submitting" @click.stop.prevent="onPressSubmit">Update</NButton>
         </NSpace>
       </NSpace>
     </NForm>
@@ -135,14 +120,10 @@ export default defineComponent({
       init();
     });
     const init = async () => {
-      const resp = await http.get({
-        url: 'emchub/api/client/user/selectByUser',
-      });
-      if (resp._result !== 0) return;
-      const { username, userImage, description } = resp.data;
-      formData.value.nickname = username || '-';
-      formData.value.avatar = userImage;
-      formData.value.description = description || '-';
+      const userInfo = userStore.user;
+      formData.value.nickname = userInfo.nickname || '-';
+      formData.value.avatar = userInfo.avatar;
+      formData.value.description = userInfo.description || '~';
     };
 
     const handleUploadImage = async (params: UploadCustomRequestOptions) => {
@@ -195,9 +176,11 @@ export default defineComponent({
       cache.user.id = userStore.user.id;
       cache.user.nickname = nickname;
       cache.user.avatar = avatar;
+      cache.user.description = description;
+
       console.log(cache);
       Utils.setLocalStorage(STORAGE_KEY, cache);
-      message.success('update success');
+      message.success('Update success');
     };
 
     const inputStyle = computed(() => {
