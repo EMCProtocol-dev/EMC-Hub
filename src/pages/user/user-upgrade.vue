@@ -28,7 +28,7 @@
               <p class="price">{{ item.price }}</p>
               <p class="original">{{ item.original }}</p>
             </span>
-            <p class="points">{{ item.points }} points</p>
+            <p class="credits">{{ item.credits }} credits</p>
             <p class="btn" @click="onPay(item)">Pay now!</p>
           </div>
         </template>
@@ -66,7 +66,7 @@ import {
   useMessage,
   NModal,
 } from 'naive-ui';
-import PayPoint from '@/components/pay-points/index.vue';
+import PayPoint from '@/components/pay-credits/index.vue';
 import { Http } from '@/tools/http';
 
 type Item = {
@@ -74,7 +74,7 @@ type Item = {
   name: string;
   price: number;
   original: number;
-  points: number;
+  credits: number;
   hot: boolean;
 };
 
@@ -121,7 +121,7 @@ export default defineComponent({
       });
       list.value = [];
       (resp.data || []).forEach((item: any, index: number) => {
-        list.value.push({ id: item.id, name: item.name, price: item.fee, original: item.originalFee, points: item.point, hot: index === 1 });
+        list.value.push({ id: item.id, name: item.name, price: item.fee, original: item.originalFee, credits: item.point, hot: index === 1 });
       });
     });
 
@@ -313,7 +313,7 @@ export default defineComponent({
   text-decoration: line-through;
 }
 
-.record-item .points {
+.record-item .credits {
   margin: 0;
   color: #f415c3;
   font-family: Roboto;

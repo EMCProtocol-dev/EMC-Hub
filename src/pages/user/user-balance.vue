@@ -2,9 +2,9 @@
   <NSpace class="page" vertical :size="[0, 24]">
     <div class="section" style="height: 280px">
       <NH2>My Balance</NH2>
-      <div class="points">
+      <div class="credits">
         <img class="section-background" src="@/assets/balance-background.png" />
-        <NSpace class="points-content" vertical align="end" :wrap-item="false">
+        <NSpace class="credits-content" vertical align="end" :wrap-item="false">
           <NSpin :rotate="loading" :size="20">
             <template #icon>
               <img src="@/assets/icon_refresh.png" style="width: 20px; height: 20px" @click="onPressRefresh" />
@@ -12,9 +12,9 @@
           </NSpin>
           <div style="color: #fff; width: 100%; text-align: center">
             <span style="font-size: 40px">{{ balance }}&nbsp;</span>
-            <span style="font-size: 26px">points left</span>
+            <span style="font-size: 26px">credits left</span>
           </div>
-          <!-- <div class="points-button">
+          <!-- <div class="credits-button">
             <span>Top-up</span>
           </div> -->
         </NSpace>
@@ -27,7 +27,7 @@
           <thead>
             <tr>
               <th>How</th>
-              <th>Points</th>
+              <th>Credits</th>
               <th>Time</th>
             </tr>
           </thead>
@@ -35,7 +35,7 @@
             <template v-for="item in list">
               <tr>
                 <td>{{ item.how }}</td>
-                <td>{{ ` ${item.points} points` }}</td>
+                <td>{{ ` ${item.credits} credits` }}</td>
                 <td>{{ item.createTime }}</td>
               </tr>
             </template>
@@ -78,6 +78,7 @@ import { Http } from '@/tools/http';
 
 import { init } from 'echarts';
 
+
 export default defineComponent({
   name: 'user-balance',
   components: {
@@ -105,7 +106,7 @@ export default defineComponent({
     const http = Http.getInstance();
 
     const loading = ref(false);
-    const list = ref([]);
+    const list = ref<any[]>([]);
     const total = ref(0);
     const balance = ref(0);
     const pageNo = ref(1);
@@ -156,7 +157,7 @@ export default defineComponent({
       ];
       list.value = newList?.map((item: any) => ({
         how: listType[item.type].type,
-        points: listType[item.type].value + item.amount,
+        credits: listType[item.type].value + item.amount,
         createTime: moment(item.create_time).format('YYYY-MM-DD HH:mm:ss'),
       }));
     };
@@ -182,7 +183,7 @@ export default defineComponent({
 .page {
   width: 100%;
 }
-.points {
+.credits {
   position: relative;
   width: 540px;
   height: 184px;
@@ -208,7 +209,7 @@ export default defineComponent({
   bottom: 0;
   z-index: 1;
 }
-.points-content {
+.credits-content {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -220,7 +221,7 @@ export default defineComponent({
   box-sizing: border-box;
   z-index: 2;
 }
-.points-button {
+.credits-button {
   padding: 8px 16px;
   border-radius: 20px;
   border: 1px solid #fff;

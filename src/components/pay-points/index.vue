@@ -67,6 +67,7 @@ import { useWeb3UserStore } from '@/stores/web3-user';
 import { ApiManager } from '@/web3/api';
 import { ConsumptionApi } from '@/web3/api/consumption';
 import { ERC20Api } from '@/web3/api/erc20';
+import { getDefaultNetwork } from '@/web3/network';
 export default defineComponent({
   name: 'pay-point',
   components: {
@@ -88,8 +89,9 @@ export default defineComponent({
     const web3User = useWeb3UserStore();
     const http = Http.getInstance();
     const apiManager = ApiManager.getInstance();
-    const consumptionContract = '0x1111daFd889956e63912D48aAa6430f913aF7337';
-    const erc20Api = apiManager.create(ERC20Api, { address: '0x20Dcf8106bdC2cCCcf84DD62dc486A7123A41d13' });
+    const networkConfig = getDefaultNetwork();
+    const consumptionContract = networkConfig.apis.consumption.contract;
+    const erc20Api = apiManager.create(ERC20Api, { address: networkConfig.tokens.emc.contract });
     const consumptionApi = apiManager.create(ConsumptionApi, { address: consumptionContract });
     // 0:empty 1:pay 2:complete 3:error
     const titles = ['', 'Pay', 'Complete', 'Error'];
