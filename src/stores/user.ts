@@ -8,7 +8,7 @@ interface User {
   id: string | number;
   nickname: string;
   avatar: string;
-  description: string;
+  description?: string;
 }
 
 export type AuthType = 'password' | 'wallet';

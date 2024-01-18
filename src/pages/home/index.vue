@@ -86,14 +86,14 @@ export default defineComponent({
         {
           cover: cover2,
           name: 'LLaMa',
-          description: 'Developers can use LLMs to create exciting language generation and text applications.',
+          description: 'Developers can use LLMs to develop exciting language generation and text applications.',
           button: 'Coming soon',
           link: 'javascript:void(0)',
         },
         {
           cover: cover3,
           name: 'MusicGen',
-          description: 'Musicians and music enthusiasts can unlock a world of creativity and innovation through the AI Music Model.',
+          description: 'Musicians and music enthusiasts can unlock a world of creativity and innovation through the AI Music Models.',
           button: 'Coming soon',
           link: 'javascript:void(0)',
         },
@@ -107,21 +107,21 @@ export default defineComponent({
         {
           title: 'Select a model',
           content: `
-            Select the model you want to use. You can discover a wide variety of categories: characters, animations, clothing, cars, buildings, and more. There are also different model types available: checkpoint, Lora, and others. 
+          Select the model you want to use. There're many categories avaiable including characters, animations, clothing, cars, buildings, and more. Model types contain checkpoint, Lora, and others.
             `,
           image: setup1,
         },
         {
           title: 'Choose a style',
           content: `
-          You could change the Checkpoint model if you need,and modify the LoRA models based on your personal interests.
+          You could change the Checkpoint model if neceesary, and modify the LoRA models based on personal interests.
             `,
           image: setup2,
         },
         {
           title: 'Input the prompts',
           content: `
-            The purpose of prompts is to guide AIGC models to create images that align with your expectations. You can learn and utilize better prompts techniques in the EMC Hub community.
+          The purpose of prompts is to guide AIGC models to create images that align with your expectations. You can learn and utilize better prompts in the EMC Hub community.
             `,
           image: setup3,
         },
@@ -137,7 +137,7 @@ export default defineComponent({
 
     const footer = ref({
       title: 'Embark on your Al journey in the Web3 world now!',
-      description: "Upload your own Al model, and in the future, you can manage the model's revenue rights and explore various unique features through NFTs.",
+      description: "Upload your own Al models, and in the future, you can manage the model's revenue rights and explore other features through NFTs.",
       button: 'Browse Models',
     });
 

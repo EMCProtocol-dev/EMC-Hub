@@ -79,6 +79,7 @@ export default defineComponent({
       }
       error.value = -1;
       errorText.value = '';
+      //废弃⚠️
       const resp = await http.get({
         url: 'https://api.edgematrix.pro/api/v1/nodelistsnapshot',
         data: { appspecs: props.hash, page: 1, size: 100 },

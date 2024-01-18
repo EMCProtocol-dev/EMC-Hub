@@ -103,7 +103,7 @@ export default defineComponent({
       step.value = -1;
       const resp = await http.get({
         url: '/emchub/api/client/wallet/queryActualPay',
-        data: { money: props.payInfo.price },
+        data: { fee: props.payInfo.price },
       });
       emc.value = resp.data || '?';
       step.value = 1;

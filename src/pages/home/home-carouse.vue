@@ -4,7 +4,7 @@
       <NGridItem>
         <NSpace class="carouse-box" :wrap-item="false" :vertical="true" justify="center" :align="isMobile || isTablet ? 'center' : 'start'" :style="titleStyle.style">
           <NH2 class="carouse-title">Fully <span class="carouse-title-span">Decentralized</span> Al Application</NH2>
-          <NH4 class="carouse-content">With the help of idle GPU computing power distributed on EdgeMatrix worldwide, you can generate the AI images you desire from anywhere at any time. It is a fully decentralized AI platform. </NH4>
+          <NH4 class="carouse-content">With idle GPU computing power distributed on EdgeMatrix worldwide, you can generate the AI images you desire at any time. It is a fully decentralized AI platform. </NH4>
           <RouterLink :to="{ path: '/models' }">
             <NButton class="carouse-button" type="warning"> Generate Your First Al lmage on Chain </NButton>
           </RouterLink>

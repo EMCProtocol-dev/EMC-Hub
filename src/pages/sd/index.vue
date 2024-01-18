@@ -22,13 +22,7 @@
                 </NFormItemGi>
                 <NFormItemGi :span="24" label="LoRA">
                   <template v-if="modelHashItemsLoading">
-                    <NSpace
-                      align="center"
-                      justify="center"
-                      :wrap-item="false"
-                      :wrap="false"
-                      style="height: 200px; width: 100%"
-                    >
+                    <NSpace align="center" justify="center" :wrap-item="false" :wrap="false" style="height: 200px; width: 100%">
                       <NSpin />
                     </NSpace>
                   </template>
@@ -63,13 +57,7 @@
                   />
                 </NFormItemGi>
                 <NFormItemGi :span="24" path="sampler" label="Sampler">
-                  <NSelect
-                    v-model:value="formData.sampler"
-                    label-field="label"
-                    value-field="val"
-                    placeholder="Select"
-                    :options="samplerOptions"
-                  />
+                  <NSelect v-model:value="formData.sampler" label-field="label" value-field="val" placeholder="Select" :options="samplerOptions" />
                 </NFormItemGi>
                 <NFormItemGi :span="24" path="steps" label="Steps">
                   <NSpace vertical style="width: 100%">
@@ -90,14 +78,7 @@
                   </NSpace>
                 </NFormItemGi>
                 <NFormItemGi :span="24" path="seed" label="Seed">
-                  <NInputNumber
-                    v-model:value="formData.seed"
-                    size="small"
-                    :min="-1"
-                    :max="99999999999"
-                    :step="1"
-                    style="width: 100%"
-                  />
+                  <NInputNumber v-model:value="formData.seed" size="small" :min="-1" :max="99999999999" :step="1" style="width: 100%" />
                 </NFormItemGi>
                 <NFormItemGi :span="12" path="cfgScale" label="CFG Scale">
                   <NSpace vertical style="width: 100%">
@@ -117,22 +98,8 @@
         </NScrollbar>
         <template #footer>
           <NSpace :wrap-item="false" :wrap="false" align="center" justify="center" :size="[24, 0]">
-            <NButton
-              :block="true"
-              color="#A45EFF"
-              ghost
-              :disabled="result.status === 1"
-              @click="onPressReset"
-              style="flex: 1"
-              >Reset</NButton
-            >
-            <NButton
-              type="primary"
-              color="#A45EFF"
-              :block="true"
-              :loading="result.status === 1"
-              @click="onPressGenerate"
-              style="flex: 1"
+            <NButton :block="true" color="#A45EFF" ghost :disabled="result.status === 1" @click="onPressReset" style="flex: 1">Reset</NButton>
+            <NButton type="primary" color="#A45EFF" :block="true" :loading="result.status === 1" @click="onPressGenerate" style="flex: 1"
               >Generate image</NButton
             >
           </NSpace>
@@ -145,9 +112,7 @@
           <div class="scroll-body">
             <template v-if="result.status === 0">
               <div class="result-empty">
-                <span class="text-color-3">
-                  Please enter some content in the form and click the "Generate image" button to generate an image
-                </span>
+                <span class="text-color-3"> Please enter some content in the form and click the "Generate image" button to generate an image </span>
               </div>
             </template>
             <template v-else-if="result.status === 1">
@@ -394,7 +359,7 @@ export default defineComponent({
             resolve({ _result: 10 + resp._result, _desc: resp.desc });
             return;
           }
-          const { status, fileUrl, failReason } = resp.data || {};
+          const { status, fileUrl, failReason, nodeId } = resp.data || {};
           if (status === 0 || status === 1) {
             const maxIntervalTime = 3000;
             const executeTime = Math.round(new Date().getTime() - beforeTime);
@@ -406,6 +371,7 @@ export default defineComponent({
           let _desc: string;
           let data: any = null;
           if (status === 2) {
+            console.info(`--->${nodeId}`);
             _result = 0;
             data = fileUrl;
             _desc = '';
@@ -426,6 +392,89 @@ export default defineComponent({
         };
         handler();
       });
+    };
+
+    const handleGenerate = async () => {
+      const errors: string[] = [];
+      const insideBody: any = {};
+      const modelHashItem = modelHashItems.value.find((item) => item.val === formData.value.modelHash);
+      const modelHash = modelHashItem?.raw;
+      modelItem.value = modelHashItem || null;
+      const body = {
+        modelHash: modelHash,
+        generativeParameters: '',
+      };
+      if (!modelHash) {
+        errors.push(`'Model' can not be empty`);
+      }
+      formConfigs.forEach((item, index) => {
+        let exposeKey = item.exposeKey;
+        let value = formData.value[item.key];
+        if (!exposeKey) {
+          errors.push(`Config error, [${index}] expose key is empty`);
+        }
+        //set default value
+        if (!value && typeof item.defaultValue !== 'undefined') {
+          value = item.defaultValue;
+        }
+        //is required
+        if (item.required && !value) {
+          errors.push(`'${item.label}' can not be empty`);
+        }
+        insideBody[exposeKey] = value;
+      });
+
+      if (errors.length > 0) {
+        message.error(errors.join(', '));
+        return;
+      }
+      body.generativeParameters = JSON.stringify(insideBody);
+      const appid = OpenEmcHubConfig.appid;
+      const secret = OpenEmcHubConfig.secret;
+      const nonce = new Date().getTime();
+      const action = 'textForImage';
+      const signParams: any = { appid, nonce, action, requestBody: JSON.stringify(body) };
+      signParams.sign = await sign(signParams, secret);
+
+      result.value.status = 1;
+      result.value.errorCode = 0;
+      result.value.errorMessage = '';
+      const resp = await http.postJSON({
+        url: 'https://openapi.emchub.ai/emchub/api/client/open/textForImage',
+        data: signParams,
+      });
+      if (resp._result !== 0) {
+        result.value.status = 3;
+        result.value.errorCode = resp._result;
+        result.value.errorMessage = resp._desc;
+        return;
+      }
+      const { taskSn = '' } = resp.data || {};
+      const resp2 = await queryTask(taskSn);
+      if (resp2._result !== 0) {
+        result.value.status = 3;
+        result.value.errorCode = resp2._result;
+        result.value.errorMessage = resp2._desc || '';
+        return;
+      }
+      const url = (resp2.data as string) || '';
+      if (!url) {
+        result.value.status = 3;
+        result.value.errorCode = resp2._result;
+        result.value.errorMessage = 'Not found url';
+        return;
+      }
+      const isGenerated = await queryImageStatus(url);
+      if (!isGenerated) {
+        result.value.status = 3;
+        result.value.errorCode = resp2._result;
+        result.value.errorMessage = 'Generate failure, unknow error';
+        return;
+      }
+      result.value.status = 2;
+      result.value.image = url;
+      const [parameters, isParameters] = await StableDiffusionMetadata.extract(url);
+      result.value.imageParameters = parameters;
     };
 
     const handleWindowMessage = (event: MessageEvent) => {
@@ -570,87 +619,12 @@ export default defineComponent({
         }
       },
       async onPressGenerate() {
-        const errors: string[] = [];
-        const insideBody: any = {};
-        const modelHashItem = modelHashItems.value.find((item) => item.val === formData.value.modelHash);
-        const modelHash = modelHashItem?.raw;
-        modelItem.value = modelHashItem || null;
-        const body = {
-          modelHash: modelHash,
-          generativeParameters: '',
-        };
-        if (!modelHash) {
-          errors.push(`'Model' can not be empty`);
-        }
-        formConfigs.forEach((item, index) => {
-          let exposeKey = item.exposeKey;
-          let value = formData.value[item.key];
-          if (!exposeKey) {
-            errors.push(`Config error, [${index}] expose key is empty`);
-          }
-          //set default value
-          if (!value && typeof item.defaultValue !== 'undefined') {
-            value = item.defaultValue;
-          }
-          //is required
-          if (item.required && !value) {
-            errors.push(`'${item.label}' can not be empty`);
-          }
-          insideBody[exposeKey] = value;
-        });
-
-        if (errors.length > 0) {
-          message.error(errors.join(', '));
-          return;
-        }
-        body.generativeParameters = JSON.stringify(insideBody);
-        const appid = OpenEmcHubConfig.appid;
-        const secret = OpenEmcHubConfig.secret;
-        const nonce = new Date().getTime();
-        const action = 'textForImage';
-        const signParams: any = { appid, nonce, action, requestBody: JSON.stringify(body) };
-        signParams.sign = await sign(signParams, secret);
-
-        result.value.status = 1;
-        result.value.errorCode = 0;
-        result.value.errorMessage = '';
-        const resp = await http.postJSON({
-          url: 'https://openapi.emchub.ai/emchub/api/client/open/textForImage',
-          data: signParams,
-        });
-        if (resp._result !== 0) {
-          result.value.status = 3;
-          result.value.errorCode = resp._result;
-          result.value.errorMessage = resp._desc;
-          return;
-        }
-        const { taskSn = '' } = resp.data || {};
-        const resp2 = await queryTask(taskSn);
-        if (resp2._result !== 0) {
-          result.value.status = 3;
-          result.value.errorCode = resp2._result;
-          result.value.errorMessage = resp2._desc || '';
-          return;
-        }
-        const url = (resp2.data as string) || '';
-        if (!url) {
-          result.value.status = 3;
-          result.value.errorCode = resp2._result;
-          result.value.errorMessage = 'Not found url';
-          return;
-        }
-        const isGenerated = await queryImageStatus(url);
-        if (!isGenerated) {
-          result.value.status = 3;
-          result.value.errorCode = resp2._result;
-          result.value.errorMessage = 'Generate failure, unknow error';
-          return;
-        }
-        result.value.status = 2;
-        result.value.image = url;
-        const [parameters, isParameters] = await StableDiffusionMetadata.extract(url);
-        result.value.imageParameters = parameters;
-        // modelSn.value
+        handleGenerate();
+        // const handle = async ()=> {
+        //   await handleGenerate();
+        //   setTimeout(()=>handle(),3000);
+        // }
+        // handle()
       },
       cancel() {
         showModal.value = false;
@@ -696,14 +670,17 @@ export default defineComponent({
   min-height: 80vh;
   display: flex;
 }
+
 .page-forms {
   width: 32vw;
   min-width: 400px;
   margin-right: 24px;
 }
+
 .page-results {
   flex: 1;
 }
+
 .scroll-body {
   padding-bottom: 24px;
   min-height: calc(100vh - var(--layout-header-height) - 168px);
@@ -715,6 +692,7 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
 }
+
 .result-img-wrapper {
   width: 100%;
   min-width: 300px;
@@ -723,6 +701,7 @@ export default defineComponent({
   border-radius: 8px;
   box-sizing: border-box;
 }
+
 .result-img {
   height: 100%;
   min-width: 300px;
