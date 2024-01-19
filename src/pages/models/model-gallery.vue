@@ -29,6 +29,7 @@ import { Http } from '@/tools/http';
 
 import GalleryItem from './gallery-item.vue';
 import ModelImage from '../model-image/index.vue';
+import { randomInt } from 'crypto';
 
 export default defineComponent({
   name: 'models-gallery',
@@ -58,7 +59,8 @@ export default defineComponent({
     const imageId = ref('');
 
     onMounted(() => {
-      galleryList(1);
+      const random = Math.floor(Math.random() * 16) + 4;
+      galleryList(random);
     });
 
     const galleryList = async (pageNo: number) => {
@@ -75,7 +77,8 @@ export default defineComponent({
 
     const onPressRefresh = () => {
       const total = Math.floor(galleryTotal.value / 5) || 0;
-      const pageNo = galleryPageNo.value < total ? (galleryPageNo.value = galleryPageNo.value + 1) : (galleryPageNo.value = 1);
+      //total内随机页码
+      const pageNo = Math.floor(Math.random() * total) + 1;
       galleryList(pageNo);
     };
 
