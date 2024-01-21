@@ -7,7 +7,7 @@
         </div>
       </template>
       <template #header-extra>
-        <NButton type="primary" color="#A45EFF" ghost strong :loading="loading" @click="onPressRefresh">Click to refresh</NButton>
+        <NButton type="primary" color="#A45EFF" ghost strong :loading="loading" @click="onPressRefresh">Refresh</NButton>
       </template>
       <NGrid cols="1 400:2 600:3 800:4 1000:5" :x-gap="24" :y-gap="24" item-responsive>
         <template v-for="item in imageList">

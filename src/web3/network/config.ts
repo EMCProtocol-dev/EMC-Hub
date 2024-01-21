@@ -14,7 +14,11 @@ export default [
     tokens: {
       emc: { contract: '0xDFB8BE6F8c87f74295A87de951974362CedCFA30', symbolName: 'EMC', decimal: 18 },
     },
-    apis: {
+    smarts: {
+      nodeStake: { contract: '0xC6C6d5ED9c407F0c9d83D13fA345c68C57a90cbD' },
+      nodeReward: { contract: '0x70bbf54454117D30B32eCAbCD16899C545DB14e4' },
+      nodeUnstakeClaim: { contract: '0xbfbc3BF85FBA818fc49A0354D2C84623cE711b63' },
+      publicSell: { contract: '0x9E035Dc6DB311d35F1eDca506B41AAec90d9E704' },
       consumption: { contract: '0x7957cEFE6aE140F529146e04c868C1FD835a110b' },
     },
   },
@@ -30,18 +34,11 @@ export default [
   //   tokens: {
   //     emc: { contract: '0x20Dcf8106bdC2cCCcf84DD62dc486A7123A41d13', symbolName: 'EMC.t', decimal: 18 },
   //   },
-  //   apis: {
-  //     consumption: { contract: '' },
+  //   smarts: {
+  //     nodeStake: { contract: '0x4A71EdAeDf64b29F43A6eF1F581d83bc71586D1f' },
+  //     nodeReward: { contract: '0xc54BD64a51A9361A6fCeFE6b0f31D7b53619f39f' },
+  //     nodeUnstakeClaim: { contract: '' },
+  //     publicSell: { contract: '0x70bbf54454117D30B32eCAbCD16899C545DB14e4' },
   //   },
-  // },
-  // {
-  //   chainId: 421613,
-  //   chainName: 'Arbitrum Goerli Testnet',
-  //   chainAvatar: Arbitrum,
-  //   rpcUrls: ['https://arbitrum-goerli.publicnode.com'],
-  //   decimals: 18,
-  //   symbol: 'AGOR',
-  //   symbolName: 'AGOR',
-  //   blockExplorerUrls: ['https://goerli.arbiscan.io/'],
   // },
 ];

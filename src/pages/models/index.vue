@@ -12,7 +12,7 @@
         </template>
         <template #header-extra>
           <template v-if="nickname === '顺子'">
-            <NButton type="primary" ghost strong @click="onPressUpload">Click to upload</NButton>
+            <NButton type="primary" ghost strong @click="onPressUpload">Upload</NButton>
           </template>
         </template>
         <NSpace :wrap-item="false" :size="[24, 0]" :wrap="true">

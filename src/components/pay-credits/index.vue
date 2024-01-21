@@ -1,5 +1,5 @@
 <template>
-  <NModal :show="visible" :mask-closable="false" :block-scroll="true" :close-on-esc="false">
+  <NModal :show="visible" :z-index="99" :mask-closable="false" :block-scroll="true" :close-on-esc="false">
     <NCard :bordered="false" :title="title" style="width: 600px">
       <template #header-extra>
         <NButton strong secondary circle @click="onPressCancel">
@@ -24,7 +24,15 @@
             <img src="@/assets/icon_emc.svg" style="width: 16px; height: 16px" />
             <NText>EMC</NText>
           </NSpace>
-          <NButton type="primary" strong size="large" :loading="payLoading" style="width: 100%" @click="onPressPay">Pay on metamask</NButton>
+          <template v-if="status === 0">
+            <NButton type="primary" strong size="large" style="width: 100%" @click="onPressConnect">Connect Wallet</NButton>
+          </template>
+          <template v-else-if="status === 1">
+            <NButton type="primary" strong size="large" style="width: 100%" @click="onPressSwitch">Switch Arbitrum</NButton>
+          </template>
+          <template v-else>
+            <NButton type="primary" strong size="large" :loading="payLoading" style="width: 100%" @click="onPressPay">Pay</NButton>
+          </template>
         </NSpace>
       </template>
       <div class="pay-content" v-show="step === 2">
@@ -34,7 +42,7 @@
           </div>
           <p class="pay-title-success">Well done</p>
           <p class="pay-tip">You've just paid ＄{{ payInfo ? payInfo.price : 0 }}</p>
-          <div class="pay-success-btn" @click="onPressCancel">continue</div>
+          <div class="pay-success-btn" @click="onPressCancel">Continue</div>
           <img class="pay-res-bg" src="@/assets/icon_pay_success_bg.svg" />
         </div>
       </div>
@@ -43,9 +51,9 @@
           <div class="icon-pay-error">
             <img src="@/assets/icon_pay_error.svg" />
           </div>
-          <p class="pay-title-error">Ooops</p>
-          <p class="pay-tip">Something went wrong,let's tryone more again</p>
-          <div @click="step = 1" class="pay-error-btn">TRY again</div>
+          <p class="pay-title-error">Failed</p>
+          <!-- <p class="pay-tip">Something went wrong, let's try one more again.</p> -->
+          <div @click="step = 1" class="pay-error-btn">Try Again</div>
           <img class="pay-res-bg" src="@/assets/icon_pay_error_bg.svg" />
         </div>
       </div>
@@ -53,130 +61,165 @@
   </NModal>
 </template>
 
-<script lang="ts">
-function wait(t: number) {
-  return new Promise((resolve) => setTimeout(resolve, t));
-}
-
-import { defineComponent, ref, computed, watch } from 'vue';
+<script lang="ts" setup>
+import { ref, computed, watch } from 'vue';
 import { NModal, NCard, NSpace, NButton, NText, NIcon, useMessage } from 'naive-ui';
 import { CloseSharp as IconClose } from '@vicons/ionicons5';
 import { ethers } from 'ethers';
 import { Http } from '@/tools/http';
-import { useWeb3UserStore } from '@/stores/web3-user';
+import { useETHUserStore } from '@/stores/eth-user';
 import { ApiManager } from '@/web3/api';
 import { ConsumptionApi } from '@/web3/api/consumption';
 import { ERC20Api } from '@/web3/api/erc20';
 import { getDefaultNetwork } from '@/web3/network';
-export default defineComponent({
-  name: 'pay-point',
-  components: {
-    NModal,
-    NCard,
-    NSpace,
-    NButton,
-    NText,
-    NIcon,
-    IconClose,
-  },
-  props: {
-    visible: { type: Boolean },
-    payInfo: { type: Object, default: () => ({}) }, //id,price
-  },
-  emits: ['update:visible', 'cancel'],
-  setup(props, ctx) {
-    const message = useMessage();
-    const web3User = useWeb3UserStore();
-    const http = Http.getInstance();
-    const apiManager = ApiManager.getInstance();
-    const networkConfig = getDefaultNetwork();
-    const consumptionContract = networkConfig.apis.consumption.contract;
-    const erc20Api = apiManager.create(ERC20Api, { address: networkConfig.tokens.emc.contract });
-    const consumptionApi = apiManager.create(ConsumptionApi, { address: consumptionContract });
-    // 0:empty 1:pay 2:complete 3:error
-    const titles = ['', 'Pay', 'Complete', 'Error'];
-    const step = ref<-1 | 1 | 2 | 3>(-1);
-    const emc = ref(0);
-    const payLoading = ref<boolean>(false);
+import { Web3Service } from '@/web3';
 
-    const init = async () => {
-      step.value = -1;
+const props = defineProps({
+  visible: { type: Boolean },
+  payInfo: { type: Object, default: () => ({}) }, //id,price
+});
+const emits = defineEmits(['update:visible', 'cancel']);
+
+const message = useMessage();
+const web3User = useETHUserStore();
+const http = Http.getInstance();
+const w3s = Web3Service.getInstance();
+const apiManager = ApiManager.getInstance();
+const networkConfig = getDefaultNetwork();
+const consumptionContract = networkConfig.smarts.consumption.contract;
+const erc20Api = apiManager.create(ERC20Api, { address: networkConfig.tokens.emc.contract });
+const consumptionApi = apiManager.create(ConsumptionApi, { address: consumptionContract });
+// 0:empty 1:pay 2:complete 3:error
+const titles = ['', 'Pay', 'Complete', 'Error'];
+const step = ref<-1 | 1 | 2 | 3>(-1);
+const emc = ref(0);
+const payLoading = ref<boolean>(false);
+const status = computed(() => {
+  if (!web3User.account0) {
+    return 0;
+  } else if (web3User.isInvalidNetwork) {
+    return 1;
+  } else {
+    return 2;
+  }
+});
+
+const init = async () => {
+  step.value = -1;
+  const resp = await http.get({
+    url: '/emchub/api/client/wallet/queryActualPay',
+    data: { fee: props.payInfo.price },
+  });
+  emc.value = resp.data || '?';
+  step.value = 1;
+};
+
+const cancel = () => {
+  if (payLoading.value) {
+    message.error('Please wait for payment...');
+    return false;
+  }
+  emits('update:visible', false);
+};
+
+const queryChargeResult = async (sn: string): Promise<Resp365> => {
+  return new Promise(async (resolve) => {
+    const handler = async () => {
+      const beforeTime = new Date().getTime();
       const resp = await http.get({
-        url: '/emchub/api/client/wallet/queryActualPay',
-        data: { fee: props.payInfo.price },
-      });
-      emc.value = resp.data || '?';
-      step.value = 1;
-    };
-
-    const cancel = () => {
-      if (payLoading.value) {
-        message.error('Please wait for payment...');
-        return false;
-      }
-      ctx.emit('update:visible', false);
-    };
-
-    const handlePay = async () => {
-      if (!web3User.account0) {
-        const resp = await web3User.signIn({ type: 'metamask' });
-        if (resp._result !== 0) {
-          return { _result: 1, _desc: resp._desc || 'Unknow sign in error' };
-        }
-      }
-      const resp = await http.post({
-        url: '/emchub/api/client/wallet/charge',
-        data: { payType: 1, chargeId: props.payInfo.id },
+        url: '/emchub/api/client/wallet/queryLogBySn',
+        data: { chargeSn: sn },
       });
       if (resp._result !== 0) {
-        return { _result: 1, _desc: resp._desc || 'Unknow pre-charge error' };
+        resolve({ _result: 10 + resp._result, _desc: resp.desc });
+        return;
       }
-      const { chargeSn, actualPay: emc, amount } = resp.data || {};
-
-      const emc256 = ethers.parseUnits(String(emc), 18);
-      const resp2 = await erc20Api.approve({ amount: emc256, spender: consumptionContract });
-      if (resp2._result !== 0) {
-        return { _result: 1, _desc: resp2._desc || 'Unknow approve error' };
+      const { status } = resp.data || {};
+      if (status === 0) {
+        const maxIntervalTime = 3000;
+        const executeTime = Math.round(new Date().getTime() - beforeTime);
+        const diffTime = maxIntervalTime - executeTime;
+        setTimeout(() => handler(), Math.max(1, diffTime));
+        return;
       }
-      console.info('approve success');
-      const remark = JSON.stringify({ sn: chargeSn, fee: emc, credit: amount });
-      const resp3 = await consumptionApi.burn({ amount: emc256, remark });
-      if (resp3._result !== 0) {
-        return { _result: 1, _desc: resp3._desc || 'Unknow consumption error' };
+      let _result = 0;
+      let _desc = 'success';
+      if (status === 1) {
+        _result = 0;
+        _desc = 'success';
+      } else if (status === 2) {
+        _result = 1;
+        _desc = 'timeout';
       }
-      return { _result: 0, _desc: 'Success', txData: resp3 };
+      resolve({ _result, _desc });
     };
+    handler();
+  });
+};
 
-    watch(
-      () => props.visible,
-      (val) => {
-        if (val) {
-          init();
-        }
-      }
-    );
+const handlePay = async () => {
+  if (!web3User.account0) {
+    return { _result: 1, _desc: 'Connect wallet first' };
+  }
+  const resp = await http.post({
+    url: '/emchub/api/client/wallet/charge',
+    data: { payType: 1, chargeId: props.payInfo.id },
+  });
+  if (resp._result !== 0) {
+    return { _result: 1, _desc: resp._desc || 'Unknow pre-charge error' };
+  }
+  const { chargeSn, actualPay: emc, amount } = resp.data || {};
+  const emc256 = ethers.parseUnits(String(emc), 18);
+  const resp2 = await erc20Api.approve({ amount: emc256, spender: consumptionContract });
+  if (resp2._result !== 0) {
+    return { _result: 1, _desc: resp2._desc || 'Unknow approve error' };
+  }
+  await resp2.data.wait();
+  const remark = JSON.stringify({ sn: chargeSn, fee: emc, credit: amount });
+  const resp3 = await consumptionApi.burn({ amount: emc256, remark });
+  if (resp3._result !== 0) {
+    return { _result: 1, _desc: resp3._desc || 'Unknow consumption error' };
+  }
+  await resp3.data.wait();
 
-    return {
-      step,
-      title: computed(() => titles[step.value]),
-      emc,
-      payLoading,
-      onPressCancel() {
-        cancel();
-      },
-      async onPressPay() {
-        payLoading.value = true;
-        const resp = await handlePay();
-        payLoading.value = false;
-        if (resp._result !== 0) {
-          step.value = 3;
-        } else {
-          step.value = 2;
-        }
-      },
-    };
-  },
-});
+  await queryChargeResult(chargeSn);
+
+  return { _result: 0, _desc: 'Success', txData: resp3 };
+};
+
+watch(
+  () => props.visible,
+  (val) => {
+    if (val) {
+      init();
+    }
+  }
+);
+
+const title = computed(() => titles[step.value]);
+
+function onPressCancel() {
+  cancel();
+}
+
+function onPressConnect() {
+  web3User.signIn();
+}
+
+function onPressSwitch() {
+  w3s.switchNetwork(networkConfig.chainId);
+}
+
+async function onPressPay() {
+  payLoading.value = true;
+  const resp = await handlePay();
+  payLoading.value = false;
+  if (resp._result !== 0) {
+    step.value = 3;
+  } else {
+    step.value = 2;
+  }
+}
 </script>
 
 <style scoped>
@@ -266,7 +309,6 @@ export default defineComponent({
   display: flex;
   align-items: center;
   flex-direction: column;
-  padding: 80px 0;
   position: relative;
 }
 

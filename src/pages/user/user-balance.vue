@@ -1,7 +1,7 @@
 <template>
   <NSpace class="page" vertical :size="[0, 24]">
     <div class="section" style="height: 280px">
-      <NH2>My Balance</NH2>
+      <NH2>Balance</NH2>
       <div class="credits">
         <img class="section-background" src="@/assets/balance-background.png" />
         <NSpace class="credits-content" vertical align="end" :wrap-item="false">
@@ -12,7 +12,7 @@
           </NSpin>
           <div style="color: #fff; width: 100%; text-align: center">
             <span style="font-size: 40px">{{ balance }}&nbsp;</span>
-            <span style="font-size: 26px">credits left</span>
+            <span style="font-size: 26px">credits</span>
           </div>
           <!-- <div class="credits-button">
             <span>Top-up</span>
@@ -21,7 +21,7 @@
       </div>
     </div>
     <NSpace class="section" vertical :wrap-item="false">
-      <NH2>Transactions</NH2>
+      <NH2>Transaction</NH2>
       <NSpin :show="loading" :size="20" style="min-height: 200px">
         <NTable :bordered="false" :single-line="false">
           <thead>

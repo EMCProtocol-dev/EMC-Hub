@@ -1,6 +1,6 @@
 <template>
   <NSpace class="page" vertical :wrap-item="false" align="center" :size="[0, 56]">
-    <NH2 style="width: 100%; text-align: left">Your profile</NH2>
+    <!-- <NH2 style="width: 100%; text-align: left">Your profile</NH2> -->
     <NForm ref="formRef" :model="formData">
       <NSpace class="form" vertical>
         <NUpload style="margin: 0 auto; width: 124px" :custom-request="handleUploadImage" :show-file-list="false">

@@ -1,6 +1,6 @@
 <template>
   <NSpace class="page" vertical :size="[24, 0]" :wrap-item="false">
-    <NH2>Your posts</NH2>
+    <NH2>Your models</NH2>
     <NSpace align="center" :size="[12, 0]" :wrap-item="false">
       <NAvatar round object-fit="cover" :size="64" :src="userInfo.avatar" />
       <NSpace vertical :size="[0, 6]" :wrap-item="false">

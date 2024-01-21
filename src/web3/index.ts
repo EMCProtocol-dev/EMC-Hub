@@ -1,4 +1,4 @@
-import { BrowserProvider, Contract, Wallet, JsonRpcProvider, formatEther } from 'ethers';
+import { BrowserProvider, Contract, Wallet, JsonRpcProvider, formatEther, ContractTransactionResponse } from 'ethers';
 import type { Eip1193Provider } from 'ethers';
 import { Web3Utils } from '@/web3/utils';
 import { getDefaultNetwork, getNetworkConfig } from './network';
@@ -10,12 +10,14 @@ export type CallOption = {
   data?: any[];
 };
 
+
 export class Web3Service {
-  public provider: BrowserProvider | undefined;
+  public provider: BrowserProvider | null;
   public defaultProvider: JsonRpcProvider;
   private static instance: Web3Service | null = null;
 
   private constructor() {
+    this.provider = null;
     this.defaultProvider = new JsonRpcProvider(getDefaultNetwork().rpcUrls[0]);
   }
 
@@ -26,11 +28,15 @@ export class Web3Service {
     return Web3Service.instance;
   }
 
-  async setup({ provider }: { provider: Eip1193Provider }) {
+   setProvider(provider: Eip1193Provider | null) {
     if (this.provider) {
       this.provider.removeAllListeners();
     }
-    this.provider = new BrowserProvider(provider);
+    if (provider) {
+      this.provider = new BrowserProvider(provider);
+    } else {
+      this.provider = null;
+    }
   }
 
   async getSigner() {
@@ -62,14 +68,7 @@ export class Web3Service {
     return { _result: 0, accounts };
   }
 
-  async addToken(config: {
-    type?: 'ERC20' | 'ERC721' | 'ERC1155';
-    address: string;
-    symbol: string;
-    decimals: number;
-    image?: string;
-    tokenId?: string;
-  }) {
+  async addToken(config: { type?: 'ERC20' | 'ERC721' | 'ERC1155'; address: string; symbol: string; decimals: number; image?: string; tokenId?: string }) {
     const { type, address, symbol, decimals, image, tokenId } = config;
     if (!this.provider) {
       return { _result: 2, _desc: 'Please connect wallet first' };
@@ -110,21 +109,26 @@ export class Web3Service {
 
   async switchNetwork(chainId: number): Promise<Resp> {
     const chainIdHex = `0x${chainId.toString(16)}`;
-    const [err, resp] = await Web3Utils.to(
-      this.provider!.send('wallet_switchEthereumChain', [{ chainId: chainIdHex }])
-    );
+    if (!this.provider) {
+      return { _result: 1, _desc: `Switch network error: Not found provider` };
+    }
+    const [err, resp] = await Web3Utils.to(this.provider.send('wallet_switchEthereumChain', [{ chainId: chainIdHex }]));
     if (!err) {
       return { _result: 0, data: resp };
     }
-    if (err.error?.code === 4902) {
+    const error = err.error;
+    if (error?.code === 4902) {
       const resp = await this.addNetwork(chainId);
       if (resp._result === 0) {
-        return await this.switchNetwork(chainId);
+        return this.switchNetwork(chainId);
       } else {
         return resp;
       }
+    } else if (error?.code === -32002) {
+      return { _result: 1, _desc: `Already request for 'switch network', please close first.` };
     }
-    return { _result: 1, _desc: `Switch network error: ${err}` };
+
+    return { _result: 1, _desc: `Switch network error: ${error}` };
   }
 
   async getChainId() {
@@ -161,6 +165,18 @@ export class Web3Service {
     const totalGasCost = gasEstimate * gasPrice;
     console.log('Total gas cost:', formatEther(totalGasCost));
     return totalGasCost;
+  }
+
+  async signMessage(message: string) {
+    const signer = await this.getSigner();
+    if (!signer) {
+      return { _result: 1, _desc: `Not found signer` };
+    }
+    const [err, signature] = await Web3Utils.to(signer.signMessage(message));
+    if (err) {
+      return { _result: 1, _desc: `Sign message failed` };
+    }
+    return { _result: 0, data: { signature } };
   }
 
   async call(option: CallOption): Promise<Resp> {

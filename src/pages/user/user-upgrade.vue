@@ -8,14 +8,8 @@
         <img class="header-star" src="@/assets/img-upgrade-star.png" alt="" />
       </div>
     </div>
-    <NSpace class="section" vertical :wrap-item="false">
-      <NH2>Your posts</NH2>
-      <NSpace style="width: 100%" :wrap-item="false" justify="end">
-        <div class="record-button">
-          <div class="record-button-mask">Upgrade record</div>
-        </div>
-      </NSpace>
-      <NSpace>
+    <NSpin :show="loading" style="min-height: 300px">
+      <NSpace class="section" :wrap-item="false">
         <template v-for="item in list">
           <div class="record-item">
             <div class="hot" v-if="item.hot">
@@ -33,39 +27,14 @@
           </div>
         </template>
       </NSpace>
-
-      <div class="footer">
-        <strong>🔒 Secure Payments</strong>
-        <p>Choose the subscription plan that's right for you</p>
-      </div>
-    </NSpace>
+    </NSpin>
   </NSpace>
-
   <PayPoint v-model:visible="showPay" :payInfo="payInfo" />
 </template>
 
-<script lang="ts">
-import { ref, defineComponent, onMounted, watch, nextTick, computed } from 'vue';
-import {
-  NButton,
-  NH2,
-  NSpace,
-  NCard,
-  NUpload,
-  NAvatar,
-  NText,
-  NForm,
-  NFormItem,
-  NInput,
-  NGrid,
-  NGridItem,
-  NIcon,
-  NUl,
-  NLi,
-  UploadCustomRequestOptions,
-  useMessage,
-  NModal,
-} from 'naive-ui';
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue';
+import { NSpace, NSpin } from 'naive-ui';
 import PayPoint from '@/components/pay-credits/index.vue';
 import { Http } from '@/tools/http';
 
@@ -78,61 +47,28 @@ type Item = {
   hot: boolean;
 };
 
-export default defineComponent({
-  name: 'user-upgrade',
-  components: {
-    NButton,
-    NH2,
-    NSpace,
-    NCard,
-    NModal,
-    NGrid,
-    NText,
-    NGridItem,
-    NAvatar,
-    NForm,
-    NFormItem,
-    NInput,
-    NUpload,
-    NIcon,
-    NUl,
-    NLi,
-    PayPoint,
-  },
-  setup(props, context) {
-    const list = ref<Item[]>([]);
-    const http = Http.getInstance();
-    const showPay = ref(false);
-    const payInfo = ref();
+const list = ref<Item[]>([]);
+const loading = ref(false);
+const http = Http.getInstance();
+const showPay = ref(false);
+const payInfo = ref();
 
-    const onPay = (item: Item) => {
-      showPay.value = true;
-      payInfo.value = item;
-    };
+const onPay = (item: Item) => {
+  showPay.value = true;
+  payInfo.value = item;
+};
 
-    const closePay = () => {
-      showPay.value = false;
-      payInfo.value = undefined;
-    };
-
-    onMounted(async () => {
-      const resp = await http.get({
-        url: '/emchub/api/client/chargeConfig/queryList',
-      });
-      list.value = [];
-      (resp.data || []).forEach((item: any, index: number) => {
-        list.value.push({ id: item.id, name: item.name, price: item.fee, original: item.originalFee, credits: item.point, hot: index === 1 });
-      });
-    });
-
-    return {
-      list,
-      showPay,
-      payInfo,
-      onPay,
-      closePay,
-    };
-  },
+onMounted(async () => {
+  loading.value = true;
+  const resp = await http.get({
+    url: '/emchub/api/client/chargeConfig/queryList',
+  });
+  loading.value = false;
+  const newList: any[] = [];
+  (resp.data || []).forEach((item: any, index: number) => {
+    newList.push({ id: item.id, name: item.name, price: item.fee, original: item.originalFee, credits: item.point, hot: index === 1 });
+  });
+  list.value = newList;
 });
 </script>
 <style scoped>
@@ -193,31 +129,10 @@ export default defineComponent({
 
 .section {
   width: 100%;
-  height: 100%;
   padding: 24px;
   background-color: #fff;
   border-radius: 20px;
   box-sizing: border-box;
-}
-
-.record-button {
-  background: linear-gradient(91.87deg, #8921c4 -0.05%, #5653f1 98.54%);
-  width: 120px;
-  height: 38px;
-  border-radius: 6px;
-  overflow: hidden;
-  box-sizing: border-box;
-  padding: 1px;
-}
-
-.record-button-mask {
-  width: 100%;
-  height: 100%;
-  line-height: 36px;
-  background-color: #fff;
-  text-align: center;
-  border-radius: 5px;
-  cursor: pointer;
 }
 
 .record-item {
@@ -233,7 +148,7 @@ export default defineComponent({
   transition: 0.3s;
   position: relative;
   top: 0;
-  margin-top: 70px;
+  margin-top: 24px;
 }
 
 .record-item:hover {
@@ -352,34 +267,5 @@ export default defineComponent({
   border-color: transparent;
   color: #fff;
   transition: 0.3s;
-}
-
-.footer {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  margin-top: 58px;
-  margin-bottom: 60px;
-}
-
-.footer strong {
-  color: #252b30;
-  text-align: center;
-  font-family: Roboto;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 28px;
-}
-
-.footer p {
-  margin: 0;
-  color: #6c7176;
-  text-align: center;
-  font-family: Roboto;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 24px;
 }
 </style>

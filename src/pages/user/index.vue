@@ -113,15 +113,14 @@ export default defineComponent({
     const pageName = ref('profile');
 
     const tabs = ref<tabsFlag[]>([
-      { id: 'profile', name: 'Your profile', icon: tabIcon1, children: [] },
-      { id: 'models', name: 'My models', icon: tabIcon2, children: [] },
-      { id: 'posts', name: 'My posts', icon: tabIcon3, children: [] },
+      { id: 'profile', name: 'Profile', icon: tabIcon1, children: [] },
+      { id: 'posts', name: 'Post', icon: tabIcon3, children: [] },
     ]);
 
     const tabsWallet = ref<tabsFlag[]>([
       {
         id: 'wallet',
-        name: 'My wallet',
+        name: 'Wallet',
         icon: tabIcon4,
         children: [
           { id: 'balance', name: 'Balance' },

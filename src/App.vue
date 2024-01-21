@@ -9,7 +9,7 @@ import { ref, onMounted, defineComponent } from 'vue';
 import { useLoadingBar, useMessage, NSpin } from 'naive-ui';
 import { router } from '@/routes/index';
 import { useUserStore } from '@/stores/user';
-
+import { WalletConnect } from '@/web3/wallet-connect';
 type Message = {
   type: string;
   data?: any;
@@ -22,6 +22,9 @@ export default defineComponent({
     const loadingBar = useLoadingBar();
     const message = useMessage();
     const userStore = useUserStore();
+
+    WalletConnect.init();
+    
     onMounted(() => {
       window.$message = message;
       window.$loadingBar = loadingBar;

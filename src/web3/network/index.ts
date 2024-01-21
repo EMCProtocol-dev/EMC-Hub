@@ -14,3 +14,7 @@ export function getNetworkConfig(chainId: any) {
 export const list = config;
 
 export const getDefaultNetwork = () => config[0];
+
+const supports = [42161];
+
+export const supportList = supports.map((chainId) => getNetworkConfig(chainId));
