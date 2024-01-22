@@ -4,63 +4,44 @@
       <Header />
     </NLayoutHeader>
     <NLayoutContent style="background-color: #f9f9f9" content-style="max-width:1440px;margin:auto;padding: 24px;min-height:calc(100vh - 84px)">
-      <template v-if="ready">
-        <router-view v-slot="{ Component, route }">
-          <transition name="slide-fade">
-            <keep-alive :include="cacheRoutes">
-              <component :is="Component" :key="route.fullPath" />
-            </keep-alive>
-          </transition>
-        </router-view>
-      </template>
-      <template v-else>
-        <div class="loading">
-          <n-spin size="large" />
-        </div>
-      </template>
+      <router-view v-slot="{ Component, route }">
+        <keep-alive :include="cacheRoutes">
+          <component :is="Component" :key="routeKey(route)" />
+        </keep-alive>
+      </router-view>
     </NLayoutContent>
   </NLayout>
 </template>
 
-<script lang="ts">
-import { ref, onMounted, defineComponent } from 'vue';
-import { NLayout, NLayoutHeader, NLayoutContent, NSpin } from 'naive-ui';
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue';
+import { NLayout, NLayoutHeader, NLayoutContent } from 'naive-ui';
 import Header from '@/layout/app/header.vue';
-import { router } from '@/routes/index';
+import { routes } from '@/routes/routes';
 
-export default defineComponent({
-  name: 'layout',
-  components: { NLayout, NLayoutHeader, NLayoutContent, Header, NSpin },
-  setup() {
-    const ready = ref(false);
-    const cacheRoutes = ref<string[]>([]);
-    const routes = router?.options?.routes || [];
-    const layoutRoute = routes.find((i: any) => i.name === 'layout');
+const cacheRoutes = ref<string[]>([]);
 
-    layoutRoute?.children?.forEach((i: any) => {
-      if (i?.meta?.keepAlive && typeof i?.name === 'string') cacheRoutes.value.push(i.name);
-    });
-    console.info(`cache routes: ${cacheRoutes.value.join(', ')}`);
-
-    onMounted(async () => {
-      ready.value = true;
-    });
-
-    return {
-      ready,
-      cacheRoutes,
-    };
-  },
+onMounted(() => {
+  const layoutRoute = routes.find((i: any) => i.name === 'layout');
+  layoutRoute?.children?.forEach((i: any) => {
+    if (typeof i.name === 'string' && i.name && i.meta?.keepAlive) {
+      cacheRoutes.value.push(i.name);
+    }
+  });
+  console.info(`cache routes: ${cacheRoutes.value.join(', ')}`);
 });
+
+function routeKey(route: any) {
+  const userRoute = route.matched.find((item: any) => item.path === '/user');
+  if (userRoute) {
+    return userRoute.path;
+  } else {
+    return route.fullPath;
+  }
+}
 </script>
 <style scoped>
-.loading {
-  min-height: 80vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
+
 .n-header {
   position: fixed;
   left: 0;

@@ -50,6 +50,31 @@ export const routes = [
         path: 'user',
         component: () => import('@/pages/user/index.vue'),
         meta: { auth: true },
+        redirect: {
+          name: 'profile',
+        },
+        children: [
+          {
+            name: 'profile',
+            path: 'profile',
+            component: () => import('@/pages/user/profile/index.vue'),
+          },
+          {
+            name: 'post',
+            path: 'post',
+            component: () => import('@/pages/user/post/index.vue'),
+          },
+          {
+            name: 'balance',
+            path: 'balance',
+            component: () => import('@/pages/user/balance/index.vue'),
+          },
+          {
+            name: 'upgrade',
+            path: 'upgrade',
+            component: () => import('@/pages/user/upgrade/index.vue'),
+          },
+        ],
       },
     ],
   },

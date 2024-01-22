@@ -28,8 +28,8 @@
         </template>
       </NSpace>
     </NSpin>
+    <PayPoint v-model:visible="showPay" :payInfo="payInfo" />
   </NSpace>
-  <PayPoint v-model:visible="showPay" :payInfo="payInfo" />
 </template>
 
 <script lang="ts" setup>
