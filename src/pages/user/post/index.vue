@@ -99,7 +99,7 @@ export default defineComponent({
     });
     const init = async () => {
       const resp = await http.get({
-        url: 'https://client.emchub.ai/emchub/api/client/modelImage/selectByUser',
+        url: '/emchub/api/client/modelImage/selectByUser',
         data: { pageNo: 1, pageSize: 50 },
       });
       if (resp._result !== 0) return;
@@ -130,7 +130,7 @@ export default defineComponent({
       },
       async onPositiveClick() {
         const resp = await http.post({
-          url: 'https://client.emchub.ai/emchub/api/client/modelImage/deleteByUser',
+          url: '/emchub/api/client/modelImage/deleteByUser',
           data: { id: imageId.value },
         });
         if (resp._result !== 0) return;

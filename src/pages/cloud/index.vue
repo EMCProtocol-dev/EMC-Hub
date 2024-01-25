@@ -155,7 +155,7 @@ export default defineComponent({
       async getInfo(value: any) {
         const { name, project, website, email, twitter, telegram, otherContact, requirement } = value?.model || {};
         const resp = await http.postJSON({
-          url: 'https://client.emchub.ai/emchub/api/client/contactInfo/saveOne',
+          url: '/emchub/api/client/contactInfo/saveOne',
           data: {
             name: name,
             project: project,

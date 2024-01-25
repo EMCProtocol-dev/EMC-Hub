@@ -200,7 +200,7 @@ export default defineComponent({
       // const { id } = props;
 
       const resp = await http.get({
-        url: 'https://client.emchub.ai/emchub/api/client/modelImage/queryOne',
+        url: '/emchub/api/client/modelImage/queryOne',
         data: { id: id },
       });
       if (resp._result !== 0) return;

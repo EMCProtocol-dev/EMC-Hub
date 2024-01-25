@@ -137,7 +137,7 @@ export default defineComponent({
     const updateList = async () => {
       loading.value = true;
       const resp = await http.get({
-        url: 'https://client.emchub.ai/emchub/api/client/modelImage/queryListByModelSn',
+        url: '/emchub/api/client/modelImage/queryListByModelSn',
         data: { pageNo: pageNo.value, pageSize: pageSize.value, modelSn: modelSn },
       });
       loading.value = false;

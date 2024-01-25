@@ -27,7 +27,8 @@
       </NSpace>
     </template>
     <template v-else>
-      <NButton class="btn-sign" type="default" size="large" strong @click="onPressSignIn">Sign In</NButton>
+      <SignInGoogle />
+      <!-- <NButton class="btn-sign" type="default" size="large" strong @click="onPressSignIn">Sign In</NButton> -->
     </template>
   </div>
 </template>
@@ -37,23 +38,14 @@ import { NButton, NSpace, NIconWrapper, NText, NDivider, NIcon } from 'naive-ui'
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 import { PersonSharp as IconPerson, ExitOutline as IconExit } from '@vicons/ionicons5';
-import { Http } from '@/tools/http';
+import SignInGoogle from '@/pages/auth/signin-google.vue';
 
 export default defineComponent({
-  components: { NButton, NSpace, NIconWrapper, NText, NDivider, NIcon, IconPerson, IconExit },
+  components: { NButton, NSpace, NIconWrapper, NText, NDivider, NIcon, IconPerson, IconExit, SignInGoogle },
   setup(props, context) {
     const router = useRouter();
     const userStore = useUserStore();
-    const http = Http.getInstance();
 
-    onMounted(async () => {
-      const resp = await http.get({
-        url: '/emchub/api/client/user/selectByUser',
-      });
-      if (resp._result === -1) {
-        userStore.signOut();
-      }
-    });
     return {
       user: computed(() => userStore.user),
       onPressSignIn() {

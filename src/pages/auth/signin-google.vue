@@ -1,10 +1,18 @@
 <template>
-  <NButton class="signin-btn" type="primary" strong size="large" color="#A45EFF" :loading="submitting"
-    @click.stop.prevent="onPressSubmit" style="width: 100%; font-weight: bold !important">
+  <NButton
+    class="signin-btn"
+    type="primary"
+    strong
+    size="large"
+    color="#A45EFF"
+    :loading="submitting"
+    @click.stop.prevent="onPressSubmit"
+    style="width: 100%; font-weight: bold !important"
+  >
     <template #icon>
       <NIcon size="24"><img src="@/assets/icon_google.png" /></NIcon>
     </template>
-    <span style="margin-left: 8px">Google</span>
+    <span style="margin-left: 8px">Sign In</span>
   </NButton>
 </template>
 <script lang="ts">

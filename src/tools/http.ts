@@ -16,7 +16,7 @@ interface HttpConfig {
 }
 
 const _defaultHttpConfig = {
-  baseURL: 'https://client.emchub.ai', //'http://36.155.7.130:9092', , //'https://api.emchub.ai', //'http://36.155.7.134:9080', //
+  baseURL: (import.meta as any).env.MODE === 'development' ? '/api' : 'https://emchub.ai', //'http://36.155.7.130:9092', , //'https://api.emchub.ai', //'http://36.155.7.134:9080', //
 };
 
 type Session = {
@@ -99,9 +99,11 @@ class Http {
     } else if (method === HTTP_METHOD.POST) {
       options.method = 'POST';
       options.headers['content-type'] = 'application/x-www-form-urlencoded';
-      options.data = Object.keys(options.data)
-        .map((key) => `${key}=${encodeURIComponent(options.data[key])}`)
-        .join('&');
+      if (typeof options.data === 'object') {
+        options.data = Object.keys(options.data)
+          .map((key) => `${key}=${encodeURIComponent(options.data[key])}`)
+          .join('&');
+      }
     } else if (method === HTTP_METHOD.POST_JSON) {
       options.method = 'POST';
       options.headers['content-type'] = 'application/json';
@@ -116,12 +118,12 @@ class Http {
       options.method = 'PUT';
       options.headers['content-type'] = 'application/json';
     }
-    if (this.session) {
-      const and = options.url.includes('?') ? '&' : '?';
-      const session = this.session as Session;
-      const sessionStr = `sid=${session.token}`;
-      options.url = `${options.url}${and}${sessionStr}`;
-    }
+    // if (this.session) {
+    //   const and = options.url.includes('?') ? '&' : '?';
+    //   const session = this.session as Session;
+    //   const sessionStr = `sid=${session.token}`;
+    //   options.url = `${options.url}${and}${sessionStr}`;
+    // }
     return options;
   }
 

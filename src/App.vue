@@ -28,10 +28,7 @@ export default defineComponent({
     onMounted(() => {
       window.$message = message;
       window.$loadingBar = loadingBar;
-      userStore.initLocalData();
-      if (userStore.user.id) {
-        //init user info
-      }
+      userStore.initUser();
       //emchub upload
       window.addEventListener('message', (event: any) => {
         const message = event.data as Message;

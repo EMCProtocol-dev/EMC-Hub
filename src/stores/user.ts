@@ -40,6 +40,7 @@ export const useUserStore = defineStore('user', () => {
   });
   const user = ref<User>(defaultUser());
   const http = Http.getInstance();
+
   const setUser = (_user: User) => {
     //set pinia user
     user.value = _user;
@@ -47,23 +48,33 @@ export const useUserStore = defineStore('user', () => {
     const cache = { user: _user };
     Utils.setLocalStorage(STORAGE_KEY, cache);
   };
+
   const handleSignResponse = (token: string, _user: User) => {
     setUser(_user);
-    //set http session
-    const session = { token };
-    http.setSession(session);
+    // set http session
+    // const session = { token };
+    // http.setSession(session);
   };
+
   const initSignResult = () => {
     return { _result: 0, _desc: '', user: defaultUser() };
   };
+
   return {
     user,
     setUser,
-    initLocalData() {
-      const cache = Utils.getLocalStorage(STORAGE_KEY);
-      if (cache) {
-        user.value = cache.user;
+    async initUser() {
+      const resp = await http.get({
+        url: '/emchub/api/client/user/selectByUser',
+      });
+      if (resp._result !== 0) {
+        return;
       }
+      const data = resp.data || {};
+      const nickname: string = data.username || '';
+      const userId: number = data.userId || 0;
+      const avatar: string = data.userImage || '';
+      user.value = { id: userId, nickname: nickname || 'EMCHub', avatar: avatar };
     },
     async signup(params: SignupParams): Promise<{ _result: number; _desc?: string }> {
       const { account = '', password = '', nickname = '', email = '' } = params;
@@ -131,11 +142,14 @@ export const useUserStore = defineStore('user', () => {
       }
       return result;
     },
-    signOut() {
+    async signOut() {
       Utils.removeLocalStorage(STORAGE_KEY);
       user.value = defaultUser();
-      Http.getInstance().clearSession();
-      return { _result: 0 };
+      http.clearSession();
+      const resp = await http.post({
+        url: '/emchub/api/client/user/logout',
+      });
+      return resp;
     },
   };
 });

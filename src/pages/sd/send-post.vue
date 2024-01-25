@@ -100,7 +100,7 @@ export default defineComponent({
       insert.description = description || '';
       loading.value = true;
       const resp = await http.postJSON({
-        url: 'https://client.emchub.ai/emchub/api/client/modelImage/insert',
+        url: '/emchub/api/client/modelImage/insert',
         data: insert,
       });
       if (resp._result !== 0) return;

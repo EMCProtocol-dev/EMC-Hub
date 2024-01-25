@@ -656,7 +656,7 @@ export default defineComponent({
         showModal.value = true;
 
         // const resp = await http.postJSON({
-        //   url: 'https://client.emchub.ai/emchub/api/client/modelImage/insert',
+        //   url: '/emchub/api/client/modelImage/insert',
         //   data: insertData,
         // });
       },

@@ -24,7 +24,7 @@
               <div class="sign-header">
                 <NSpace :wrap-item="false" justify="space-between" align="center">
                   <div class="sign-title">Edge Matrix Hub</div>
-                  <NA class="sign-signup" @click="onPressSignUpToggle">Sign Up</NA>
+                  <!-- <NA class="sign-signup" @click="onPressSignUpToggle">Sign Up</NA> -->
                 </NSpace>
                 <div class="sign-subtitle">Welcome #AI</div>
               </div>
