@@ -41,24 +41,26 @@
                     <div class="upgrade-btn" @click="handleTransaction">Top-up record</div>
                 </n-spin>
             </div>
-            <NSpace class="upgrade-section" :wrap-item="false">
-                <template v-for="item in list">
-                    <div class="record-item">
-                        <div class="hot" v-if="item.hot">
-                            <img src="@/assets/icon_hot.svg" alt="" />
-                            <p>MOST POPULAR</p>
+            <NSpin :show="loading" style="min-height: 376px">
+                <NSpace class="upgrade-section" :wrap-item="false">
+                    <template v-for="item in list">
+                        <div class="record-item">
+                            <div class="hot" v-if="item.hot">
+                                <img src="@/assets/icon_hot.svg" alt="" />
+                                <p>MOST POPULAR</p>
+                            </div>
+                            <p class="name">{{ item.name }}</p>
+                            <span>
+                                ＄
+                                <p class="price">{{ item.price }}</p>
+                                <p class="original">{{ item.original }}</p>
+                            </span>
+                            <p class="credits">{{ item.credits }} credits</p>
+                            <p class="btn" @click="onPay(item)">Pay now!</p>
                         </div>
-                        <p class="name">{{ item.name }}</p>
-                        <span>
-                            ＄
-                            <p class="price">{{ item.price }}</p>
-                            <p class="original">{{ item.original }}</p>
-                        </span>
-                        <p class="credits">{{ item.credits }} credits</p>
-                        <p class="btn" @click="onPay(item)">Pay now!</p>
-                    </div>
-                </template>
-            </NSpace>
+                    </template>
+                </NSpace>
+            </NSpin>
             <div class="upgrade-layer">
                 <p>🔒 Secure Payments</p>
                 <p>Choose the subscription plan that's right for you</p>

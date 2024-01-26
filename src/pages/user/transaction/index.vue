@@ -128,7 +128,6 @@ const getTableData = async () => {
     // pagination.itemCount = 1
     emits('update:loading', false)
 };
-getTableData()
 
 const handleClose = () => {
     data.value = []
