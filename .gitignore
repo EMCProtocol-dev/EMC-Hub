@@ -26,3 +26,5 @@ deploy/
 
 # credentials.json files
 *.credentials.json
+
+.backup/

@@ -1,15 +1,7 @@
-import { Client as MinioClient } from 'minio';
 import { Axios, AxiosProgressEvent, isCancel } from 'axios';
 import { sign } from '@/tools/open-api';
 import { Http } from '@/tools/http';
 import config from '@/minio.credentials.json';
-const ACCESS_KEY = config.accessKey;
-const SECRET_KEY = config.secretKey;
-
-const HOST = '36.155.7.145';
-const PORT = 9000;
-const SSL = false;
-const BUCKET_NAME = 'hub-archive';
 
 interface FileInfo {
   id: string;
@@ -55,23 +47,9 @@ type PresignHttpOptions = {
 };
 
 export function useMinio() {
-  let minioClient: MinioClient;
-  const getContext = () => {
-    if (!minioClient) {
-      minioClient = new MinioClient({
-        endPoint: HOST,
-        port: PORT,
-        useSSL: SSL,
-        accessKey: ACCESS_KEY,
-        secretKey: SECRET_KEY,
-      });
-    }
-    return minioClient;
-  };
-
   const presignedHttp = async (params: PresignHttpOptions) => {
-    const appid = config.httpAppId;
-    const secret = config.httpSecret;
+    const appid = config.appId;
+    const secret = config.secret;
     const nonce = new Date().getTime();
     const action = 'sign';
     const { fileName, fileType, fileHash, fileSize, signType, userId } = params;
@@ -100,29 +78,8 @@ export function useMinio() {
     };
   };
 
-  const presignedPolicy = async (file: FileInfo): Promise<PolicyResult> => {
-    const ctx = getContext();
-    const policyRaw = ctx.newPostPolicy();
-    policyRaw.setBucket(BUCKET_NAME);
-    policyRaw.setKey(file.name);
-    policyRaw.setContentLengthRange(1024, 1024 * 1024 * 1024 * 10); // Min upload length is 1KB Max upload size is 10GB
-
-    const expires = new Date();
-    expires.setSeconds(6000); // 100 minutes
-    policyRaw.setExpires(expires);
-
-    const policyData = await ctx.presignedPostPolicy(policyRaw);
-    console.info(`presigned policy --->`, policyData);
-    return {
-      postURL: policyData.postURL,
-      postFormData: policyData.formData,
-    };
-  };
-
   const upload = async (params: UploadOptions): Promise<Resp365> => {
-    let { file, headers, url, policyData: _policyData, onProgress, abortSignal } = params;
-
-    const policyData = _policyData ? _policyData : await presignedPolicy(file);
+    let { file, headers, url, policyData, onProgress, abortSignal } = params;
 
     if (!policyData) {
       return { _result: 1, _desc: `presigned error` };
