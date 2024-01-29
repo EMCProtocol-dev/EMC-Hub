@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="upgrade-title">
-                <NH2>Balance</NH2>
+                <NH2>Top-up</NH2>
                 <n-spin :show="trxLoading">
                     <div class="upgrade-btn" @click="handleTransaction">Top-up record</div>
                 </n-spin>

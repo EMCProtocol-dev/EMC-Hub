@@ -2,7 +2,7 @@
 	<div class="usage-container">
         <div class="usage-header">
             <span>usage</span>
-            <n-date-picker v-model:value="timestamp" type="monthrange" clearable />
+            <n-date-picker class="usage-time" v-model:value="timestamp" type="monthrange" clearable />
         </div>
         <div class="usage-content">
             <p class="usage-spend">Monthly Spend <span>＄0.00</span></p>
@@ -150,6 +150,10 @@ onMounted(() => {
         display: flex;
         justify-content: space-between;
         align-items: center;
+
+        :deep(.usage-time) {
+            width: 330px;
+        }
 
         span {
             color: #333;
