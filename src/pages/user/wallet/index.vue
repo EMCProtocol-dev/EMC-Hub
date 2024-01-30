@@ -47,7 +47,7 @@ import {
 } from 'naive-ui';
 import moment from 'moment';
 import { Http } from '@/tools/http';
-
+const message = useMessage()
 const http = Http.getInstance();
 
 const loading = ref(false);
