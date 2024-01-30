@@ -1,5 +1,5 @@
 <template>
-    <n-modal v-model:show="showModal">
+    <n-modal v-model:show="showModal" :on-mask-click="handleClose">
         <n-card style="width: 1107px" title="Transactions" :bordered="false" size="huge" role="dialog" aria-modal="true">
             <template #header-extra>
                 <n-icon size="24" color="#CCCCCC" class="cursor-pointer" @click="handleClose">
