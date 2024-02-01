@@ -1,34 +1,41 @@
 <template>
     <n-modal v-model:show="showModal" :on-mask-click="handleClose">
         <n-card style="width: 670px" title="Create new secret key" :bordered="false" size="huge" role="dialog" aria-modal="true">
-            <n-form ref="formRef" :model="model" :rules="rules" :show-require-mark="false">
-                <n-form-item path="name" label="Name">
-                    <n-input v-model:value="model.name" placeholder="My Test Key" @keydown.enter.prevent />
-                </n-form-item>
-            </n-form>
-            <div class="modal-footer">
-                <n-button color="#F5F5F5" size="large" class="cancle" @click="handleClose">Cancel</n-button>
-                <n-button color="#A45EFF" size="large">Create secret key</n-button>
-            </div>
+            <n-spin :show="loading">
+                <n-form ref="formRef" :model="model" :rules="rules" :show-require-mark="false">
+                    <n-form-item path="appName" label="Name">
+                        <n-input v-model:value="model.appName" placeholder="My Test Key" @keydown.enter.prevent />
+                    </n-form-item>
+                </n-form>
+                <div class="modal-footer">
+                    <n-button color="#F5F5F5" size="large" class="cancle" @click="handleClose">Cancel</n-button>
+                    <n-button color="#A45EFF" size="large" @click="handleSubmit">Create secret key</n-button>
+                </div>
+            </n-spin>
         </n-card>
     </n-modal>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { NButton, NCard, NForm, NFormItem, NInput, NModal, FormInst, FormRules } from 'naive-ui';
+import { NButton, NCard, NForm, NFormItem, NInput, NModal, NSpin, FormInst, FormRules, useMessage } from 'naive-ui';
+import { Http } from '@/tools/http';
+
+const http = Http.getInstance();
+const message = useMessage()
 
 interface modelType {
-    name: string
+    appName: string
 }
 
 const showModal = ref(false)
+const loading = ref(false)
 const formRef = ref<FormInst | null>(null)
 const model = ref<modelType>({
-    name: ''
+    appName: ''
 })
 const rules: FormRules = {
-    name: [{
+    appName: [{
         required: true,
         message: 'please input name',
         trigger: 'blur'
@@ -38,7 +45,31 @@ const rules: FormRules = {
 const emits = defineEmits(['ok']);
 
 const handleClose = () => {
+    loading.value = false
     showModal.value = false
+}
+const handleSubmit = (e: MouseEvent) => {
+    e.preventDefault()
+    loading.value = true
+    formRef.value?.validate(async (errors) => {
+        if (errors) {
+            loading.value = false
+            return
+        }
+        const res = await http.postJSON({
+            url: '/emchub/api/client/userAppInfo/saveOne',
+            data: { ...model.value }
+        })
+        loading.value = false
+        if (res._result !== 0) {
+            message.error(res._desc);
+            return
+        } else {
+            emits('ok')
+            message.success('success');
+            handleClose()
+        }
+    })
 }
 
 /*
@@ -48,8 +79,9 @@ const handleClose = () => {
  */
 const handleShow = async () => {
     model.value = {
-        name: ''
+        appName: ''
     }
+    loading.value = false
     showModal.value = true
 }
 defineExpose({

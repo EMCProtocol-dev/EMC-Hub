@@ -54,7 +54,8 @@ const copyKey = async () => {
 }
 </script>
 
-<style lang="less" scoped>
+<style scoped lang="less">
 .ml-8px {
     margin-left: 8px;
-}</style>
+}
+</style>
