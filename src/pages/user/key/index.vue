@@ -38,11 +38,11 @@
 
 <script lang="ts" setup>
 import { reactive, ref, h, onMounted } from 'vue';
-import { NButton, NDivider, NH2, NSpace, DataTableColumns, useMessage, NDataTable, NIcon } from 'naive-ui';
-import { AddSharp } from '@vicons/ionicons5'
+import { NButton, NDivider, NH2, NSpace, DataTableColumns, useMessage, NDataTable, NIcon, useDialog } from 'naive-ui';
+import { AddSharp, TrashOutline } from '@vicons/ionicons5'
 import { Http } from '@/tools/http';
-import deletePng from '@/assets/apikey/delete.png'
-import editPng from '@/assets/apikey/edit.png'
+// import deletePng from '@/assets/apikey/delete.png'
+// import editPng from '@/assets/apikey/edit.png'
 // import viewPng from '@/assets/apikey/view.png'
 // import copyPng from '@/assets/apikey/copy.png'
 // import { Utils } from '@/tools/utils'
@@ -52,6 +52,7 @@ import { RowType } from './type'
 
 const http = Http.getInstance();
 const message = useMessage()
+const dialog = useDialog()
 
 const keyCreateRef = ref<InstanceType<typeof KeyCreate>>()
 const addapi = () => {
@@ -132,29 +133,6 @@ const columns: DataTableColumns<RowType> = [
                     { style: { 'display': 'inline-block', 'minWidth': '80px' } },
                     row.secretKey.substring(0, 3) + '...' + row.secretKey.substring(row.secretKey.length - 3)
                 ),
-                // h(
-                //     'img',
-                //     {
-                //         src: copyPng,
-                //         style: { 'cursor': 'pointer' },
-                //         onClick: () => copyKey(row.secretKey, 'SECRETKEY')
-                //     },
-                //     { default: () => 'Play' }
-                // ),
-                // // h(
-                // //     'img',
-                // //     {
-                // //         src: viewPng,
-                // //         style: { 'marginLeft': '5px', 'cursor': 'pointer' },
-                // //         onMouseover: () => viewFull(row, true, 2),
-                // //         onMouseout: () => viewFull(row, false, 2),
-                // //     },
-                // //     { default: () => 'Play' }
-                // // )
-                // h(
-                //     keyPop,
-                //     { name: row.apiKey }
-                // )
                 h(
                     TableBtn,
                     { name: row.secretKey, key: 'SECRETKEY' }
@@ -170,14 +148,15 @@ const columns: DataTableColumns<RowType> = [
         title: '',
         key: 'actions',
         render(row) {
-            return [h(
-                'img',
+            return h(
+                NIcon,
                 {
-                    src: deletePng,
+                    size: 16,
                     style: { 'cursor': 'pointer' },
+                    component: TrashOutline,
                     onClick: () => deleteApiKey(row)
                 }
-            )]
+            )
         }
     }
 ]
@@ -205,14 +184,35 @@ onMounted(() => {
 })
 
 const deleteApiKey = async (rowData: RowType) => {
-    loading.value = true
-    const res = await http.post({
-        url: '/emchub/api/client/userAppInfo/deleteOne',
-        data: { appId: rowData.appId }
+    
+    dialog.create({
+        title: 'EMC Hub Says',
+        content: 'Are you sure you want to delete this key?',
+        positiveText: 'Delete',
+        negativeText: 'Cancel',
+        positiveButtonProps: {
+            ghost: true
+        },
+        negativeButtonProps: {
+            type: 'info',
+            quaternary: true
+        },
+        closable: false,
+        showIcon: false,
+        onPositiveClick: async () => {
+            loading.value = true
+            const res = await http.post({
+                url: '/emchub/api/client/userAppInfo/deleteOne',
+                data: { appId: rowData.appId }
+            })
+            loading.value = false
+            if (res._result !== 0) return;
+            handleSearch()
+        },
+        onNegativeClick: () => {
+            message.error('Cancel')
+        }
     })
-    loading.value = false
-    if (res._result !== 0) return;
-    handleSearch()
 }
 
 // const viewFull = (rowData: RowType, showOrHide: boolean, type: number) => {

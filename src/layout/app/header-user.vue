@@ -49,7 +49,7 @@
                     </div>
                     <div class="user-info-balance">
                         <p class="balance-title">EMC Balance</p>
-                        <p class="balance-value">0</p>
+                        <p class="balance-value">{{ balance }}</p>
                     </div>
                     <p class="user-info-quick">Quick entry</p>
                     <div class="user-info-entry">
@@ -83,13 +83,15 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { NButton, NSpace, NIconWrapper, NText, NDivider, NIcon, NPopover } from 'naive-ui';
 import { useRouter } from 'vue-router';
+import { Http } from '@/tools/http';
 import { useUserStore } from '@/stores/user';
 import { PersonSharp as IconPerson, ExitOutline as IconExit, ChevronForwardCircle, CubeOutline } from '@vicons/ionicons5';
 import SignInGoogle from '@/pages/auth/signin-google.vue';
 
+const http = Http.getInstance();
 const router = useRouter();
 const userStore = useUserStore();
 const user = computed(() => userStore.user)
@@ -103,6 +105,18 @@ const onPressSignOut = () => {
     userStore.signOut();
     router.push({ name: 'home' });
 }
+
+const balance = ref(0);
+const init = async () => {
+    const resp = await http.get({
+        url: '/emchub/api/client/wallet/info',
+    });
+    if (resp._result !== 0) return;
+    balance.value = resp.data?.balance;
+};
+onMounted(() => {
+    init()
+})
 </script>
 
 <style lang="less" scoped>
