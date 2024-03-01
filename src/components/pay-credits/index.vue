@@ -4,7 +4,9 @@
       <template #header-extra>
         <NButton strong secondary circle @click="onPressCancel">
           <template #icon>
-            <NIcon><IconClose /></NIcon>
+            <NIcon>
+              <IconClose />
+            </NIcon>
           </template>
         </NButton>
       </template>
@@ -16,7 +18,14 @@
       <template v-if="step === 1">
         <NSpace vertical :wrap-item="false" :size="[0, 16]">
           <NSpace align="center" justify="center" :wrap-item="false" :size="[0, 0]">
-            <NText style="font-size: 32px">＄{{ payInfo.price || 0 }}</NText>
+            <template v-if="payInfo.id === -1">
+              <NInput v-model:value="inputPrice" size="large"
+                style="font-size: 32px;height:64px;line-height:64px;text-align: center;" placeholder=""
+                @blur="onInputBlur"></NInput>
+            </template>
+            <template v-else>
+              <NText style="font-size: 32px">＄{{ payInfo.price || 0 }}</NText>
+            </template>
           </NSpace>
           <NSpace align="center" justify="center" :wrap-item="false" :size="[0, 0]">
             <NText>You will pay </NText>
@@ -25,13 +34,16 @@
             <NText>EMC</NText>
           </NSpace>
           <template v-if="status === 0">
-            <NButton type="primary" strong size="large" style="width: 100%" @click="onPressConnect">Connect Wallet</NButton>
+            <NButton type="primary" strong size="large" style="width: 100%" @click="onPressConnect">Connect Wallet
+            </NButton>
           </template>
           <template v-else-if="status === 1">
-            <NButton type="primary" strong size="large" style="width: 100%" @click="onPressSwitch">Switch Arbitrum</NButton>
+            <NButton type="primary" strong size="large" style="width: 100%" @click="onPressSwitch">Switch Arbitrum
+            </NButton>
           </template>
           <template v-else>
-            <NButton type="primary" strong size="large" :loading="payLoading" style="width: 100%" @click="onPressPay">Pay</NButton>
+            <NButton type="primary" strong size="large" :loading="payLoading" style="width: 100%" @click="onPressPay">Pay
+            </NButton>
           </template>
         </NSpace>
       </template>
@@ -63,7 +75,7 @@
 
 <script lang="ts" setup>
 import { ref, computed, watch } from 'vue';
-import { NModal, NCard, NSpace, NButton, NText, NIcon, useMessage } from 'naive-ui';
+import { NModal, NCard, NSpace, NButton, NText, NIcon, NInput, useMessage } from 'naive-ui';
 import { CloseSharp as IconClose } from '@vicons/ionicons5';
 import { ethers } from 'ethers';
 import { Http } from '@/tools/http';
@@ -94,6 +106,8 @@ const titles = ['', 'Pay', 'Complete', 'Error'];
 const step = ref<-1 | 1 | 2 | 3>(-1);
 const emc = ref(0);
 const payLoading = ref<boolean>(false);
+const inputPrice = ref('0');
+const emcLoading = ref(false);
 const status = computed(() => {
   if (!web3User.account0) {
     return 0;
@@ -111,7 +125,18 @@ const init = async () => {
     data: { fee: props.payInfo.price },
   });
   emc.value = resp.data || '?';
+  inputPrice.value = String(props.payInfo.price);
   step.value = 1;
+};
+
+const updateEMCPrice = async () => {
+  emcLoading.value = true;
+  const resp = await http.get({
+    url: '/emchub/api/client/wallet/queryActualPay',
+    data: { fee: inputPrice.value },
+  });
+  emcLoading.value = false;
+  emc.value = resp.data || '?';
 };
 
 const cancel = () => {
@@ -161,9 +186,17 @@ const handlePay = async () => {
   if (!web3User.account0) {
     return { _result: 1, _desc: 'Connect wallet first' };
   }
+  const params: any = { payType: 1, chargeId: props.payInfo.id };
+  if (params.chargeId === -1) {
+    const number = Number(inputPrice.value);
+    if (!number) {
+      return { _result: 1, _desc: 'Invalid input value' };
+    }
+    params.fee = number.toFixed(2);
+  }
   const resp = await http.post({
     url: '/emchub/api/client/wallet/charge',
-    data: { payType: 1, chargeId: props.payInfo.id },
+    data: params, // fee = usdt
   });
   if (resp._result !== 0) {
     return { _result: 1, _desc: resp._desc || 'Unknow pre-charge error' };
@@ -196,6 +229,10 @@ watch(
   }
 );
 
+async function onInputBlur() {
+  await updateEMCPrice();
+}
+
 const title = computed(() => titles[step.value]);
 
 function onPressCancel() {
@@ -220,6 +257,9 @@ async function onPressPay() {
     step.value = 2;
   }
 }
+
+
+
 </script>
 
 <style scoped>
