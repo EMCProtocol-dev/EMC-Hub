@@ -32,6 +32,7 @@
             </tr>
           </thead>
           <tbody>
+
             <template v-for="item in list">
               <tr>
                 <td>{{ item.how }}</td>
@@ -76,7 +77,7 @@ import {
 import moment from 'moment';
 import { Http } from '@/tools/http';
 
-import { init } from 'echarts';
+import { map as walletLogTypes } from '../wallet/wallet-log-types';
 
 
 export default defineComponent({
@@ -137,29 +138,14 @@ export default defineComponent({
       total.value = resp.pageInfo?.total;
 
       const newList = resp.pageInfo?.list;
-      const listType = [
-        {
-          value: '+',
-          type: 'Manual balance adjustment',
-        },
-        {
-          value: '-',
-          type: 'Manual balance adjustment',
-        },
-        {
-          value: '+',
-          type: 'Recharge',
-        },
-        {
-          value: '-',
-          type: 'Consume',
-        },
-      ];
-      list.value = newList?.map((item: any) => ({
-        how: listType[item.type].type,
-        credits: listType[item.type].value + item.amount,
-        createTime: moment(item.create_time).format('YYYY-MM-DD HH:mm:ss'),
-      }));
+      list.value = newList?.map((item: any) => {
+        const typeConfig = walletLogTypes[item.type];
+        return ({
+          how: typeConfig.type,
+          credits: `${typeConfig.operator}${item.amount}`,
+          createTime: moment(item.create_time).format('YYYY-MM-DD HH:mm:ss'),
+        })
+      });
     };
     console.log(list.value);
 
@@ -179,10 +165,12 @@ export default defineComponent({
   },
 });
 </script>
+
 <style scoped>
 .page {
   width: 100%;
 }
+
 .credits {
   position: relative;
   width: 540px;
@@ -199,6 +187,7 @@ export default defineComponent({
   border-radius: 20px;
   box-sizing: border-box;
 }
+
 .section-background {
   position: absolute;
   width: 100%;
@@ -209,6 +198,7 @@ export default defineComponent({
   bottom: 0;
   z-index: 1;
 }
+
 .credits-content {
   position: absolute;
   width: 100%;
@@ -221,6 +211,7 @@ export default defineComponent({
   box-sizing: border-box;
   z-index: 2;
 }
+
 .credits-button {
   padding: 8px 16px;
   border-radius: 20px;

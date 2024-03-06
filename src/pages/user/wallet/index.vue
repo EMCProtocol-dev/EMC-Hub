@@ -20,7 +20,7 @@
           <br />
           on the EMC HUB.
           <br />
-          <span>1000 Credit = 1 USD.</span>
+          <span>1 USD = 1000 Credit</span>
         </div>
       </div>
     </div>
@@ -42,6 +42,7 @@
       </div>
       <NSpin :show="loading" style="min-height: 376px">
         <NSpace class="upgrade-section" :wrap-item="false">
+
           <template v-for="item in list">
             <div class="record-item">
               <div class="hot" v-if="item.hot">
@@ -104,48 +105,6 @@ const init = async () => {
   loading.value = false;
 };
 
-// const initList = async () => {
-//     const resp = await http.get({
-//         url: '/emchub/api/client/wallet/log_list',
-//         data: { page: pageNo.value, size: pageSize.value },
-//     });
-//     if (resp._result !== 0) return;
-
-//     total.value = resp.pageInfo?.total;
-
-//     const newList = resp.pageInfo?.list;
-//     const listType = [
-//         {
-//             value: '+',
-//             type: 'Manual balance adjustment',
-//         },
-//         {
-//             value: '-',
-//             type: 'Manual balance adjustment',
-//         },
-//         {
-//             value: '+',
-//             type: 'Recharge',
-//         },
-//         {
-//             value: '-',
-//             type: 'Consume',
-//         },
-//     ];
-//     list.value = newList?.map((item: any) => ({
-//         how: listType[item.type].type,
-//         credits: listType[item.type].value + item.amount,
-//         createTime: moment(item.create_time).format('YYYY-MM-DD HH:mm:ss'),
-//     }));
-// };
-// console.log(list.value);
-
-// watch(
-//     () => pageNo.value,
-//     () => {
-//         initList();
-//     }
-// );
 
 const onPressRefresh = () => {
   init();
